@@ -54,11 +54,12 @@ public abstract class BacktrackingWaveFunctionCollapse {
 
     public void partialCollapse(int[][] wave, Index index, int value) {
         HashMap<Index, Integer> propagationMap = computePropagation(wave, index, value);
-        propagationMap.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.identity(value)));
+        propagationMap.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.singletonFrom(value)));
 
         for (Map.Entry<Index, Integer> entry : propagationMap.entrySet()) {
-            int y = entry.getKey().y();
-            int x = entry.getKey().x();
+            Index key = entry.getKey();
+            int y = key.y();
+            int x = key.x();
 
             wave[y][x] = Superpositions.difference(wave[y][x], entry.getValue());
         }
@@ -103,26 +104,27 @@ public abstract class BacktrackingWaveFunctionCollapse {
 
                 int value = Utils.chooseRandomFromSuperposition(viable, getWeights());
                 HashMap<Index, Integer> propagationMap = computePropagation(wave, index, value);
-                propagationMap.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.identity(value)));
+                propagationMap.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.singletonFrom(value)));
 
                 // Compute the changes
                 HashSet<Index> removals = computeReducedIndices(wave, propagationMap, indices);
 
                 for (Map.Entry<Index, Integer> entry : propagationMap.entrySet()) {
-                    int y = entry.getKey().y();
-                    int x = entry.getKey().x();
+                    Index key = entry.getKey();
+                    int y = key.y();
+                    int x = key.x();
 
                     wave[y][x] = Superpositions.difference(wave[y][x], entry.getValue());
                 }
 
                 indices.removeAll(removals);
-                events.add(events.size() - 1, new Event(
+                events.add(new Event(
                         index,
                         removals,
                         propagationMap,
                         tried == nullTried
-                                ? Superpositions.identity(value)
-                                : Superpositions.union(tried, Superpositions.identity(value))
+                                ? Superpositions.singletonFrom(value)
+                                : Superpositions.union(tried, Superpositions.singletonFrom(value))
                 ));
 
                 tried = nullTried;
@@ -148,8 +150,9 @@ public abstract class BacktrackingWaveFunctionCollapse {
                 indices.addAll(removals);
 
                 for (Map.Entry<Index, Integer> entry : propagationMap.entrySet()) {
-                    int y = entry.getKey().y();
-                    int x = entry.getKey().x();
+                    Index key = entry.getKey();
+                    int y = key.y();
+                    int x = key.x();
 
                     wave[y][x] = Superpositions.union(wave[y][x], entry.getValue());
                 }

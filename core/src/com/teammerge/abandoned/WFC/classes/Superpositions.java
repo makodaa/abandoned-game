@@ -4,12 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Superpositions {
-    public static int identity(int value) {
-        int output = 0;
-        output |= 1 << value;
 
-        return output;
+    // Returns what is analogous to a full set containing all the possible values in the superposition.
+    public static int universal(Object[] options) {
+        return (1 << (options.length + 1)) - 1;
     }
+
+    public static int universal(Iterable<?> options) {
+        int count = 0;
+        for (Object option : options) {
+            count += 1;
+        }
+
+        return count;
+    }
+
+    public static int singletonFrom(int value) { return 1 << value; }
 
     public static int empty() {
         return 0;
@@ -29,13 +39,19 @@ public class Superpositions {
 
     public static int createFrom(int ...rawValues) {
         return Arrays.stream(rawValues)
-                .map(Superpositions::identity)
+                .map(Superpositions::singletonFrom)
                 .reduce(Superpositions::union)
                 .orElseGet(() -> 0);
     }
 
     public static int union(int left, int right) {
         return left | right;
+    }
+
+    public static int intersection(int left, int right) { return left & right; }
+
+    public static int union(int ...values) {
+        return Arrays.stream(values).reduce(Superpositions::union).orElseGet(() -> 0);
     }
 
     public static boolean isSingle(int superposition) {
@@ -61,6 +77,8 @@ public class Superpositions {
         return superposition == 0;
     }
 
+    public static boolean isEmpty(int superposition) { return superposition == 0; }
+
     public static int getSizeOf(int superposition) {
         int count = 0;
         while (superposition != 0) {
@@ -73,7 +91,7 @@ public class Superpositions {
 
     public static ArrayList<Integer> iterableOf(int superposition) {
         ArrayList<Integer> results = new ArrayList<>();
-        for (int i = 0; superposition != 0; superposition >>= 1, ++i) {
+        for (int i = 0; superposition != 0; superposition >>>= 1, ++i) {
             if ((superposition & 1) != 0) {
                 results.add(i);
             }
@@ -82,3 +100,42 @@ public class Superpositions {
         return results;
     }
 }
+
+//public class Superposition extends HashSet<Integer> {
+//    public static Superposition identity(int value) {
+//        Superposition result = new Superposition();
+//        result.add(value);
+//
+//        return result;
+//    }
+//
+//    public static Superposition empty() {
+//        return new Superposition();
+//    }
+//
+//    public int getSingle() {
+//        assert this.size() == 1;
+//        return this.iterator().next();
+//    }
+//
+//    public Superposition copy() {
+//        Superposition newCopy = new Superposition();
+//        newCopy.addAll(this);
+//
+//        return newCopy;
+//    }
+//
+//    public Superposition difference(HashSet<Integer> right) {
+//        Superposition copy = this.copy();
+//        copy.removeAll(right);
+//
+//        return copy;
+//    }
+//
+//    public Superposition union(HashSet<Integer> right) {
+//        Superposition copy = this.copy();
+//        copy.addAll(right);
+//
+//        return copy;
+//    }
+//}

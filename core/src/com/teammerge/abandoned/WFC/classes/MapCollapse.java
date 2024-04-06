@@ -8,45 +8,28 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class MapCollapse extends BacktrackingWaveFunctionCollapse {
     static abstract class Areas {
-        public static final String RESCUE_AREA = "Ra";
-        public static final String FOREST = "Fo";
+        private static final String[] aliases = {
+                "Ra", "Fo", "Vi", "Pa", "CB", "Ma", "Fa", "Ho",
+        };
 
-        public static final String VILLAGE = "Vi";
+        public static final int RESCUE_AREA = 0;
 
-        public static final String PARK = "Pa";
+        public static final int FOREST = 1;
 
-        public static final String COMMERCIAL_BLDG = "CB";
+        public static final int VILLAGE = 2;
 
-        public static final String MALL = "Ma";
+        public static final int PARK = 3;
 
-        public static final String FARM = "Fa";
+        public static final int COMMERCIAL_BLDG = 4;
 
-        public static final String HOSPITAL = "Ho";
+        public static final int MALL = 5;
+
+        public static final int FARM = 6;
+
+        public static final int HOSPITAL = 7;
+
+        public static final int UNIVERSAL = Superpositions.universal(tiles);
     }
-
-    /// Rescue Area
-    ///  Can be next to: Forests.
-
-    /// Forests
-    ///   Can be next to: Forests, Village, Parks, Farms
-
-    /// Village
-    ///   Can be next to: Village, Commercial Bldg, Park, Forests
-
-    /// Parks
-    ///    Can be next to: Village, Forest
-
-    /// Commercial Bldg:
-    ///    Can be next to: Village, Malls, Parks, Hospitals
-
-    /// Malls:
-    ///    Can be next to: Commercial Bldg
-
-    /// Farms:
-    ///    Can be next to: Village, Forests
-
-    /// Hospitals:
-    ///    Can be next to: Commercial Bldg, Hospitals.
 
     public String render(int[][] wave) {
         StringBuilder buffer = new StringBuilder();
@@ -55,7 +38,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
                 if (Superpositions.isInvalid(active)) {
                     buffer.append("!");
                 } else if (Superpositions.isCollapsed(active)) {
-                    buffer.append(tiles[Superpositions.getSingle(active)]);
+                    buffer.append(Areas.aliases[tiles[Superpositions.getSingle(active)][0]]);
                 } else {
                     buffer.append("?");
                 }
@@ -67,15 +50,43 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         return buffer.toString();
     }
 
-    private static final String[] tiles = {
-            "Ra", "Fo", "Vi", "Pa", "CB", "Ma", "Fa" , "Ho"
+    public static final int[][] tiles = {
+            /// Rescue Area
+            ///  Can be next to: Forests.
+            {Areas.RESCUE_AREA, Superpositions.createFrom(Areas.FOREST)},
+
+            /// Forests
+            ///   Can be next to: Forests, Village, Parks, Farms, [Rescue Area]
+            {Areas.FOREST, Superpositions.createFrom(Areas.FOREST, Areas.RESCUE_AREA, Areas.VILLAGE, Areas.PARK, Areas.FARM)},
+
+            /// Villages
+            ///    Can be next to: Village, Commercial Bldg, Park, Forests, [Farm]
+            {Areas.VILLAGE, Superpositions.createFrom(Areas.VILLAGE, Areas.COMMERCIAL_BLDG, Areas.PARK, Areas.FOREST, Areas.FARM)},
+
+            /// Parks
+            ///    Can be next to: Village, Forest
+            {Areas.PARK, Superpositions.createFrom(Areas.VILLAGE, Areas.FOREST, Areas.COMMERCIAL_BLDG)},
+
+            /// Commercial Bldg:
+            ///    Can be next to: Village, Malls, Parks, Hospitals
+            {Areas.COMMERCIAL_BLDG, Superpositions.createFrom(Areas.VILLAGE, Areas.MALL, Areas.PARK, Areas.HOSPITAL)},
+
+            /// Malls:
+            ///    Can be next to: Commercial Bldg
+            {Areas.MALL, Superpositions.createFrom(Areas.COMMERCIAL_BLDG)},
+
+
+            /// Farms:
+            ///    Can be next to: Village, Forests
+            {Areas.FARM, Superpositions.createFrom(Areas.VILLAGE, Areas.FOREST)},
+
+            /// Hospitals:
+            ///    Can be next to: Commercial Bldg.
+            {Areas.HOSPITAL, Superpositions.createFrom(Areas.COMMERCIAL_BLDG)}
     };
 
     @Override
-    protected int[] getWeights() {
-        return new int[]{1, 2, 2, 2, 2, 2, 2, 2
-        };
-    }
+    protected int[] getWeights() { return new int[]{1, 5, 1, 5, 5, 5, 5, 5}; }
 
     public int[][] generateWave(Board board) {
         int height = board.size();
@@ -86,7 +97,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
             for (int x = 0; x < width; ++x) {
                 int superposition = 0;
                 for (int i = 0; i < tiles.length; ++i) {
-                    superposition = Superpositions.union(superposition, Superpositions.identity(i));
+                    superposition = Superpositions.union(superposition, Superpositions.singletonFrom(i));
                 }
                 wave[y][x] = superposition;
             }
@@ -101,7 +112,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         int width = wave[0].length;
 
         HashMap<Index, Integer> remove = new HashMap<>();
-        remove.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.identity(value)));
+        remove.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.singletonFrom(value)));
 
         Queue<Index> queue = new LinkedBlockingQueue<>();
         queue.add(index);
@@ -111,60 +122,38 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
             int y = latest.y();
             int x = latest.x();
 
-            switch (tiles[value]) {
-                case "Ra":
-                    if (y - 1 >= 0) {
-                        Index neighbor = new Index(y - 1, x);
-                        remove.put(
-                                neighbor,
-                                Superpositions.union(
-                                        remove.getOrDefault(neighbor, Superpositions.empty()),
-                                        Superpositions.difference(
-                                                remove.getOrDefault(neighbor, Superpositions.empty()),
-                                                Superpositions.identity(0)
-                                        )
-                                )
-                        );
-                    }
-                    if (y + 1 < height) {
-                        Index neighbor = new Index(y + 1, x);
-                        remove.put(
-                                neighbor,
-                                Superpositions.union(
-                                        remove.getOrDefault(neighbor, Superpositions.empty()),
-                                        Superpositions.difference(
-                                                remove.getOrDefault(neighbor, Superpositions.empty()),
-                                                Superpositions.identity(0)
-                                        )
-                                )
-                        );
-                    }
-                    if (x - 1 >= 0) {
-                        Index neighbor = new Index(y , x - 1);
-                        remove.put(
-                                neighbor,
-                                Superpositions.union(
-                                        remove.getOrDefault(neighbor, Superpositions.empty()),
-                                        Superpositions.difference(
-                                                remove.getOrDefault(neighbor, Superpositions.empty()),
-                                                Superpositions.identity(0)
-                                        )
-                                )
-                        );
-                    }
-                    if (x + 1 < width) {
-                        Index neighbor = new Index(y, x + 1);
-                        remove.put(
-                                neighbor,
-                                Superpositions.union(
-                                        remove.getOrDefault(neighbor, Superpositions.empty()),
-                                        Superpositions.difference(
-                                                remove.getOrDefault(neighbor, Superpositions.empty()),
-                                                Superpositions.identity(0)
-                                        )
-                                )
-                        );
-                    }
+            final int possibilitiesAtTile = Superpositions.difference(
+                    wave[y][x],
+                    remove.getOrDefault(latest, Superpositions.empty())
+            );
+            final int allowed = Superpositions.iterableOf(possibilitiesAtTile)
+                    .stream()
+                    .map((possibleTile) ->  tiles[possibleTile][1])
+                    .reduce(Superpositions.empty(), Superpositions::union);
+            final int notAllowed = Superpositions.difference(Areas.UNIVERSAL, allowed);
+
+            Index[] neighbors = {
+                    new Index(y - 1, x),
+                    new Index(y, x + 1),
+                    new Index(y + 1, x),
+                    new Index(y, x - 1),
+            };
+
+            for (Index neighborIndex : neighbors) {
+                int ny = neighborIndex.y();
+                int nx = neighborIndex.x();
+
+                /// If it is out of bounds, skip the iteration.
+                if (!(0 <= ny && ny < height) || !(0 <= nx && nx < width)) continue;
+                final int currentRemovals = remove.getOrDefault(neighborIndex, Superpositions.empty());
+                final int neighborPossibilities = Superpositions.difference(wave[ny][nx], currentRemovals);
+                final int newRemovals = Superpositions.intersection(neighborPossibilities, notAllowed);
+
+                if (Superpositions.isEmpty(newRemovals)) continue;
+
+                final int neighborRemovals = Superpositions.union(currentRemovals, newRemovals);
+                remove.put(neighborIndex, neighborRemovals);
+                queue.add(neighborIndex);
             }
         }
 
