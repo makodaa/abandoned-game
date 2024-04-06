@@ -1,6 +1,6 @@
-package com.teammerge.abandoned.WFC.classes;
+package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.WFC.records.Index;
+import com.teammerge.abandoned.utilities.wfc.records.Index;
 
 import java.util.HashMap;
 import java.util.Queue;

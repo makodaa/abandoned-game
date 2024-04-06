@@ -1,7 +1,7 @@
-package com.teammerge.abandoned.WFC.classes;
+package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.WFC.records.Event;
-import com.teammerge.abandoned.WFC.records.Index;
+import com.teammerge.abandoned.utilities.wfc.records.Event;
+import com.teammerge.abandoned.utilities.wfc.records.Index;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.WFC.classes;
+package com.teammerge.abandoned.utilities.wfc.classes;
 
 public class Main {
     public static void main(String[] args) {

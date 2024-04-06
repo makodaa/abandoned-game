@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.WFC.classes;
+package com.teammerge.abandoned.utilities.wfc.classes;
 
 import java.util.ArrayList;
 import java.util.Arrays;

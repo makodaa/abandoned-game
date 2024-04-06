@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.WFC.records;
+package com.teammerge.abandoned.utilities.wfc.records;
 
 import java.util.HashMap;
 import java.util.HashSet;
