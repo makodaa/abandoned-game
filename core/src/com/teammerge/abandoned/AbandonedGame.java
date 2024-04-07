@@ -1,24 +1,33 @@
 package com.teammerge.abandoned;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.teammerge.abandoned.screens.MainMenuScreen;
 
-public class AbandonedGame extends ApplicationAdapter {
+/*
+* AbandonedGame Runner Class
+*
+* */
+public class AbandonedGame extends Game {
+
+	// TODO: declare viewport width, height
 	SpriteBatch batch;
 	Texture img;
 	
 	@Override
 	public void create () {
+		batch = new SpriteBatch();
+		setScreen(new MainMenuScreen(this));
 	}
 
 	@Override
 	public void render () {
-
+		super.render();
 	}
 	
 	@Override
 	public void dispose () {
+		batch.dispose();
 	}
 }
