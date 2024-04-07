@@ -12,8 +12,7 @@ import com.teammerge.abandoned.screens.MainMenuScreen;
 public class AbandonedGame extends Game {
 
 	// TODO: declare viewport width, height
-	SpriteBatch batch;
-	Texture img;
+	public SpriteBatch batch;
 	
 	@Override
 	public void create () {

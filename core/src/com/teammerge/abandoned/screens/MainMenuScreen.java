@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -20,21 +20,19 @@ import com.teammerge.abandoned.AbandonedGame;
 
 public class MainMenuScreen implements Screen {
 
-    private AbandonedGame game;
+    private final AbandonedGame game;
 // TODO: Ortho camera
-    private Stage stage;
+    private final Stage stage;
     private final SpriteBatch batch;
-    BitmapFont h1, h2, h3;
+    BitmapFont h1, h2;
     Label titleLabel;
-    Label.LabelStyle titleStyle;
 
     TextButton newGameButton, exitButton;
-    TextButton.TextButtonStyle styleButton;
     FreeTypeFontGenerator generator;
     FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
 //  TODO: Search about viewports
-    public MainMenuScreen(AbandonedGame game) {
+    public MainMenuScreen(final AbandonedGame game) {
         this.game = game;
         batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
@@ -74,7 +72,8 @@ public class MainMenuScreen implements Screen {
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("debug: new game game");
+                game.setScreen(new GameScreen(game));
+                dispose();
                 return false;
             }
         });
