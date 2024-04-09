@@ -17,7 +17,7 @@ public abstract class BacktrackingWaveFunctionCollapse {
             int x_ = x;
             Arrays.stream(wave)
                 .map(row -> (int)Math.floor(Math.log(row[x_]) / Math.log(2)))
-                .reduce((a, b) -> a > b ? a : b)
+                .reduce(Math::max)
                 .ifPresent(profile::add);
         }
 
@@ -79,7 +79,7 @@ public abstract class BacktrackingWaveFunctionCollapse {
 
 
         int tried = nullTried;
-        Index tryingIndex = nullIndex;
+        Optional<Index> tryingIndex = Optional.empty();
 
         while (true) {
             boolean backtrack = true;
@@ -89,9 +89,7 @@ public abstract class BacktrackingWaveFunctionCollapse {
                     return;
                 }
 
-                Index index = !tryingIndex.equals(nullIndex)
-                        ? tryingIndex
-                        : Utils.chooseRandomFromWave(wave, indices);
+                Index index = tryingIndex.orElseGet(() -> Utils.chooseRandomFromWave(wave, indices));
                 int superposition = wave[index.y()][index.x()];
 
                 int viable = tried == nullTried
@@ -128,7 +126,7 @@ public abstract class BacktrackingWaveFunctionCollapse {
                 ));
 
                 tried = nullTried;
-                tryingIndex = nullIndex;
+                tryingIndex = Optional.empty();
 
                 backtrack = false;
             } while (false);
@@ -144,7 +142,7 @@ public abstract class BacktrackingWaveFunctionCollapse {
                 Map<Index, Integer> propagationMap = lastEvent.propagationMap();
                 int previousTried = lastEvent.tried();
 
-                tryingIndex = index;
+                tryingIndex = Optional.of(index);
                 tried = previousTried;
 
                 indices.addAll(removals);

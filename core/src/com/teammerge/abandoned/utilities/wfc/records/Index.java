@@ -16,4 +16,32 @@ public class Index {
     public int x() {
         return _x;
     }
+
+    public int squareDistance(Index other) {
+        int dy = other._y - this._y;
+        int dx = other._x - this._x;
+
+        return dy * dy + dx * dx;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Index) {
+            Index otherIndex = (Index)other;
+
+            return otherIndex._y == this._y && otherIndex._x == this._x;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + _y;
+        result = prime * result + _x;
+
+        return result;
+    }
 }

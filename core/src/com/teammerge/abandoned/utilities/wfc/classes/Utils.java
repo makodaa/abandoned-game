@@ -34,6 +34,10 @@ public abstract class Utils {
         return lowest;
     }
 
+    public static int clamp(int value, int low, int high) {
+        return Math.max(low, Math.min(high, value));
+    }
+
     public static String padRight(String original, char padChar, int padCount) {
         int target = padCount - original.length();
         if (target <= 0) {
@@ -135,7 +139,7 @@ public abstract class Utils {
         return 0;
     }
 
-    public static HashSet<Index>  copyIndices(HashSet<Index> source) {
+    public static HashSet<Index> copyIndices(HashSet<Index> source) {
         return new HashSet<>(source);
     }
 
@@ -157,5 +161,4 @@ public abstract class Utils {
 
         return newWave;
     }
-
 }
