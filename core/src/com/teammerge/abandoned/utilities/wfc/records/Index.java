@@ -44,4 +44,14 @@ public class Index {
 
         return result;
     }
+
+
+    @Override
+    public String toString() {
+        return "Location[x=" +
+                _x +
+                ", y=" +
+                _y +
+                "]";
+    }
 }

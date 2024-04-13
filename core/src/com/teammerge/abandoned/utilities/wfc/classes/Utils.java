@@ -2,7 +2,10 @@ package com.teammerge.abandoned.utilities.wfc.classes;
 
 import com.teammerge.abandoned.utilities.wfc.records.Index;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public abstract class Utils {

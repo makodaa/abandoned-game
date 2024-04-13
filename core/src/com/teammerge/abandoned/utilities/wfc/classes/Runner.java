@@ -1,10 +1,5 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.utilities.wfc.records.Index;
-
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-
 public class Runner {
     private static String drawGrid(int[][] matrix) {
         StringBuilder builder = new StringBuilder();

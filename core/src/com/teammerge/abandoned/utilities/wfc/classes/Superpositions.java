@@ -25,6 +25,10 @@ public class Superpositions {
         return 0;
     }
 
+    public static boolean contains(final int superposition, int value) {
+        return intersection(superposition, Superpositions.singletonFrom(value)) != 0;
+    }
+
     public static int getSingle(int superposition) {
         if (!isSingle(superposition)) {
             throw new Error("The superposition " + superposition + " has multiple values!");
@@ -41,7 +45,7 @@ public class Superpositions {
         return Arrays.stream(rawValues)
                 .map(Superpositions::singletonFrom)
                 .reduce(Superpositions::union)
-                .orElseGet(() -> 0);
+                .orElse(0);
     }
 
     public static int union(int left, int right) {
@@ -51,7 +55,7 @@ public class Superpositions {
     public static int intersection(int left, int right) { return left & right; }
 
     public static int union(int ...values) {
-        return Arrays.stream(values).reduce(Superpositions::union).orElseGet(() -> 0);
+        return Arrays.stream(values).reduce(Superpositions::union).orElse(0);
     }
 
     public static boolean isSingle(int superposition) {

@@ -125,95 +125,59 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
      */
     public int[][] generateMap(int width, int height) {
         Board board = Board.generate(height, width);
-        Index center = new Index(height / 2, width / 2);
-
-        if ((center.x() * 2 + 1) != width || (center.y() * 2 + 1) != height) {
-            throw new Error("Incorrect parameters. Please select a grid size with an odd number.");
-        }
+        Actor.Location origin = new Actor.Location((double)height / 2, (double)width / 2);
 
         int[][] wave = generateWave(board);
 
         Actor[] actors = new Actor[16];
 
+        for (int i = 0; i < actors.length; ++i) {
+            actors[i] = new Actor(
+                    Actor.Location.fromPoint(
+                        Utils.random.nextInt(0, height),
+                        Utils.random.nextInt(0, width)
+                    )
+            );
+        }
+
         //// WARNING: Really abhorrent code incoming.
         // TODO: Change the code use a separation algorithm instead of brute force.
-        boolean redo = false;
-        do /* unsafe */ {
-            redo = false;
-            int retries = 0;
 
+        int count = 0;
+        Actor.Location[] previousMovements = new Actor.Location[actors.length];
+        boolean change = false;
+        do {
+            change = false;
+
+            Actor.Location[] movements = new Actor.Location[actors.length];
             for (int i = 0; i < actors.length; ++i) {
-                actors[i] = new Actor(center, (2 * Math.PI) * ((double) i / actors.length));
+                Actor actor = actors[i];
+                Actor.Location movement = actor.separate(actors);
+
+                System.out.println(movement);
+                movements[i] = movement;
             }
 
-            /// Fixed point iteration
-            boolean run = false;
-            do {
-                run = false;
-                boolean[] shouldMove = new boolean[actors.length];
+            for (int i = 0; i < actors.length; ++i) {
+                actors[i].getLocation()
+                        .addToSelf(movements[i])
+                        .constrainSelfX(0, width - 1)
+                        .constrainSelfY(0, height - 1);
+            }
 
-                if (retries > 8) {
-                    redo = true;
-                    System.out.println("Redoing because code bad");
-                    break;
-                }
+            for (int i = 0; i < movements.length; ++i) {
+                change = change || !movements[i].equals(previousMovements[i]);
+            }
 
-                for (int i = 0; i < actors.length; ++i) {
-                    for (int j = i + 1; j < actors.length; ++j) {
-                        Actor left = actors[i];
-                        Actor right = actors[j];
-                        if (left == right) { continue; }
-
-                        double squareDistance = left.getIndex().squareDistance(right.getIndex());
-
-                        shouldMove[i] = shouldMove[i] ^ squareDistance < left.getSensitivity() * left.getSensitivity();
-                        shouldMove[j] = shouldMove[j] ^ squareDistance < right.getSensitivity() * right.getSensitivity();
-                    }
-                }
-
-                ArrayList<Integer> toBeReplaced = new ArrayList<>();
-                for (int i = 0; i < actors.length; ++i) {
-                    Actor actor = actors[i];
-                    boolean should = shouldMove[i];
-                    if (should) {
-                        double dy = Math.sqrt(actor.getSensitivity()) * Math.sin(actor.getVectorAngle());
-                        double dx = Math.sqrt(actor.getSensitivity()) * Math.cos(actor.getVectorAngle());
-
-                        int newY = Math.min(Math.max((int)Math.round(actor.getIndex().y() + dy), 0), wave.length - 1);
-                        int newX = Math.min(Math.max((int)Math.round(actor.getIndex().x() + dx), 0), wave[0].length - 1);
-
-                        if (newY == actor.getIndex().y() && newX == actor.getIndex().x()) {
-                            retries += 1;
-
-                            System.out.println("Colliding circle has not moved! Is there an infinite loop?");
-
-                            /// Option 1: Remove one of the two colliding, (and spawn a new one at the center. Possibly.)
-                            toBeReplaced.add(i);
-                            continue;
-                        }
-
-                        actor.setIndex(new Index(newY, newX));
-                    }
-
-                    run = should || run;
-                }
-                for (int index : toBeReplaced) {
-                    double angleDelta = 0.5 * (0.5 - Actor.random.nextDouble());
-                    double theta = (2 * Math.PI) * (angleDelta + (double) index / actors.length);
-
-                    actors[index] = new Actor(
-                            new Index(center.y() + (int)(6 * Math.sin(theta)), center.x() + (int)(6 * Math.cos(theta))),
-                            theta
-                    );
-                }
-            } while (run);
-        } while (redo);
+            previousMovements = movements;
+        } while (count++ < 120 && change);
 
         for (Actor actor : actors) {
-            partialCollapse(wave, actor.getIndex(), MapCollapse.Areas.RESCUE_AREA);
+            partialCollapse(wave, actor.getLocation().asIndex(), MapCollapse.Areas.RESCUE_AREA);
         }
         fullCollapse(wave);
 
+        System.out.println(renderWave(wave));
         for (int y = 0; y < wave.length; ++y) {
             for (int x = 0; x < wave[y].length; ++x) {
                 wave[y][x] = Superpositions.getSingle(wave[y][x]);

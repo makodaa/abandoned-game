@@ -53,6 +53,10 @@ public abstract class BacktrackingWaveFunctionCollapse {
     }
 
     public void partialCollapse(int[][] wave, Index index, int value) {
+        if (!Superpositions.contains(wave[index.y()][index.x()], value)) {
+            return;
+        }
+
         HashMap<Index, Integer> propagationMap = computePropagation(wave, index, value);
         propagationMap.put(index, Superpositions.difference(wave[index.y()][index.x()], Superpositions.singletonFrom(value)));
 
