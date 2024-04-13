@@ -24,7 +24,9 @@ public class RestScreen extends Table {
 
 //        Creating actors
         Label label = new VisLabel("Take a Rest");
+        label.setSize(128, 64);
         TextButton closeButton = new VisTextButton("X");
+        closeButton.setSize(64,64);
         closeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -67,7 +69,7 @@ public class RestScreen extends Table {
         padRight(Gdx.graphics.getWidth() / 20.0f);
 
         add(closeButton).minSize(64,64);
-        add(label).height(64).fillX();
+        add(label).fillX();
         row().expandX().fillX().fillY();
         add(oneHourButton).height(64);
         row().expandX().fillX().fillY();

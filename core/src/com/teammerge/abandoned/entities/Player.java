@@ -25,27 +25,27 @@ public class Player {
     }
 
     public void decay(){
-        fullness -= random.nextInt(0,2);
-        hydration -= random.nextInt(0,2);
-        energy -= random.nextInt(0,2);
+        setFullness(fullness - random.nextInt(0,2));
+        setHydration(hydration - random.nextInt(0,2));
+        setEnergy(energy - random.nextInt(0,2));
 
-        if(fullness < 10 || hydration < 10 || energy < 5) condition -= random.nextInt(0,1);
+        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,2));
     }
 
     public void setCondition(int condition) {
-        this.condition = Math.min(condition,100);
+        this.condition = Math.min(Math.max(condition,0),100);
     }
 
     public void setFullness(int fullness) {
-        this.fullness = Math.min(fullness,100);
+        this.fullness = Math.min(Math.max(fullness, 0),100);
     }
 
     public void setHydration(int hydration) {
-        this.hydration = Math.min(hydration,100);
+        this.hydration = Math.min(Math.max(hydration,0),100);
     }
 
     public void setEnergy(int energy) {
-        this.energy = Math.min(energy, 100);
+        this.energy = Math.min(Math.max(energy,0), 100);
     }
 
     public void setMinutes(int minutes) {

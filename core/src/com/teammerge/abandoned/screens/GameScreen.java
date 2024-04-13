@@ -189,9 +189,10 @@ public class GameScreen implements Screen {
     }
 
     public Table createActionButtonsTable() {
+//        Create Table
         Table table = new Table();
+//        Create Rest Button that opens up RestScreen
         TextButton restButton = new VisTextButton("Rest");
-        restButton.setSize(96, 96 );
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -200,9 +201,28 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
+        TextButton travelButton = new VisTextButton("Travel");
+        travelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
+        TextButton scavengeButton = new VisTextButton("Scavenge");
+        TextButton inventoryButton = new VisTextButton("Inventory");
+        TextButton craftingButton = new VisTextButton("Craft");
+
+
+//        Finalization, arranging actors onto table
         padTable(table);
-        table.align(Align.topLeft);
-        table.add(restButton);
+        table.align(Align.right);
+        table.defaults().size(108);
+        table.add(restButton).pad(12);
+        table.add(travelButton).pad(12);
+        table.row().fillX();
+        table.add(scavengeButton).pad(12);
+        table.add(inventoryButton).pad(12);
+        table.add(craftingButton).pad(12);
         return table;
     }
 
