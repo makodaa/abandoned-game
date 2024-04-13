@@ -8,8 +8,10 @@ import com.teammerge.abandoned.AbandonedGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle("Abandoned (in-development)");
+		config.setWindowedMode(1280, 800);
 		config.setForegroundFPS(60);
-		config.setTitle("abandoned");
+		config.useVsync(true);
 		new Lwjgl3Application(new AbandonedGame(), config);
 	}
 }
