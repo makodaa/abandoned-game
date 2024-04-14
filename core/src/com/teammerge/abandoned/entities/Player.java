@@ -3,6 +3,8 @@ package com.teammerge.abandoned.entities;
 import java.util.Random;
 public class Player {
     public int condition, fullness, hydration, energy, minutes;
+
+    int row, column;
     public long timeSinceLastSecond;
     Random random = new Random();
 

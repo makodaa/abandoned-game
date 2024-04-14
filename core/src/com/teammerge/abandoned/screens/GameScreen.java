@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
+import com.teammerge.abandoned.actors.InventoryScreen;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.actors.Background;
 import com.teammerge.abandoned.actors.RestScreen;
@@ -83,7 +84,6 @@ public class GameScreen implements Screen {
 
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
-        System.out.println(Gdx.graphics.getWidth() + ", " + Gdx.graphics.getHeight());
     }
 
 
@@ -210,6 +210,14 @@ public class GameScreen implements Screen {
         });
         TextButton scavengeButton = new VisTextButton("Scavenge");
         TextButton inventoryButton = new VisTextButton("Inventory");
+        inventoryButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                InventoryScreen overlay = new InventoryScreen(player);
+                stage.addActor(overlay);
+                overlay.setVisible(true);
+            }
+        });
         TextButton craftingButton = new VisTextButton("Craft");
 
 
