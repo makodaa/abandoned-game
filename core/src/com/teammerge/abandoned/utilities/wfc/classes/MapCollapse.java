@@ -1,35 +1,13 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
+import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 import com.teammerge.abandoned.utilities.wfc.records.Index;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
+
 public class MapCollapse extends BacktrackingWaveFunctionCollapse {
-    static abstract class Areas {
-        private static final String[] aliases = {
-                "Ra", "Fo", "Vi", "Pa", "CB", "Ma", "Fa", "Ho",
-        };
-
-        public static final int RESCUE_AREA = 0;
-
-        public static final int FOREST = 1;
-
-        public static final int VILLAGE = 2;
-
-        public static final int PARK = 3;
-
-        public static final int COMMERCIAL_BLDG = 4;
-
-        public static final int MALL = 5;
-
-        public static final int FARM = 6;
-
-        public static final int HOSPITAL = 7;
-
-        public static final int UNIVERSAL = Superpositions.universal(tiles);
-    }
-
     public String renderWave(int[][] wave) {
         StringBuilder buffer = new StringBuilder();
         for (int[] row : wave) {
@@ -37,7 +15,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
                 if (Superpositions.isInvalid(active)) {
                     buffer.append("! ");
                 } else if (Superpositions.isCollapsed(active)) {
-                    buffer.append(Areas.aliases[tiles[Superpositions.getSingle(active)][0]]);
+                    buffer.append(AreaType.from(Superpositions.getSingle(active)).getAlias());
                 } else {
                     buffer.append("? ");
                 }
@@ -53,7 +31,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         StringBuilder buffer = new StringBuilder();
         for (int[] row : map) {
             for (int active : row) {
-                buffer.append(Areas.aliases[tiles[active][0]]);
+                buffer.append(AreaType.from(active).getAlias());
                 buffer.append(" ");
             }
             buffer.append('\n');
@@ -61,40 +39,6 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
 
         return buffer.toString();
     }
-
-    public static final int[][] tiles = {            /// Rescue Area
-            ///  Can be next to: Forests.
-            {Areas.RESCUE_AREA, Superpositions.createFrom(Areas.FOREST)},
-
-            /// Forests
-            ///   Can be next to: Forests, Village, Parks, Farms, [Rescue Area]
-            {Areas.FOREST, Superpositions.createFrom(Areas.FOREST, Areas.RESCUE_AREA, Areas.VILLAGE, Areas.PARK, Areas.FARM)},
-
-            /// Villages
-            ///    Can be next to: Village, Commercial Bldg, Park, Forests, [Farm]
-            {Areas.VILLAGE, Superpositions.createFrom(Areas.VILLAGE, Areas.COMMERCIAL_BLDG, Areas.PARK, Areas.FOREST, Areas.FARM)},
-
-            /// Parks
-            ///    Can be next to: Village, Forest
-            {Areas.PARK, Superpositions.createFrom(Areas.VILLAGE, Areas.FOREST, Areas.COMMERCIAL_BLDG)},
-
-            /// Commercial Bldg:
-            ///    Can be next to: Village, Malls, Parks, Hospitals
-            {Areas.COMMERCIAL_BLDG, Superpositions.createFrom(Areas.VILLAGE, Areas.MALL, Areas.PARK, Areas.HOSPITAL)},
-
-            /// Malls:
-            ///    Can be next to: Commercial Bldg
-            {Areas.MALL, Superpositions.createFrom(Areas.COMMERCIAL_BLDG)},
-
-
-            /// Farms:
-            ///    Can be next to: Village, Forests
-            {Areas.FARM, Superpositions.createFrom(Areas.VILLAGE, Areas.FOREST)},
-
-            /// Hospitals:
-            ///    Can be next to: Commercial Bldg.
-            {Areas.HOSPITAL, Superpositions.createFrom(Areas.COMMERCIAL_BLDG)}
-    };
 
     @Override
     protected int[] getWeights() { return new int[]{1, 3, 1, 5, 2, 5, 5, 5}; }
@@ -106,11 +50,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         int[][] wave = new int[height][width];
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                int superposition = 0;
-                for (int i = 0; i < tiles.length; ++i) {
-                    superposition = Superpositions.union(superposition, Superpositions.singletonFrom(i));
-                }
-                wave[y][x] = superposition;
+                wave[y][x] = Superpositions.universal(AreaType.values());
             }
         }
 
@@ -118,12 +58,12 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
     }
 
     /**
-     * Returns
+     * Returns a matrix (2d array) of integers which represent values in the [MapCollapse.Areas]
      * @param width Represents the horizontal size of the matrix.
      * @param height Represents the vertical size of the matrix.
-     * @return a matrix (2d array) of integers which represent values in the [MapCollapse.Areas]
+     * @return the generated map
      */
-    public int[][] generateMap(int width, int height) {
+    public int[][] generateAreas(int width, int height) {
         Board board = Board.generate(height, width);
         Actor.Location origin = new Actor.Location((double)height / 2, (double)width / 2);
 
@@ -134,14 +74,9 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         for (int i = 0; i < actors.length; ++i) {
             actors[i] = new Actor(
                     Actor.Location.fromPoint(
-                        Utils.random.nextInt(0, height),
-                        Utils.random.nextInt(0, width)
-                    )
-            );
+                            Utils.random.nextInt(0, height),
+                            Utils.random.nextInt(0, width)));
         }
-
-        //// WARNING: Really abhorrent code incoming.
-        // TODO: Change the code use a separation algorithm instead of brute force.
 
         int count = 0;
         Actor.Location[] previousMovements = new Actor.Location[actors.length];
@@ -170,10 +105,10 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
             }
 
             previousMovements = movements;
-        } while (count++ < 120 && change);
+        } while (count++ < 60 && change);
 
         for (Actor actor : actors) {
-            partialCollapse(wave, actor.getLocation().asIndex(), MapCollapse.Areas.RESCUE_AREA);
+            partialCollapse(wave, actor.getLocation().asIndex(), AreaType.RESCUE_AREA.ordinal());
         }
         fullCollapse(wave);
 
@@ -187,7 +122,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         return wave;
     }
 
-    public int[][] generateRescueProbabilityMatrix(int[][] map) {
+    public double[][] generateRescueProbabilityMatrix(int[][] map) {
         int height = map.length;
         int width = map[0].length;
 
@@ -196,13 +131,13 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         for (int y = 0; y < map.length; ++y) {
             for (int x = 0; x < map[y].length; ++x) {
                 int collapsedValue = map[y][x];
-                if (collapsedValue == MapCollapse.Areas.RESCUE_AREA) {
+                if (AreaType.from(collapsedValue) == AreaType.RESCUE_AREA) {
                     allRescueAreas.add(new Index(y, x));
                 }
             }
         }
 
-        int[][] rescueProbabilityMatrix = new int[height][width];
+        double[][] rescueProbabilityMatrix = new double[height][width];
         for (Index rescueArea : allRescueAreas) {
             double radiusOfArea = Math.pow(rescueArea.squareDistance(center), 0.25);
             HashSet<Index> visited = new HashSet<>();
@@ -233,7 +168,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
 
                 rescueProbabilityMatrix[y][x] = Math.max(
                         rescueProbabilityMatrix[y][x],
-                        (int)Math.round(radiusOfArea - Math.sqrt(squareDistance))
+                        (radiusOfArea - Math.sqrt(squareDistance)) / Math.sqrt(squareDistance)
                 );
 
                 queue.addAll(Arrays.asList(neighbors));
@@ -244,6 +179,23 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         return rescueProbabilityMatrix;
     }
 
+    public Area[][] generateMap(int width, int height) {
+        int[][] map = generateAreas(31, 31);
+        double[][] rescueProbabilityMatrix = generateRescueProbabilityMatrix(map);
+
+        Area[][] areas = new Area[height][width];
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                areas[y][x] = new Area(
+                        AreaType.from(map[y][x]),
+                        rescueProbabilityMatrix[y][x]
+                );
+            }
+        }
+
+        return areas;
+    }
+    
     @Override
     public HashMap<Index, Integer> computePropagation(int[][] wave, Index index, int value) {
         int height = wave.length;
@@ -266,9 +218,9 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
             );
             final int allowed = Superpositions.iterableOf(possibilitiesAtTile)
                     .stream()
-                    .map((possibleTile) ->  tiles[possibleTile][1])
+                    .map((possibleTile) ->  AreaType.from(possibleTile).getCompatibilities())
                     .reduce(Superpositions.empty(), Superpositions::union);
-            final int notAllowed = Superpositions.difference(Areas.UNIVERSAL, allowed);
+            final int notAllowed = Superpositions.difference(AreaType.UNIVERSAL, allowed);
 
             Index[] neighbors = {
                     new Index(y - 1, x),

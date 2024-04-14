@@ -1,8 +1,8 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.utilities.wfc.records.Index;
-
 import java.util.Random;
+
+import com.teammerge.abandoned.utilities.wfc.records.Index;
 
 /// Represents a moving 2-dimensional index.
 
@@ -99,7 +99,9 @@ public class Actor {
             return new Location(
                     (distance * Math.sin(angle)),
                     (distance * Math.cos(angle)));
-        }/**
+        }
+
+        /**
          *
          * @param distance Distance from the origin.
          * @param angle    A float in [0, 2π).
@@ -141,8 +143,7 @@ public class Actor {
 
             return new Location(
                     this.y / magnitude,
-                    this.x / magnitude
-            );
+                    this.x / magnitude);
         }
 
         public void normalizeSelf() {
@@ -179,8 +180,7 @@ public class Actor {
         public Location add(Location other) {
             return new Location(
                     this.y + other.y,
-                    this.x + other.x
-                    );
+                    this.x + other.x);
         }
 
         public Location addToSelf(Location other) {
@@ -193,15 +193,13 @@ public class Actor {
         public Location difference(Location other) {
             return new Location(
                     this.y - other.y,
-                    this.x - other.x
-                    );
+                    this.x - other.x);
         }
 
         public Location multiply(double scalar) {
             return new Location(
                     this.y * scalar,
-                    this.x * scalar
-            );
+                    this.x * scalar);
         }
 
         public Location multiplyToSelf(double scalar) {
@@ -214,15 +212,13 @@ public class Actor {
         public Location divide(double divisor) {
             return new Location(
                     this.y / divisor,
-                    this.x / divisor
-            );
+                    this.x / divisor);
         }
 
         public void divideSelf(double divisor) {
             this.y /= divisor;
             this.x /= divisor;
         }
-
 
         @Override
         public boolean equals(Object other) {

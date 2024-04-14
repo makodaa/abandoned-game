@@ -41,6 +41,14 @@ public class Superpositions {
         return left & ~right;
     }
 
+    public static int createFrom(Enum<?> ...rawValues) {
+        return Arrays.stream(rawValues)
+                .map(Enum::ordinal)
+                .map(Superpositions::singletonFrom)
+                .reduce(Superpositions::union)
+                .orElse(0);
+    }
+
     public static int createFrom(int ...rawValues) {
         return Arrays.stream(rawValues)
                 .map(Superpositions::singletonFrom)
@@ -53,10 +61,6 @@ public class Superpositions {
     }
 
     public static int intersection(int left, int right) { return left & right; }
-
-    public static int union(int ...values) {
-        return Arrays.stream(values).reduce(Superpositions::union).orElse(0);
-    }
 
     public static boolean isSingle(int superposition) {
         double logged = Math.log(superposition) / Math.log(2);

@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.entities;
 
 import java.util.Random;
+
 public class Player {
     public int condition, fullness, hydration, energy, minutes;
 
@@ -34,9 +35,7 @@ public class Player {
         if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,2));
     }
 
-    public void setCondition(int condition) {
-        this.condition = Math.min(Math.max(condition,0),100);
-    }
+    public void setCondition(int condition) { this.condition = Math.min(Math.max(condition,0),100); }
 
     public void setFullness(int fullness) {
         this.fullness = Math.min(Math.max(fullness, 0),100);

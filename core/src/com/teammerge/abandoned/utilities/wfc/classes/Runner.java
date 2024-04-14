@@ -1,7 +1,7 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
 public class Runner {
-    private static String drawGrid(int[][] matrix) {
+    private static String drawGrid(double[][] matrix) {
         StringBuilder builder = new StringBuilder();
 
         for (int y = 0; y < matrix.length; ++y) {
@@ -20,8 +20,8 @@ public class Runner {
         int height = 31;
 
         MapCollapse simple = new MapCollapse();
-        int[][] map = simple.generateMap(31, 31);
-        int[][] rescueProbabilityMatrix = simple.generateRescueProbabilityMatrix(map);
+        int[][] map = simple.generateAreas(31, 31);
+        double[][] rescueProbabilityMatrix = simple.generateRescueProbabilityMatrix(map);
 
         System.out.println(drawGrid(rescueProbabilityMatrix));
         System.out.println(simple.renderMap(map));
