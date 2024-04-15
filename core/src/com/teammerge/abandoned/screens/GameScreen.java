@@ -5,23 +5,23 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.kotcrab.vis.ui.widget.VisImageTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.Background;
 import com.teammerge.abandoned.actors.InventoryScreen;
 import com.teammerge.abandoned.actors.RestScreen;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
+import com.kotcrab.vis.ui.widget.VisProgressBar;
 
 public class GameScreen implements Screen {
 
@@ -36,10 +36,12 @@ public class GameScreen implements Screen {
 
     final int row_height = Gdx.graphics.getHeight() / 16;
     final int col_width = Gdx.graphics.getWidth() / 16;
-    Boolean isPaused = false;
+    boolean isPaused = false;
 
+    VisProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
     Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
+    Image craftButtonSkin, scavengeButtonSkin, restButtonSkin, inventoryButtonSkin, travelButtonSkin;
 
     Table containerTable;
     Player player;
@@ -55,7 +57,7 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
         font = new BitmapFont();
-        background = new Background("images/plain_white_background.png");
+        background = new Background("assets/images/plain_white_background.png");
 
         // Create Instance of Player and Map
         player = new Player();
@@ -147,20 +149,51 @@ public class GameScreen implements Screen {
 
     private Table createAttributesTable() {
         Table table = new Table();
+        Table subTable1 = new Table();
+        Table subTable2 = new Table();
+        Table subTable3 = new Table();
+        Table subTable4 = new Table();
 
-        conditionLabel = createLabel("Condition: " + player.condition, font, Color.WHITE);
-        fullnessLabel = createLabel("Fullness: " + player.fullness, font, Color.WHITE);
-        hydrationLabel = createLabel("Hydration: " + player.hydration, font, Color.WHITE);
-        energyLabel = createLabel("Energy: " + player.energy, font, Color.WHITE);
+        conditionLabel = createLabel("Condition: " , font, Color.WHITE);
+        fullnessLabel = createLabel("Fullness: " , font, Color.WHITE);
+        hydrationLabel = createLabel("Hydration: " , font, Color.WHITE);
+        energyLabel = createLabel("Energy: " , font, Color.WHITE);
+
+        conditionBar = new VisProgressBar(0, 100, 1, false);
+        conditionBar.setColor(Color.GREEN);
+        fullnessBar = new VisProgressBar(0, 100, 1, false);
+        fullnessBar.setColor(1, 0, 0, 1);
+        hydrationBar = new VisProgressBar(0, 100, 1, false);
+        hydrationBar.setColor(Color.WHITE);
+        energyBar = new VisProgressBar(0, 100, 1, false);
+        energyBar.setColor(Color.ORANGE);
+
+
 
         padTable(table);
-        table.add(conditionLabel).fillX();
         table.row().expandX().fillX();
-        table.add(fullnessLabel).fillX();
-        table.row().expandX().fillX();
-        table.add(hydrationLabel).fillX();
-        table.row().expandX().fillX();
-        table.add(energyLabel).fillX();
+
+        table.add(subTable1);
+        table.add(subTable2);
+        table.add(subTable3);
+        table.add(subTable4);
+
+        subTable1.add(conditionLabel).fillX();
+        subTable1.row().fillX();
+        subTable1.add(conditionBar);
+
+        subTable2.add(fullnessLabel).fillX();
+        subTable2.row().fillX();
+        subTable2.add(fullnessBar);
+
+        subTable3.add(hydrationLabel).fillX();
+        subTable3.row().fillX();
+        subTable3.add(hydrationBar);
+
+        subTable4.add(energyLabel).fillX();
+        subTable4.row().fillX();
+        subTable4.add(energyBar);
+
         return table;
     }
 
@@ -177,22 +210,31 @@ public class GameScreen implements Screen {
         debugMilisecondCounterLabel.setAlignment(Align.right);
 
         padTable(table);
-        table.align(Align.topRight);
         table.row().expandX().fillX();
-        table.add(daysPassedLabel).fillX();
+        table.add(daysPassedLabel);
         table.row().expandX().fillX();
-        table.add(hoursBeforeNextPhaseLabel).fillX();
-        table.row().expandX().fillX();
-        table.add(debugMilisecondCounterLabel).fillX();
+        table.add(hoursBeforeNextPhaseLabel);
+        table.row().expand().fillX();
+        table.add(debugMilisecondCounterLabel);
 
         return table;
     }
 
     public Table createActionButtonsTable() {
+
+        // ewan ko balat ng button ata to
+        restButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/TESTINGBETLOG.jpg")));
+        travelButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
+        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
+        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
+        craftButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
+
+
         // Create Table
         Table table = new Table();
+
         // Create Rest Button that opens up RestScreen
-        TextButton restButton = new VisTextButton("Rest");
+        VisImageTextButton restButton = new VisImageTextButton("", restButtonSkin.getDrawable());
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -201,15 +243,15 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
-        TextButton travelButton = new VisTextButton("Travel");
+        VisImageTextButton travelButton = new VisImageTextButton("", travelButtonSkin.getDrawable());
         travelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
 
             }
         });
-        TextButton scavengeButton = new VisTextButton("Scavenge");
-        TextButton inventoryButton = new VisTextButton("Inventory");
+        VisImageTextButton scavengeButton = new VisImageTextButton("", scavengeButtonSkin.getDrawable());
+        VisImageTextButton inventoryButton = new VisImageTextButton("", inventoryButtonSkin.getDrawable());
         inventoryButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -218,18 +260,26 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
-        TextButton craftingButton = new VisTextButton("Craft");
+        VisImageTextButton craftingButton = new VisImageTextButton("", craftButtonSkin.getDrawable());
 
         // Finalization, arranging actors onto table
         padTable(table);
-        table.align(Align.right);
+        table.align(Align.left);
         table.defaults().size(108);
-        table.add(restButton).pad(12);
+
+
+        table.add(restButton).pad(12).padLeft(0);
         table.add(travelButton).pad(12);
+
         table.row().fillX();
-        table.add(scavengeButton).pad(12);
+
+        table.add(scavengeButton).pad(12).padLeft(0);
         table.add(inventoryButton).pad(12);
-        table.add(craftingButton).pad(12);
+
+        table.row().fillX();
+
+        table.add(craftingButton).pad(12).padLeft(0);
+
         return table;
     }
 
@@ -241,10 +291,10 @@ public class GameScreen implements Screen {
     }
 
     private void updateAttributeGraphics() {
-        conditionLabel.setText("Condition: " + player.condition);
-        fullnessLabel.setText("Fullness: " + player.fullness);
-        hydrationLabel.setText("Hydration: " + player.hydration);
-        energyLabel.setText("Energy: " + player.energy);
+        conditionBar.setValue( player.condition);
+        fullnessBar.setValue( player.fullness);
+        hydrationBar.setValue(player.hydration);
+        energyBar.setValue( player.energy);
     }
 
     private void updateDiurnalCycleGraphics() {
