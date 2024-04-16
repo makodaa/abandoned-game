@@ -1,7 +1,7 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
-import com.teammerge.abandoned.utilities.wfc.records.Index;
+import com.teammerge.abandoned.records.Index;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;

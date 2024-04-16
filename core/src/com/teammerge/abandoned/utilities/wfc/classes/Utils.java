@@ -1,6 +1,6 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.utilities.wfc.records.Index;
+import com.teammerge.abandoned.records.Index;
 
 import java.util.ArrayList;
 import java.util.HashSet;

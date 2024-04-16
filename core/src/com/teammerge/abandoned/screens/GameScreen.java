@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+//import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -20,8 +21,17 @@ import com.teammerge.abandoned.actors.Background;
 import com.teammerge.abandoned.actors.InventoryScreen;
 import com.teammerge.abandoned.actors.RestScreen;
 import com.teammerge.abandoned.entities.Player;
+import com.teammerge.abandoned.enums.Direction;
+import com.teammerge.abandoned.records.Index;
+import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.kotcrab.vis.ui.widget.VisProgressBar;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class GameScreen implements Screen {
 
@@ -40,6 +50,7 @@ public class GameScreen implements Screen {
 
     VisProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
+    Label currentLocationLabel;
     Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
     Image craftButtonSkin, scavengeButtonSkin, restButtonSkin, inventoryButtonSkin, travelButtonSkin;
 
@@ -47,8 +58,24 @@ public class GameScreen implements Screen {
     Player player;
 
     MapCollapse mapGenerator;
-    int[][] map;
-    double[][] rescueProbabilityMatrix;
+    Area[][] map;
+
+
+    protected interface KeyHandler {
+        void run();
+    }
+
+    private final HashSet<Integer> activeKeys = new HashSet<>();
+
+    private final HashMap<Integer, KeyHandler> listeners = new HashMap<>() {{
+        put(Input.Keys.W, () -> {
+            System.out.println("W");
+        });
+    }};
+
+    private void addKeyListener(int key, KeyHandler handler) {
+        listeners.put(key, handler);
+    }
 
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
 
@@ -61,10 +88,9 @@ public class GameScreen implements Screen {
         shadow = new Background("images/plain_white_background.png");
 
         // Create Instance of Player and Map
-        player = new Player();
+        player = new Player(new Index(mapWidth / 2, mapHeight / 2));
         mapGenerator = new MapCollapse();
-        map = mapGenerator.generateAreas(mapWidth, mapHeight);
-        rescueProbabilityMatrix = mapGenerator.generateRescueProbabilityMatrix(map);
+        map = mapGenerator.generateMap(mapWidth, mapHeight);
 
         // Set up Main table and Actors
         containerTable = new Table();
@@ -93,6 +119,20 @@ public class GameScreen implements Screen {
 
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
+
+        addKeyListener(Input.Keys.W, () -> {
+            player.move(Direction.UP);
+        });
+        addKeyListener(Input.Keys.A, () -> {
+            player.move(Direction.DOWN);
+        });
+        addKeyListener(Input.Keys.S, () -> {
+            player.move(Direction.LEFT);
+        });
+        addKeyListener(Input.Keys.D, () -> {
+            player.move(Direction.RIGHT);
+        });
+
     }
 
     @Override
@@ -110,6 +150,26 @@ public class GameScreen implements Screen {
             isPaused = !isPaused;
         }
 
+        for (Map.Entry<Integer, KeyHandler> entry : listeners.entrySet()) {
+            int key = entry.getKey();
+            var handler = entry.getValue();
+
+            if (activeKeys.contains(key)) {
+                if (Gdx.input.isKeyPressed(key)) {
+                    continue;
+                } else {
+                    activeKeys.remove(key);
+                }
+            } else {
+                if (Gdx.input.isKeyPressed(key)) {
+                    activeKeys.add(key);
+                    handler.run();
+                } else {
+                    continue;
+                }
+            }
+        }
+
         /*
          * Time stuff (Day, Hours til sundown/ sunrise)
          */
@@ -119,10 +179,12 @@ public class GameScreen implements Screen {
             player.tick(delta * 1000 * 15);
         // Checks
 
-        updateAttributeGraphics();
-        updateDiurnalCycleGraphics();
 
+        updateAttributeGraphics();
+        updateLocationGraphics();
+        updateDiurnalCycleGraphics();
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -208,6 +270,9 @@ public class GameScreen implements Screen {
     private Table createTimeAreaTable() {
         Table table = new Table();
 
+        currentLocationLabel = createLabel("Location", font, Color.WHITE);
+        currentLocationLabel.setAlignment(Align.right);
+
         daysPassedLabel = createLabel("Day n", font, Color.WHITE);
         daysPassedLabel.setAlignment(Align.right);
 
@@ -218,6 +283,8 @@ public class GameScreen implements Screen {
         debugMilisecondCounterLabel.setAlignment(Align.right);
 
         padTable(table);
+        table.row().expandX().fillX();
+        table.add(currentLocationLabel);
         table.row().expandX().fillX();
         table.add(daysPassedLabel);
         table.row().expandX().fillX();
@@ -231,11 +298,11 @@ public class GameScreen implements Screen {
     public Table createActionButtonsTable() {
 
         // ewan ko balat ng button ata to
-        restButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
-        travelButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
-        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
-        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
-        craftButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
+        restButtonSkin = new Image(new Texture(Gdx.files.internal("images/sleep.png")));
+        travelButtonSkin = new Image(new Texture(Gdx.files.internal("images/move.png")));
+        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("images/axe.png")));
+        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("images/inventory.png")));
+        craftButtonSkin = new Image(new Texture(Gdx.files.internal("images/craft.png")));
 
 
         // Create Table
@@ -296,6 +363,11 @@ public class GameScreen implements Screen {
         table.padTop(Gdx.graphics.getHeight() / 16.0f);
         table.padLeft(Gdx.graphics.getWidth() / 20.0f);
         table.padRight(Gdx.graphics.getWidth() / 20.0f);
+    }
+
+    private void updateLocationGraphics() {
+        Area area = map[player.position.y()][player.position.x()];
+        currentLocationLabel.setText("Location: " + area.getName() + " " + player.position);
     }
 
     private void updateAttributeGraphics() {

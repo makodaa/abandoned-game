@@ -1,21 +1,30 @@
 package com.teammerge.abandoned.entities;
 
+import com.teammerge.abandoned.enums.Direction;
+import com.teammerge.abandoned.records.Index;
+
 import java.util.Random;
 
 public class Player {
     public int condition, fullness, hydration, energy, minutes;
 
-    int row, column;
+    public Index position;
+
     public long timeSinceLastSecond;
     Random random = new Random();
 
-    public Player() {
+    public Player(Index starting) {
         timeSinceLastSecond = 0;
         condition = 80 + random.nextInt( 20);
         fullness = 80 + random.nextInt( 20);
         hydration = 80 + random.nextInt( 20);
         energy = 80 + random.nextInt(20);
         minutes = random.nextInt(0, 8);
+        position = starting;
+    }
+
+    public void move(Direction direction) {
+        this.position = position.add(direction.vector);
     }
 
     public void tick(double ms) {

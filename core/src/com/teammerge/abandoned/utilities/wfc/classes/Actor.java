@@ -2,7 +2,7 @@ package com.teammerge.abandoned.utilities.wfc.classes;
 
 import java.util.Random;
 
-import com.teammerge.abandoned.utilities.wfc.records.Index;
+import com.teammerge.abandoned.records.Index;
 
 /// Represents a moving 2-dimensional index.
 

@@ -52,7 +52,7 @@ public enum AreaType {
     public String[] getSuffixes() {
         return switch (this) {
             case RESCUE_AREA -> new String[]{"Rescue Area"};
-            case FOREST -> new String[]{"Forest", "Range"};
+            case FOREST -> new String[]{"Forest", "Grove"};
             case VILLAGE -> new String[]{"Village"};
             case PARK -> new String[]{"Park"};
             case COMMERCIAL_BLDG -> new String[]{"Commercial Building"};

@@ -1,6 +1,10 @@
-package com.teammerge.abandoned.utilities.wfc.records;
+package com.teammerge.abandoned.records;
 
 public record Index(int y, int x) {
+    public Index add(Index other) {
+        return new Index(this.y + other.y, this.x + other.x);
+    }
+
     public int squareDistance(Index other) {
         int dy = this.y - other.y;
         int dx = this.x - other.x;
