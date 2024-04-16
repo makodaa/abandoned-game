@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -30,6 +31,7 @@ public class MainMenuScreen implements Screen {
     public static final int col_width = Gdx.graphics.getWidth() / 16;
     BitmapFont h1, h2;
     Label titleLabel;
+    Table containerTable;
 
     TextButton newGameButton, exitButton;
 

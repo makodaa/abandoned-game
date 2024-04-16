@@ -32,7 +32,7 @@ public class GameScreen implements Screen {
     // TODO: Implement fonts for various labels
     BitmapFont font;
 
-    Background background;
+    Background colored,shadow;
 
     final int row_height = Gdx.graphics.getHeight() / 16;
     final int col_width = Gdx.graphics.getWidth() / 16;
@@ -43,7 +43,7 @@ public class GameScreen implements Screen {
     Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
     Image craftButtonSkin, scavengeButtonSkin, restButtonSkin, inventoryButtonSkin, travelButtonSkin;
 
-    Table containerTable;
+    Table containerTable, shadowOverlayTable;
     Player player;
 
     MapCollapse mapGenerator;
@@ -57,7 +57,8 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
         font = new BitmapFont();
-        background = new Background("assets/images/plain_white_background.png");
+        colored = new Background("images/plain_white_background.png");
+        shadow = new Background("images/plain_white_background.png");
 
         // Create Instance of Player and Map
         player = new Player();
@@ -68,12 +69,19 @@ public class GameScreen implements Screen {
         // Set up Main table and Actors
         containerTable = new Table();
         containerTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        background.setColor(88, 163, 153, 255);
-        containerTable.setBackground(background);
+        colored.setColor(88, 163, 153, 255);
+        containerTable.setBackground(colored);
+
+        shadowOverlayTable = new Table();
+        shadowOverlayTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shadow.setColor(0,0,0, 100);
+        shadowOverlayTable.setBackground(shadow);
+
         Table timeAreaTable = createTimeAreaTable();
         Table attributesTable = createAttributesTable();
         Table actionButtonsTable = createActionButtonsTable();
 
+        containerTable.add(shadowOverlayTable);
         containerTable.row().expandX().fillX();
         containerTable.align(Align.topRight);
         containerTable.add(timeAreaTable).fillX().fillY();
@@ -223,11 +231,11 @@ public class GameScreen implements Screen {
     public Table createActionButtonsTable() {
 
         // ewan ko balat ng button ata to
-        restButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/TESTINGBETLOG.jpg")));
-        travelButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
-        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
-        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
-        craftButtonSkin = new Image(new Texture(Gdx.files.internal("assets/images/batbold.jpg")));
+        restButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
+        travelButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
+        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
+        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
+        craftButtonSkin = new Image(new Texture(Gdx.files.internal("images/plain_white_background.png")));
 
 
         // Create Table
@@ -309,22 +317,34 @@ public class GameScreen implements Screen {
                 dayCycle = "Early Morning, ";
                 nextCycle = "Sunrise";
                 waitingHours = 6 - hours;
+                colored.setColor(64, 31, 113,((hours / 4.0f) * 255));
+                containerTable.setBackground(colored);
             } else {
                 dayCycle = "Morning, ";
                 nextCycle = "Noon";
                 waitingHours = 12 - hours;
+
+                colored.setColor(19, 93, 102,((hours / 6.0f) * 255));
+                containerTable.setBackground(colored);
             }
         } else {
             if (hours < 18) {
                 dayCycle = "Afternoon, ";
                 nextCycle = "Sunset";
                 waitingHours = 18 - hours;
-                background.setColor(226, 244, 197, 255);
-                containerTable.setBackground(background);
+
+                if (hours > 15) {
+                    colored.setColor(130, 77, 116, ((waitingHours / 8.0f) * 255));
+                    containerTable.setBackground(colored);
+                }
+
+
             } else {
                 dayCycle = "Evening, ";
                 nextCycle = "Midnight";
                 waitingHours = 24 - hours;
+                colored.setColor(64, 31, 113,((waitingHours / 10.0f) * 255));
+                containerTable.setBackground(colored);
             }
 
         }
