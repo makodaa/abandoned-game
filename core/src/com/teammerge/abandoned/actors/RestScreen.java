@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.kotcrab.vis.ui.widget.VisLabel;
+import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.entities.Player;
 
@@ -23,6 +25,7 @@ public class RestScreen extends Table {
 
 
 //        Creating actors
+        Table topBarTable = new VisTable();
         Label label = new VisLabel("Take a Rest");
         label.setSize(128, 64);
         TextButton closeButton = new VisTextButton("X");
@@ -33,6 +36,10 @@ public class RestScreen extends Table {
                 setVisible(false);
             }
         });
+        topBarTable.align(Align.topLeft);
+        topBarTable.add(closeButton).minSize(64,64).spaceRight(18);
+        topBarTable.add(label);
+
         TextButton oneHourButton = new VisTextButton("1 Hour");
         oneHourButton.addListener(new ChangeListener() {
             @Override
@@ -63,13 +70,9 @@ public class RestScreen extends Table {
         });
 
 //        Finalization, arranging actors
-        padBottom(Gdx.graphics.getHeight() / 16.0f);
-        padTop(Gdx.graphics.getHeight() / 16.0f);
-        padLeft(Gdx.graphics.getWidth() / 20.0f);
-        padRight(Gdx.graphics.getWidth() / 20.0f);
 
-        add(closeButton).minSize(64,64);
-        add(label).fillX();
+        align(Align.topLeft);
+        add(topBarTable).fillX().spaceBottom(18);
         row().expandX().fillX().fillY();
         add(oneHourButton).height(64);
         row().expandX().fillX().fillY();

@@ -14,10 +14,11 @@ public class Area {
 
         this.distance = Utils.random.nextInt(31, 73);
 
+        String[] prefixes = type.getPrefixes();
         String[] suffixes = type.getSuffixes();
 
         // TODO: Change this to something more suitable.
-        this.name = suffixes[Utils.random.nextInt(0, suffixes.length)];
+        this.name = prefixes[Utils.random.nextInt(0, prefixes.length)] + " " + suffixes[Utils.random.nextInt(0, suffixes.length)];
     }
 
     public AreaType getType() {

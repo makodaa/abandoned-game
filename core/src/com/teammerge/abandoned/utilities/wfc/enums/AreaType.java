@@ -53,12 +53,84 @@ public enum AreaType {
         return switch (this) {
             case RESCUE_AREA -> new String[]{"Rescue Area"};
             case FOREST -> new String[]{"Forest", "Grove"};
-            case VILLAGE -> new String[]{"Village"};
+            case VILLAGE -> new String[]{"Village", "Subdivision", "Homes"};
             case PARK -> new String[]{"Park"};
-            case COMMERCIAL_BLDG -> new String[]{"Commercial Building"};
-            case MALL -> new String[]{"Mall"};
-            case FARM -> new String[]{"Farm"};
-            case HOSPITAL -> new String[]{"Hospital"};
+            case COMMERCIAL_BLDG -> new String[]{"Commercial Building","Complex", "Avenue", "Plaza"};
+            case MALL -> new String[]{"Malls", "Mart",};
+            case FARM -> new String[]{"Farm", "Fields", "Acres"};
+            case HOSPITAL -> new String[]{"Hospital", "Clinic", "Medical Centre"};
+        };
+    }
+
+    /**
+    * Returns possible prefixes for area names, such as "Blue rose [suffix]"
+    * @return array of name combination
+    */
+    public String[] getPrefixes() {
+        return switch (this) {
+            case RESCUE_AREA -> new String[]{
+                    "Unnamed",
+                    "Gen. Santos",
+                    "Gen. Luna",
+                    "Philippine National",
+                    "Survivors United",
+                    "Southeast United",
+                    ""
+            };
+
+            case FOREST -> new String[]{
+                    "Unnamed",
+                    "Viridian",
+                    "Cerulean",
+                    "Little Baguio",
+                    "Philippine Grand",
+                    "Philippine Protected",
+                    ""
+
+
+            };
+            case VILLAGE -> new String[]{
+                    "Unrecognizable",
+                    "Countryside",
+                    "Queensville",
+                    "Everest",
+                    "Springtime",
+                    "Summertime",
+                    "Diggers"
+            };
+            case PARK -> new String[]{
+                    "Seo June",
+                    "Central",
+                    ""
+
+
+            };
+            case COMMERCIAL_BLDG -> new String[]{
+                    "Rizal",
+                    "Araneta",
+                    "Ciannax",
+            };
+            case MALL -> new String[]{
+                    "Unrecognizable",
+                    "Sta. Robina",
+                    "Magnolia",
+                    "Ceilmart",
+                    "Kostko",
+                    "Diggers",
+            };
+            case FARM -> new String[]{
+                    "Unnamed",
+                    "Bumble",
+                    "Big",
+                    ""
+            };
+            case HOSPITAL -> new String[]{
+                    "St. Peter's",
+                    "Ace General",
+                    "Salve",
+                    "Far East",
+                    ""
+            };
         };
     }
 

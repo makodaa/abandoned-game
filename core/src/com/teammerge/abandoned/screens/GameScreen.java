@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-//import com.badlogic.gdx.maps.Map;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -26,12 +26,13 @@ import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.kotcrab.vis.ui.widget.VisProgressBar;
+import com.teammerge.abandoned.utilities.wfc.classes.Superpositions;
+import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static java.util.Map.entry;
 
 public class GameScreen implements Screen {
 
@@ -42,10 +43,8 @@ public class GameScreen implements Screen {
     // TODO: Implement fonts for various labels
     BitmapFont font;
 
-    Background colored,shadow;
+    Background colored;
 
-    final int row_height = Gdx.graphics.getHeight() / 16;
-    final int col_width = Gdx.graphics.getWidth() / 16;
     boolean isPaused = false;
 
     VisProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
@@ -54,7 +53,7 @@ public class GameScreen implements Screen {
     Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
     Image craftButtonSkin, scavengeButtonSkin, restButtonSkin, inventoryButtonSkin, travelButtonSkin;
 
-    Table containerTable, shadowOverlayTable;
+    Table containerTable;
     Player player;
 
     MapCollapse mapGenerator;
@@ -85,7 +84,6 @@ public class GameScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         font = new BitmapFont();
         colored = new Background("images/plain_white_background.png");
-        shadow = new Background("images/plain_white_background.png");
 
         // Create Instance of Player and Map
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
@@ -98,17 +96,10 @@ public class GameScreen implements Screen {
         colored.setColor(88, 163, 153, 255);
         containerTable.setBackground(colored);
 
-        shadowOverlayTable = new Table();
-        shadowOverlayTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        shadow.setColor(0,0,0, 100);
-        shadowOverlayTable.setBackground(shadow);
-
         Table timeAreaTable = createTimeAreaTable();
         Table attributesTable = createAttributesTable();
         Table actionButtonsTable = createActionButtonsTable();
 
-        containerTable.add(shadowOverlayTable);
-        containerTable.row().expandX().fillX();
         containerTable.align(Align.topRight);
         containerTable.add(timeAreaTable).fillX().fillY();
         containerTable.row().expandX().fillX();
@@ -121,18 +112,56 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         addKeyListener(Input.Keys.W, () -> {
-            player.move(Direction.UP);
+            move(Direction.UP);
         });
         addKeyListener(Input.Keys.A, () -> {
-            player.move(Direction.DOWN);
+            move(Direction.LEFT);
         });
         addKeyListener(Input.Keys.S, () -> {
-            player.move(Direction.LEFT);
+            move(Direction.DOWN);
         });
         addKeyListener(Input.Keys.D, () -> {
-            player.move(Direction.RIGHT);
+            move(Direction.RIGHT);
         });
 
+    }
+
+    private void displayMap(Area[][] map, Index highlight) {
+            StringBuilder buffer = new StringBuilder();
+
+            int left = Math.max(0, highlight.x() - 2);
+            int right = Math.min(map[0].length, highlight.x() + 3);
+            int top = Math.max(0, highlight.y() - 2);
+            int bottom = Math.min(map.length, highlight.y() + 3);
+
+            for (int y = top; y < bottom; ++y) {
+                Area[] row = map[y];
+                for (int x = left; x < right; ++x) {
+                    Area active = row[x];
+                    buffer.append(active.getType().getAlias());
+                    buffer.append(" ");
+                }
+                buffer.append('\n');
+                for (int x = left; x < right; ++x) {
+                    Area active = row[x];
+
+                    if (highlight.y() == y && highlight.x() == x) {
+                        buffer.append("++");
+                    } else {
+                        buffer.append("  ");
+                    }
+                    buffer.append(" ");
+                }
+                buffer.append('\n');
+            }
+
+            System.out.println(buffer.toString());
+
+    }
+
+    private void move(Direction direction) {
+        player.move(direction);
+        displayMap(map, player.position);
     }
 
     @Override
@@ -219,10 +248,10 @@ public class GameScreen implements Screen {
 
     private Table createAttributesTable() {
         Table table = new Table();
-        Table subTable1 = new Table();
-        Table subTable2 = new Table();
-        Table subTable3 = new Table();
-        Table subTable4 = new Table();
+        Table conditionBarGroup = new Table();
+        Table fullnessBarGroup = new Table();
+        Table hydrationBarGroup = new Table();
+        Table energyBarGroup = new Table();
 
         conditionLabel = createLabel("Condition: " , font, Color.WHITE);
         fullnessLabel = createLabel("Fullness: " , font, Color.WHITE);
@@ -230,39 +259,34 @@ public class GameScreen implements Screen {
         energyLabel = createLabel("Energy: " , font, Color.WHITE);
 
         conditionBar = new VisProgressBar(0, 100, 1, false);
-        conditionBar.setColor(Color.GREEN);
         fullnessBar = new VisProgressBar(0, 100, 1, false);
-        fullnessBar.setColor(1, 0, 0, 1);
         hydrationBar = new VisProgressBar(0, 100, 1, false);
-        hydrationBar.setColor(Color.WHITE);
         energyBar = new VisProgressBar(0, 100, 1, false);
-        energyBar.setColor(Color.ORANGE);
-
 
 
         padTable(table);
         table.row().expandX().fillX();
 
-        table.add(subTable1);
-        table.add(subTable2);
-        table.add(subTable3);
-        table.add(subTable4);
+        conditionBarGroup.add(conditionLabel).fillX();
+        conditionBarGroup.row().fillX();
+        conditionBarGroup.add(conditionBar);
 
-        subTable1.add(conditionLabel).fillX();
-        subTable1.row().fillX();
-        subTable1.add(conditionBar);
+        fullnessBarGroup.add(fullnessLabel).fillX();
+        fullnessBarGroup.row().fillX();
+        fullnessBarGroup.add(fullnessBar);
 
-        subTable2.add(fullnessLabel).fillX();
-        subTable2.row().fillX();
-        subTable2.add(fullnessBar);
+        hydrationBarGroup.add(hydrationLabel).fillX();
+        hydrationBarGroup.row().fillX();
+        hydrationBarGroup.add(hydrationBar);
 
-        subTable3.add(hydrationLabel).fillX();
-        subTable3.row().fillX();
-        subTable3.add(hydrationBar);
+        energyBarGroup.add(energyLabel).fillX();
+        energyBarGroup.row().fillX();
+        energyBarGroup.add(energyBar);
 
-        subTable4.add(energyLabel).fillX();
-        subTable4.row().fillX();
-        subTable4.add(energyBar);
+        table.add(conditionBarGroup);
+        table.add(fullnessBarGroup);
+        table.add(hydrationBarGroup);
+        table.add(energyBarGroup);
 
         return table;
     }
@@ -427,5 +451,4 @@ public class GameScreen implements Screen {
         // FIXME:
         debugMilisecondCounterLabel.setText("" + player.timeSinceLastSecond);
     }
-
 }

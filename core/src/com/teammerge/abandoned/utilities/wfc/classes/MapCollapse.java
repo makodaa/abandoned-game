@@ -89,7 +89,6 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
                 Actor actor = actors[i];
                 Actor.Location movement = actor.separate(actors);
 
-                System.out.println(movement);
                 movements[i] = movement;
             }
 
@@ -112,7 +111,6 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         }
         fullCollapse(wave);
 
-        System.out.println(renderWave(wave));
         for (int y = 0; y < wave.length; ++y) {
             for (int x = 0; x < wave[y].length; ++x) {
                 wave[y][x] = Superpositions.getSingle(wave[y][x]);
