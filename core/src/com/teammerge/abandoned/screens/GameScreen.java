@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -19,6 +18,7 @@ import com.kotcrab.vis.ui.widget.VisImageTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.Background;
 import com.teammerge.abandoned.actors.InventoryScreen;
+import com.teammerge.abandoned.actors.TravelScreen;
 import com.teammerge.abandoned.actors.RestScreen;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
@@ -26,8 +26,6 @@ import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.kotcrab.vis.ui.widget.VisProgressBar;
-import com.teammerge.abandoned.utilities.wfc.classes.Superpositions;
-import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +44,7 @@ public class GameScreen implements Screen {
     Background colored;
 
     boolean isPaused = false;
+    private final HashSet<Class<?>> activeScreens = new HashSet<>();
 
     VisProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
@@ -59,25 +58,7 @@ public class GameScreen implements Screen {
     MapCollapse mapGenerator;
     Area[][] map;
 
-
-    protected interface KeyHandler {
-        void run();
-    }
-
-    private final HashSet<Integer> activeKeys = new HashSet<>();
-
-    private final HashMap<Integer, KeyHandler> listeners = new HashMap<>() {{
-        put(Input.Keys.W, () -> {
-            System.out.println("W");
-        });
-    }};
-
-    private void addKeyListener(int key, KeyHandler handler) {
-        listeners.put(key, handler);
-    }
-
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
-
         // Load camera, stage, and assets
         this.game = game;
         batch = new SpriteBatch();
@@ -126,43 +107,14 @@ public class GameScreen implements Screen {
 
     }
 
-    private void displayMap(Area[][] map, Index highlight) {
-            StringBuilder buffer = new StringBuilder();
-
-            int left = Math.max(0, highlight.x() - 2);
-            int right = Math.min(map[0].length, highlight.x() + 3);
-            int top = Math.max(0, highlight.y() - 2);
-            int bottom = Math.min(map.length, highlight.y() + 3);
-
-            for (int y = top; y < bottom; ++y) {
-                Area[] row = map[y];
-                for (int x = left; x < right; ++x) {
-                    Area active = row[x];
-                    buffer.append(active.getType().getAlias());
-                    buffer.append(" ");
-                }
-                buffer.append('\n');
-                for (int x = left; x < right; ++x) {
-                    Area active = row[x];
-
-                    if (highlight.y() == y && highlight.x() == x) {
-                        buffer.append("++");
-                    } else {
-                        buffer.append("  ");
-                    }
-                    buffer.append(" ");
-                }
-                buffer.append('\n');
-            }
-
-            System.out.println(buffer.toString());
-
+    public Area[][] getMap() {
+        return this.map;
     }
 
-    private void move(Direction direction) {
-        player.move(direction);
-        displayMap(map, player.position);
+    public HashSet<Class<?>> getActiveScreens() {
+        return this.activeScreens;
     }
+
 
     @Override
     public void show() {
@@ -342,11 +294,18 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
+
+        /// TRAVEL BUTTON IMPLEMENTATION.
+        final GameScreen self = this;
         VisImageTextButton travelButton = new VisImageTextButton("", travelButtonSkin.getDrawable());
         travelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                if (activeScreens.add(TravelScreen.class)) {
+                    TravelScreen overlay = new TravelScreen(player, self);
+                    stage.addActor(overlay);
+                    overlay.setVisible(true);
+                }
             }
         });
         VisImageTextButton scavengeButton = new VisImageTextButton("", scavengeButtonSkin.getDrawable());
@@ -390,8 +349,8 @@ public class GameScreen implements Screen {
     }
 
     private void updateLocationGraphics() {
-        Area area = map[player.position.y()][player.position.x()];
-        currentLocationLabel.setText("Location: " + area.getName() + " " + player.position);
+        Area area = map[player.getPosition().y()][player.getPosition().x()];
+        currentLocationLabel.setText("Location: " + area.getName() + " " + player.getPosition());
     }
 
     private void updateAttributeGraphics() {
@@ -450,5 +409,24 @@ public class GameScreen implements Screen {
 
         // FIXME:
         debugMilisecondCounterLabel.setText("" + player.timeSinceLastSecond);
+    }
+
+
+    protected interface KeyHandler {
+        void run();
+    }
+
+    private final HashSet<Integer> activeKeys = new HashSet<>();
+
+    private final HashMap<Integer, KeyHandler> listeners = new HashMap<>();
+
+    private void addKeyListener(int key, KeyHandler handler) {
+        listeners.put(key, handler);
+    }
+
+
+    /// TODO: Implement UI for the action of moving itself.
+    public void move(Direction direction) {
+        player.move(direction);
     }
 }

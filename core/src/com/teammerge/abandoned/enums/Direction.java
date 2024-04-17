@@ -3,15 +3,25 @@ package com.teammerge.abandoned.enums;
 import com.teammerge.abandoned.records.Index;
 
 public enum Direction {
-    UP(new Index(-1, 0)),
-    DOWN(new Index(+1, 0)),
-    LEFT(new Index(0, -1)),
-    RIGHT(new Index(0, +1)),
+    UP("North", new Index(-1, 0)),
+    DOWN("South", new Index(+1, 0)),
+    LEFT("West", new Index(0, -1)),
+    RIGHT("East", new Index(0, +1)),
     ;
 
-    public final Index vector;
+    private final Index vector;
+    private String cardinalName;
 
-    Direction(Index vector) {
+    Direction(String cardinalName, Index vector) {
+        this.cardinalName = cardinalName;
         this.vector = vector;
+    }
+
+    public Index getVector() {
+        return this.vector;
+    }
+
+    public String getCardinalName() {
+        return this.cardinalName;
     }
 }

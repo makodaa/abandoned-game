@@ -8,7 +8,7 @@ import java.util.Random;
 public class Player {
     public int condition, fullness, hydration, energy, minutes;
 
-    public Index position;
+    private Index position;
 
     public long timeSinceLastSecond;
     Random random = new Random();
@@ -24,7 +24,7 @@ public class Player {
     }
 
     public void move(Direction direction) {
-        this.position = position.add(direction.vector);
+        this.position = position.add(direction.getVector());
     }
 
     public void tick(double ms) {
@@ -63,4 +63,5 @@ public class Player {
     }
 
 
+    public Index getPosition() { return this.position; }
 }
