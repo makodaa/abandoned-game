@@ -17,7 +17,11 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
-import com.teammerge.abandoned.actors.*;
+import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
+import com.teammerge.abandoned.actors.tables.InventoryScreen;
+import com.teammerge.abandoned.actors.tables.LoadingScreen;
+import com.teammerge.abandoned.actors.tables.RestScreen;
+import com.teammerge.abandoned.actors.tables.TravelScreen;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
@@ -38,9 +42,7 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
     BitmapFont mediumFont, regular, lightFont;
 
-    Background Background;
-
-    Background day, dusk, night, midnight;
+    BackgroundDrawable day, dusk, night, midnight;
 
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
 
@@ -74,10 +76,10 @@ public class GameScreen implements Screen {
         lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
 
         // Load Background/s
-        Background = new Background("images/plain_white_background.png");
-        day = new Background("images/backgrounds/day.png");
-        night = new Background("images/backgrounds/night.png");
-        midnight = new Background("images/backgrounds/midnight.png");
+
+        day = new BackgroundDrawable("images/backgrounds/day.png");
+        night = new BackgroundDrawable("images/backgrounds/night.png");
+        midnight = new BackgroundDrawable("images/backgrounds/midnight.png");
 
         // Create Instance of Player and Map
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
@@ -209,6 +211,7 @@ public class GameScreen implements Screen {
         Pixmap pixmap = new Pixmap(10, 18, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
+        Texture white = new Texture(pixmap);
         skin.add("white", new Texture(pixmap));
 
         ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle(skin.newDrawable("white", new Color(0,0,0,0.3f)),  new TextureRegionDrawable(new TextureRegion(new Texture(pixmap))));
@@ -383,7 +386,6 @@ public class GameScreen implements Screen {
                 nextCycle = "NOON";
                 waitingHours = 12 - hours;
 
-                Background.setColor(19, 93, 102,((hours / 6.0f) * 255));
                 containerTable.setBackground(day);
             }
         } else {
@@ -393,7 +395,6 @@ public class GameScreen implements Screen {
                 waitingHours = 18 - hours;
 
                 if (hours > 15) {
-                    Background.setColor(130, 77, 116, ((waitingHours / 8.0f) * 255));
                     containerTable.setBackground(day);
                 }
 
@@ -402,7 +403,6 @@ public class GameScreen implements Screen {
                 dayCycle = "EVENING, ";
                 nextCycle = "MIDNIGHT";
                 waitingHours = 24 - hours;
-                Background.setColor(64, 31, 113,((waitingHours / 10.0f) * 255));
                 containerTable.setBackground(midnight);
             }
 

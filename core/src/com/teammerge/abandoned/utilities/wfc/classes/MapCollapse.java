@@ -178,7 +178,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
     }
 
     public Area[][] generateMap(int width, int height) {
-        int[][] map = generateAreas(31, 31);
+        int[][] map = generateAreas(width, height);
         double[][] rescueProbabilityMatrix = generateRescueProbabilityMatrix(map);
 
         Area[][] areas = new Area[height][width];

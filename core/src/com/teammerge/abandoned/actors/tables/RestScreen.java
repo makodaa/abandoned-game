@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.actors;
+package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -8,21 +8,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.screens.GameScreen;
 
 public class RestScreen extends Table {
-    Background background;
+    BackgroundDrawable backgroundDrawable;
     GameScreen screen;
     Player player;
 
     public RestScreen(Player player, GameScreen screen) {
         this.screen = screen;
         this.player = player;
-        background = new Background("images/plain_white_background.png");
-        background.setColor(127.5f,127.5f,127.5f, 255);
+        backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
+        backgroundDrawable.setColor(127.5f,127.5f,127.5f, 255);
         setSize(1280, 800);
-        setBackground(background);
+        setBackground(backgroundDrawable);
 
 
 //        Creating actors

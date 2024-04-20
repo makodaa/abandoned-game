@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.actors;
+package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
@@ -17,7 +18,7 @@ import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 
 public class TravelScreen extends Table {
-    Background background;
+    BackgroundDrawable backgroundDrawable;
     Player player;
     GameScreen screen;
     int distanceBetweenAreas;
@@ -25,10 +26,10 @@ public class TravelScreen extends Table {
     public TravelScreen(Player player, GameScreen screen) {
         this.player = player;
         this.screen = screen;
-        background = new Background("images/plain_white_background.png");
-        background.setColor(0,0,0, 205);
+        backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
+        backgroundDrawable.setColor(0,0,0, 205);
         setSize(1280, 800);
-        setBackground(background);
+        setBackground(backgroundDrawable);
 
         // Creating actors
         Label label = new VisLabel("Move somewhere:");

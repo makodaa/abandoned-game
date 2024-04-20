@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.actors;
+package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -13,25 +13,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.screens.GameScreen;
 
 /*
  * TODO: Implement action enum to generate loading text
  * */
 public class LoadingScreen extends Table {
-    Background background;
+    BackgroundDrawable backgroundDrawable;
     ProgressBar progressBar;
     private  float elapsedTime;
     private final float duration;
     GameScreen screen;
     public LoadingScreen() {
-        background = new Background("images/plain_white_background.png");
-        background.setColor(0f,0f,0f, 235);
+        backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
+        backgroundDrawable.setColor(0f,0f,0f, 235);
         this.elapsedTime = 0f;
         this.duration = 1.75f;
 
         setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        setBackground(background);
+        setBackground(backgroundDrawable);
 
         // Creating Blank Skin with Plain White Drawable
         Skin skin = new Skin();

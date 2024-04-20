@@ -1,4 +1,4 @@
-package com.teammerge.abandoned.actors;
+package com.teammerge.abandoned.actors.drawables;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-public class Background implements Drawable {
+public class BackgroundDrawable implements Drawable {
 
     private Float x;
     private Float y;
@@ -22,15 +22,15 @@ public class Background implements Drawable {
     private Sprite sprite;
     private Color color;
 
-    public Background(String filename) {
+    public BackgroundDrawable(String filename) {
         this(filename, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public Background(String filename, float x, float y) {
+    public BackgroundDrawable(String filename, float x, float y) {
         this(filename, x, y, 0.0f, 0.0f);
     }
 
-    public Background(String filename, float x, float y, float width, float height) {
+    public BackgroundDrawable(String filename, float x, float y, float width, float height) {
         this.setPosition(x, y);
         this.setSize(width, height);
         initialize(filename);

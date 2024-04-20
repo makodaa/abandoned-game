@@ -1,6 +1,5 @@
-package com.teammerge.abandoned.actors;
+package com.teammerge.abandoned.actors.tables;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -10,7 +9,7 @@ import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisScrollPane;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
-import com.teammerge.abandoned.actors.Background;
+import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 
 public class InventoryScreen extends Table {
@@ -19,10 +18,10 @@ public class InventoryScreen extends Table {
     public InventoryScreen(Player player) {
         Skin skin = VisUI.getSkin();
         this.player = player;
-        Background background = new Background("images/plain_white_background.png");
-        background.setColor(0,0,0, 178);
+        BackgroundDrawable backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
+        backgroundDrawable.setColor(0,0,0, 178);
         setSize(1280, 800);
-        setBackground(background);
+        setBackground(backgroundDrawable);
 
 //        Creating Actors
         Table topBarTable = new VisTable();
