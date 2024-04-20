@@ -2,7 +2,6 @@ package com.teammerge.abandoned.actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,13 +20,13 @@ public class TravelScreen extends Table {
     Background background;
     Player player;
     GameScreen screen;
+    int distanceBetweenAreas;
 
     public TravelScreen(Player player, GameScreen screen) {
         this.player = player;
         this.screen = screen;
-
         background = new Background("images/plain_white_background.png");
-        background.setColor(0,0,0, 178);
+        background.setColor(0,0,0, 205);
         setSize(1280, 800);
         setBackground(background);
 
@@ -41,7 +40,7 @@ public class TravelScreen extends Table {
         topBarTable.add(label);
 
         align(Align.topLeft);
-        add(topBarTable).fillX().spaceBottom(18);
+        add(topBarTable).fillX();
         row().expandX().fillX().fillY();
 
         var mapHeight = screen.getMap().length;
@@ -87,17 +86,46 @@ public class TravelScreen extends Table {
     }
 
     private Actor createMoveOption(Direction direction) {
+        Index currentIndex = player.getPosition();
+        Area currentArea = screen.getMap()[currentIndex.y()][currentIndex.x()];
+
         Index targetIndex = player.getPosition().add(direction.getVector());
         Area targetArea = screen.getMap()[targetIndex.y()][targetIndex.x()];
         TextButton choice = new VisTextButton("Move " + direction.getCardinalName() + ": " + targetArea.getName());
 
+        /*
+        * Disables button when statistics are too low
+        * Computation 2 energy per distance
+         */
+        distanceBetweenAreas = Math.abs(targetArea.getDistance() - currentArea.getDistance());
+        if (player.getEnergy() < (distanceBetweenAreas * 2) + 10){
+            choice.setText("Not Enough Energy");
+            choice.setDisabled(true);
+        }
+
+        /*
+        * Conceal area name when dark
+        * TODO: Work on UI
+        * */
+        if (player.getMinutes() % 24 < 7 || 18 < player.getMinutes() % 24) {
+            choice.setText("??? | It's too hard to see.");
+            choice.getLabel().setColor(Color.RED);
+        }
 
         /// TODO: Work on the layout of the buttons.
         /// TODO: Work on the UI of this screen.
-        choice.setColor(Color.BLUE);
+        {
+            choice.setColor(Color.BLUE);
+        }
         choice.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                screen.showLoadingScreen();
+                player.setMinutes(player.getMinutes() + (distanceBetweenAreas / 5));
+                player.setEnergy(player.getEnergy() - (distanceBetweenAreas * 2));
+                for (int i = player.getMinutes(); i < 3 * (player.getMinutes() + (distanceBetweenAreas / 5)); i++) {
+                    player.decay();
+                }
                 screen.move(direction);
                 closeScreen();
             }

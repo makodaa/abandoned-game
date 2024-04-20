@@ -6,7 +6,7 @@ import com.teammerge.abandoned.records.Index;
 import java.util.Random;
 
 public class Player {
-    public int condition, fullness, hydration, energy, minutes;
+    private int condition, fullness, hydration, energy, minutes;
 
     private Index position;
 
@@ -15,11 +15,11 @@ public class Player {
 
     public Player(Index starting) {
         timeSinceLastSecond = 0;
+        minutes = random.nextInt(0, 8);
         condition = 80 + random.nextInt( 20);
         fullness = 80 + random.nextInt( 20);
         hydration = 80 + random.nextInt( 20);
         energy = 80 + random.nextInt(20);
-        minutes = random.nextInt(0, 8);
         position = starting;
     }
 
@@ -62,6 +62,29 @@ public class Player {
         this.minutes = minutes;
     }
 
+    public int getMinutes() {
+        return minutes;
+    }
+
+    public int getCondition() {
+        return condition;
+    }
+
+    public int getFullness() {
+        return fullness;
+    }
+
+    public int getHydration() {
+        return hydration;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public long getTimeSinceLastSecond() {
+        return timeSinceLastSecond;
+    }
 
     public Index getPosition() { return this.position; }
 }

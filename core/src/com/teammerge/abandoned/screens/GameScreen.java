@@ -1,31 +1,28 @@
 package com.teammerge.abandoned.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisImageTextButton;
+import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
-import com.teammerge.abandoned.actors.Background;
-import com.teammerge.abandoned.actors.InventoryScreen;
-import com.teammerge.abandoned.actors.TravelScreen;
-import com.teammerge.abandoned.actors.RestScreen;
+import com.teammerge.abandoned.actors.*;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
-import com.kotcrab.vis.ui.widget.VisProgressBar;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,73 +34,75 @@ public class GameScreen implements Screen {
     final AbandonedGame game;
     final SpriteBatch batch;
     final Stage stage;
+    final GameScreen self;
+    OrthographicCamera camera;
+    BitmapFont mediumFont, regular, lightFont;
 
-    // TODO: Implement fonts for various labels
-    BitmapFont font;
+    Background Background;
 
-    Background colored;
+    Background day, dusk, night, midnight;
 
-    boolean isPaused = false;
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
 
-    VisProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
+    LoadingScreen loadingScreen;
+    ProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
     Label currentLocationLabel;
     Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
-    Image craftButtonSkin, scavengeButtonSkin, restButtonSkin, inventoryButtonSkin, travelButtonSkin;
 
     Table containerTable;
     Player player;
-
     MapCollapse mapGenerator;
     Area[][] map;
 
+    boolean isInTransition;
+
+
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
         // Load camera, stage, and assets
+        self = this;
         this.game = game;
         batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 1280, 800);
         stage = new Stage(new ScreenViewport());
-        font = new BitmapFont();
-        colored = new Background("images/plain_white_background.png");
+        loadingScreen = new LoadingScreen();
+        isInTransition = false;
+
+        // Load Fonts
+        mediumFont = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
+        lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
+
+        // Load Background/s
+        Background = new Background("images/plain_white_background.png");
+        day = new Background("images/backgrounds/day.png");
+        night = new Background("images/backgrounds/night.png");
+        midnight = new Background("images/backgrounds/midnight.png");
 
         // Create Instance of Player and Map
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
         mapGenerator = new MapCollapse();
         map = mapGenerator.generateMap(mapWidth, mapHeight);
 
-        // Set up Main table and Actors
+        // Set up container table and actor groups
         containerTable = new Table();
-        containerTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        colored.setColor(88, 163, 153, 255);
-        containerTable.setBackground(colored);
+        containerTable.setSize(1280, 800);
 
         Table timeAreaTable = createTimeAreaTable();
         Table attributesTable = createAttributesTable();
         Table actionButtonsTable = createActionButtonsTable();
 
+        padTable(containerTable);
         containerTable.align(Align.topRight);
-        containerTable.add(timeAreaTable).fillX().fillY();
-        containerTable.row().expandX().fillX();
-        containerTable.add(actionButtonsTable);
-        containerTable.row().expandX().fillX();
+        containerTable.add(timeAreaTable).fillX();
+        containerTable.row().expand();
+        containerTable.add(actionButtonsTable).expandX().fillX();
+        containerTable.row().expand().fill();
         containerTable.align(Align.bottomLeft);
         containerTable.add(attributesTable);
 
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
-
-        addKeyListener(Input.Keys.W, () -> {
-            move(Direction.UP);
-        });
-        addKeyListener(Input.Keys.A, () -> {
-            move(Direction.LEFT);
-        });
-        addKeyListener(Input.Keys.S, () -> {
-            move(Direction.DOWN);
-        });
-        addKeyListener(Input.Keys.D, () -> {
-            move(Direction.RIGHT);
-        });
 
     }
 
@@ -126,11 +125,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.draw();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            isPaused = !isPaused;
-        }
-
+        stage.act(delta);
         for (Map.Entry<Integer, KeyHandler> entry : listeners.entrySet()) {
             int key = entry.getKey();
             var handler = entry.getValue();
@@ -156,11 +151,11 @@ public class GameScreen implements Screen {
          */
 
         // FIXME: Current clock speed x 15 for testing purposes, change back to 1
-        if (!isPaused)
-            player.tick(delta * 1000 * 15);
-        // Checks
+        // FIXME:
+        if (loadingScreen.getStage() == null) player.tick(delta * 1000 * 15);
 
 
+        checkForEvent();
         updateAttributeGraphics();
         updateLocationGraphics();
         updateDiurnalCycleGraphics();
@@ -205,40 +200,58 @@ public class GameScreen implements Screen {
         Table hydrationBarGroup = new Table();
         Table energyBarGroup = new Table();
 
-        conditionLabel = createLabel("Condition: " , font, Color.WHITE);
-        fullnessLabel = createLabel("Fullness: " , font, Color.WHITE);
-        hydrationLabel = createLabel("Hydration: " , font, Color.WHITE);
-        energyLabel = createLabel("Energy: " , font, Color.WHITE);
+        conditionLabel = createLabel("CONDITION" , lightFont, Color.LIGHT_GRAY);
+        fullnessLabel = createLabel("FULLNESS" , lightFont, Color.LIGHT_GRAY);
+        hydrationLabel = createLabel("HYDRATION" , lightFont, Color.LIGHT_GRAY);
+        energyLabel = createLabel("ENERGY" , lightFont, Color.LIGHT_GRAY);
 
-        conditionBar = new VisProgressBar(0, 100, 1, false);
-        fullnessBar = new VisProgressBar(0, 100, 1, false);
-        hydrationBar = new VisProgressBar(0, 100, 1, false);
-        energyBar = new VisProgressBar(0, 100, 1, false);
+        Skin skin = new Skin();
+        Pixmap pixmap = new Pixmap(10, 18, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
 
+        ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle(skin.newDrawable("white", new Color(0,0,0,0.3f)),  new TextureRegionDrawable(new TextureRegion(new Texture(pixmap))));
+        barStyle.knobBefore = barStyle.knob;
 
-        padTable(table);
-        table.row().expandX().fillX();
+        conditionBar = new ProgressBar(0.0f, 100.0f, 1.0f, false, barStyle);
+        conditionBar.setSize(290, conditionBar.getPrefHeight());
+        conditionBar.setValue(0f);
 
-        conditionBarGroup.add(conditionLabel).fillX();
-        conditionBarGroup.row().fillX();
+        fullnessBar = new ProgressBar(0.0f, 100.0f, 1.0f, false, barStyle);
+        fullnessBar.setSize(290, fullnessBar.getPrefHeight());
+        fullnessBar.setValue(0f);
+
+        hydrationBar = new ProgressBar(0.0f, 100.0f, 1.0f, false, barStyle);
+        hydrationBar.setSize(290, hydrationBar.getPrefHeight());
+        hydrationBar.setValue(0f);
+
+        energyBar = new ProgressBar(0.0f, 100.0f, 1.0f, false, barStyle);
+        hydrationBar.setSize(290, hydrationBar.getPrefHeight());
+        hydrationBar.setValue(0f);
+
+        table.defaults().pad(0,18,0,18);
+
+        conditionBarGroup.add(conditionLabel).left();
+        conditionBarGroup.row().fillX().expandX();
         conditionBarGroup.add(conditionBar);
 
-        fullnessBarGroup.add(fullnessLabel).fillX();
-        fullnessBarGroup.row().fillX();
+        fullnessBarGroup.add(fullnessLabel).left();
+        fullnessBarGroup.row().fillX().expandX();
         fullnessBarGroup.add(fullnessBar);
 
-        hydrationBarGroup.add(hydrationLabel).fillX();
-        hydrationBarGroup.row().fillX();
+        hydrationBarGroup.add(hydrationLabel).left();
+        hydrationBarGroup.row().fillX().expandX();
         hydrationBarGroup.add(hydrationBar);
 
-        energyBarGroup.add(energyLabel).fillX();
-        energyBarGroup.row().fillX();
+        energyBarGroup.add(energyLabel).left();
+        energyBarGroup.row().fillX().expandX();
         energyBarGroup.add(energyBar);
 
-        table.add(conditionBarGroup);
-        table.add(fullnessBarGroup);
-        table.add(hydrationBarGroup);
-        table.add(energyBarGroup);
+        table.add(conditionBarGroup).expandX().fillX();
+        table.add(fullnessBarGroup).expandX().fillX();
+        table.add(hydrationBarGroup).expandX().fillX();
+        table.add(energyBarGroup).expandX().fillX();
 
         return table;
     }
@@ -246,58 +259,50 @@ public class GameScreen implements Screen {
     private Table createTimeAreaTable() {
         Table table = new Table();
 
-        currentLocationLabel = createLabel("Location", font, Color.WHITE);
+        currentLocationLabel = createLabel("Location", mediumFont, new Color(0.5f,0.5f,0.5f, 0.6f));
         currentLocationLabel.setAlignment(Align.right);
 
-        daysPassedLabel = createLabel("Day n", font, Color.WHITE);
+        daysPassedLabel = createLabel("Day 0", mediumFont, new Color(0.5f,0.5f,0.5f, 0.6f));
         daysPassedLabel.setAlignment(Align.right);
 
-        hoursBeforeNextPhaseLabel = createLabel("Lorem Ipsum", font, Color.WHITE);
+        Table locationDaysGroupTable = new Table();
+        locationDaysGroupTable.add(currentLocationLabel).right();
+        locationDaysGroupTable.add(daysPassedLabel).spaceLeft(18.0f).right();
+
+        hoursBeforeNextPhaseLabel = createLabel(" ", mediumFont, Color.WHITE);
         hoursBeforeNextPhaseLabel.setAlignment(Align.right);
 
-        debugMilisecondCounterLabel = createLabel("00000", font, Color.WHITE);
+        debugMilisecondCounterLabel = createLabel(" ", mediumFont, Color.WHITE);
         debugMilisecondCounterLabel.setAlignment(Align.right);
 
-        padTable(table);
-        table.row().expandX().fillX();
-        table.add(currentLocationLabel);
-        table.row().expandX().fillX();
-        table.add(daysPassedLabel);
-        table.row().expandX().fillX();
-        table.add(hoursBeforeNextPhaseLabel);
-        table.row().expand().fillX();
-        table.add(debugMilisecondCounterLabel);
+        table.align(Align.topRight);
+        table.add(locationDaysGroupTable).right();
+        table.row();
+        table.add(hoursBeforeNextPhaseLabel).right();
+        table.row();
+        table.add(debugMilisecondCounterLabel).right();
 
         return table;
     }
 
     public Table createActionButtonsTable() {
 
-        // ewan ko balat ng button ata to
-        restButtonSkin = new Image(new Texture(Gdx.files.internal("images/sleep.png")));
-        travelButtonSkin = new Image(new Texture(Gdx.files.internal("images/move.png")));
-        scavengeButtonSkin = new Image(new Texture(Gdx.files.internal("images/axe.png")));
-        inventoryButtonSkin = new Image(new Texture(Gdx.files.internal("images/inventory.png")));
-        craftButtonSkin = new Image(new Texture(Gdx.files.internal("images/craft.png")));
-
-
         // Create Table
         Table table = new Table();
 
         // Create Rest Button that opens up RestScreen
-        VisImageTextButton restButton = new VisImageTextButton("", restButtonSkin.getDrawable());
+        VisTextButton restButton = new VisTextButton("Rest");
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                RestScreen overlay = new RestScreen(player);
+                RestScreen overlay = new RestScreen(player,self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
         });
 
         /// TRAVEL BUTTON IMPLEMENTATION.
-        final GameScreen self = this;
-        VisImageTextButton travelButton = new VisImageTextButton("", travelButtonSkin.getDrawable());
+        VisTextButton travelButton = new VisTextButton("Travel");
         travelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -308,8 +313,8 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        VisImageTextButton scavengeButton = new VisImageTextButton("", scavengeButtonSkin.getDrawable());
-        VisImageTextButton inventoryButton = new VisImageTextButton("", inventoryButtonSkin.getDrawable());
+        VisTextButton scavengeButton = new VisTextButton("Scavenge");
+        VisTextButton inventoryButton = new VisTextButton("Inventory");
         inventoryButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -318,7 +323,7 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
-        VisImageTextButton craftingButton = new VisImageTextButton("", craftButtonSkin.getDrawable());
+        VisTextButton craftingButton = new VisTextButton("Craft");
 
         // Finalization, arranging actors onto table
         padTable(table);
@@ -342,70 +347,69 @@ public class GameScreen implements Screen {
     }
 
     private void padTable(Table table) {
-        table.padBottom(Gdx.graphics.getHeight() / 16.0f);
-        table.padTop(Gdx.graphics.getHeight() / 16.0f);
-        table.padLeft(Gdx.graphics.getWidth() / 20.0f);
-        table.padRight(Gdx.graphics.getWidth() / 20.0f);
+        table.padBottom(Gdx.graphics.getHeight() / 32.0f);
+        table.padTop(Gdx.graphics.getHeight() / 32.0f);
+        table.padLeft(Gdx.graphics.getWidth() / 40.0f);
+        table.padRight(Gdx.graphics.getWidth() / 40.0f);
     }
 
     private void updateLocationGraphics() {
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-        currentLocationLabel.setText("Location: " + area.getName() + " " + player.getPosition());
+        currentLocationLabel.setText((area.getName()).toUpperCase());
     }
 
     private void updateAttributeGraphics() {
-        conditionBar.setValue( player.condition);
-        fullnessBar.setValue( player.fullness);
-        hydrationBar.setValue(player.hydration);
-        energyBar.setValue( player.energy);
+        conditionBar.setValue(player.getCondition());
+        fullnessBar.setValue(player.getCondition());
+        hydrationBar.setValue(player.getHydration());
+        energyBar.setValue(player.getEnergy());
     }
 
     private void updateDiurnalCycleGraphics() {
-        // FIXME
-        int hours = player.minutes % 24;
+        // TODO: Refactor, or Change to Two-Cycle Day and Night
+        int hours = player.getMinutes() % 24;
         int waitingHours;
         String dayCycle, nextCycle;
 
         // Following conditions check if time is 0AM - 12AM, and 1PM - 11PM
         if (0 <= hours && hours < 12) {
             if (hours < 6) {
-                dayCycle = "Early Morning, ";
-                nextCycle = "Sunrise";
+                dayCycle = "EARLY MORNING, ";
+                nextCycle = "SUNRISE";
                 waitingHours = 6 - hours;
-                colored.setColor(64, 31, 113,((hours / 4.0f) * 255));
-                containerTable.setBackground(colored);
+                containerTable.setBackground(midnight);
             } else {
-                dayCycle = "Morning, ";
-                nextCycle = "Noon";
+                dayCycle = "MORNING, ";
+                nextCycle = "NOON";
                 waitingHours = 12 - hours;
 
-                colored.setColor(19, 93, 102,((hours / 6.0f) * 255));
-                containerTable.setBackground(colored);
+                Background.setColor(19, 93, 102,((hours / 6.0f) * 255));
+                containerTable.setBackground(day);
             }
         } else {
             if (hours < 18) {
-                dayCycle = "Afternoon, ";
-                nextCycle = "Sunset";
+                dayCycle = "AFTERNOON, ";
+                nextCycle = "SUNFALL";
                 waitingHours = 18 - hours;
 
                 if (hours > 15) {
-                    colored.setColor(130, 77, 116, ((waitingHours / 8.0f) * 255));
-                    containerTable.setBackground(colored);
+                    Background.setColor(130, 77, 116, ((waitingHours / 8.0f) * 255));
+                    containerTable.setBackground(day);
                 }
 
 
             } else {
-                dayCycle = "Evening, ";
-                nextCycle = "Midnight";
+                dayCycle = "EVENING, ";
+                nextCycle = "MIDNIGHT";
                 waitingHours = 24 - hours;
-                colored.setColor(64, 31, 113,((waitingHours / 10.0f) * 255));
-                containerTable.setBackground(colored);
+                Background.setColor(64, 31, 113,((waitingHours / 10.0f) * 255));
+                containerTable.setBackground(midnight);
             }
 
         }
         // FIXME:
-        daysPassedLabel.setText("Day " + (player.minutes / 24));
-        hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " hours till " + nextCycle);
+        daysPassedLabel.setText("DAY " + (player.getMinutes() / 24));
+        hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " HOURS BEFORE " + nextCycle);
 
         // FIXME:
         debugMilisecondCounterLabel.setText("" + player.timeSinceLastSecond);
@@ -424,9 +428,28 @@ public class GameScreen implements Screen {
         listeners.put(key, handler);
     }
 
+    private BitmapFont generateFont(String path, int size) {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(path));
+        FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = size;
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
+        return font;
+    }
 
-    /// TODO: Implement UI for the action of moving itself.
+    private void checkForEvent(){
+    }
+
     public void move(Direction direction) {
         player.move(direction);
+    }
+
+    public void showLoadingScreen(){
+        loadingScreen = new LoadingScreen();
+        stage.addActor(loadingScreen);
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }

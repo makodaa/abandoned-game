@@ -52,12 +52,12 @@ public enum AreaType {
     public String[] getSuffixes() {
         return switch (this) {
             case RESCUE_AREA -> new String[]{"Rescue Area"};
-            case FOREST -> new String[]{"Forest", "Grove"};
-            case VILLAGE -> new String[]{"Village", "Subdivision", "Homes"};
-            case PARK -> new String[]{"Park"};
-            case COMMERCIAL_BLDG -> new String[]{"Commercial Building","Complex", "Avenue", "Plaza"};
-            case MALL -> new String[]{"Malls", "Mart",};
-            case FARM -> new String[]{"Farm", "Fields", "Acres"};
+            case FOREST -> new String[]{"Forest", "Grove", "Reserve"};
+            case VILLAGE -> new String[]{"Village", "Subdivision", "Homes", "Hills"};
+            case PARK -> new String[]{"Park", "Reserve", "Plaza"};
+            case COMMERCIAL_BLDG -> new String[]{"Complex","District", "Avenue", "Junction"};
+            case MALL -> new String[]{"Malls", "Super Mall",};
+            case FARM -> new String[]{"Farm", "Fields", "Acres", "Pastures"};
             case HOSPITAL -> new String[]{"Hospital", "Clinic", "Medical Centre"};
         };
     }
@@ -69,67 +69,185 @@ public enum AreaType {
     public String[] getPrefixes() {
         return switch (this) {
             case RESCUE_AREA -> new String[]{
-                    "Unnamed",
+                    "American Aid",
+                    "American Safety",
+                    "Camp Bravo",
+                    "East National",
                     "Gen. Santos",
                     "Gen. Luna",
+                    "Gen. Garcia",
+                    "North National",
+                    "Party Delta",
                     "Philippine National",
+                    "Sector Alpha",
+                    "Sector Charlie",
+                    "Sector Foxtrot",
                     "Survivors United",
+                    "South Eagle",
+                    "South National",
+                    "Swiss United",
                     "Southeast United",
-                    ""
+                    "West-East United",
+                    "West National"
             };
 
             case FOREST -> new String[]{
-                    "Unnamed",
-                    "Viridian",
                     "Cerulean",
-                    "Little Baguio",
+                    "Boreal",
+                    "Dynasty",
+                    "Ebonwood",
+                    "Firefly",
+                    "Hollow Purple",
+                    "National Green",
+                    "National Birch",
+                    "National Oak",
+                    "Pearlwood",
                     "Philippine Grand",
                     "Philippine Protected",
-                    ""
-
+                    "Philippine Spruce",
+                    "Philippine Oak",
+                    "Shadewood",
+                    "Sunlight",
+                    "Unnamed",
+                    "Unrecognizable",
+                    "Viridian",
+                    "Vermont",
 
             };
             case VILLAGE -> new String[]{
-                    "Unrecognizable",
+                    "Brightwood",
+                    "Cedar",
                     "Countryside",
-                    "Queensville",
+                    "Diggers",
+                    "Evergreen",
                     "Everest",
+                    "Forestside",
+                    "Green Meadow",
+                    "Maplewood",
+                    "Mountainview",
+                    "Pinesville",
+                    "Provident",
+                    "Queensville",
                     "Springtime",
                     "Summertime",
-                    "Diggers"
+                    "Sunflower",
+                    "Unrecognizable",
+                    "Unnamed",
+                    "White Plains",
+                    "Willow",
+
             };
             case PARK -> new String[]{
-                    "Seo June",
+                    "Bonifacio",
                     "Central",
-                    ""
-
-
+                    "Cityscape",
+                    "Downtown",
+                    "Evergreen",
+                    "Freedom",
+                    "Heroes Memorial",
+                    "Lily",
+                    "National",
+                    "Mabini",
+                    "Mayfair",
+                    "Peoples",
+                    "Seo June",
+                    "Serenity",
+                    "Starlight",
+                    "Starling",
+                    "Townscape",
+                    "Ventnor",
+                    "Unnamed",
+                    "Unrecognizable",
+                    "White Dove"
             };
             case COMMERCIAL_BLDG -> new String[]{
-                    "Rizal",
+                    "Unnamed",
                     "Araneta",
-                    "Ciannax",
+                    "Boston",
+                    "Business",
+                    "Ciel",
+                    "Cityscape",
+                    "Commerce",
+                    "Country Trade",
+                    "Diggers",
+                    "Downtown",
+                    "Easton",
+                    "Fleeting",
+                    "Leicester",
+                    "Marcos",
+                    "Marlborough",
+                    "Mayfair",
+                    "Oxford",
+                    "Rizal",
+                    "Ventnor",
+                    "Wall Street",
+
             };
             case MALL -> new String[]{
-                    "Unrecognizable",
-                    "Sta. Robina",
-                    "Magnolia",
-                    "Ceilmart",
-                    "Kostko",
+                    "Broadwalk",
+                    "Central",
                     "Diggers",
+                    "Fresh Goods",
+                    "General Goods",
+                    "Jazz",
+                    "Kostko",
+                    "Pacific",
+                    "Pall",
+                    "Palm",
+                    "States",
+                    "Shopper's",
+                    "Solid Goods",
+                    "Saver's",
+                    "Star",
+                    "Trafalgar",
+                    "Magnolia",
+                    "Unrecognizable",
+                    "Ventnor",
+                    "Whitehall"
             };
             case FARM -> new String[]{
-                    "Unnamed",
-                    "Bumble",
                     "Big",
-                    ""
+                    "Bumble",
+                    "Bountiful",
+                    "Cotton Pick's",
+                    "Diggers",
+                    "Farmer Joseph",
+                    "Fresh Picks",
+                    "Large Harvest",
+                    "Homestead",
+                    "Gepard's",
+                    "Old MacDonald",
+                    "Peaceful",
+                    "Plentiful",
+                    "Rustic",
+                    "Serenity",
+                    "Sycamore",
+                    "Tranquil",
+                    "Unnamed",
+                    "Verdant",
+                    "Wildwood",
             };
             case HOSPITAL -> new String[]{
-                    "St. Peter's",
-                    "Ace General",
-                    "Salve",
+                    "Ace",
+                    "Better Care",
+                    "City National",
+                    "Country Health",
+                    "East Regional",
+                    "Evercare",
                     "Far East",
-                    ""
+                    "General Health",
+                    "Golden Crest",
+                    "Honored One",
+                    "Horizon",
+                    "Lazarus",
+                    "McKinely",
+                    "Metro City",
+                    "National Children's",
+                    "Peoples",
+                    "Providence",
+                    "Stand Proud",
+                    "St. Bonaventure's",
+                    "Veterans",
             };
         };
     }

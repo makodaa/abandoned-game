@@ -10,6 +10,7 @@ import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisScrollPane;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.teammerge.abandoned.actors.Background;
 import com.teammerge.abandoned.entities.Player;
 
 public class InventoryScreen extends Table {
