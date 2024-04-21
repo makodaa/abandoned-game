@@ -18,10 +18,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
-import com.teammerge.abandoned.actors.tables.InventoryScreen;
-import com.teammerge.abandoned.actors.tables.LoadingScreen;
-import com.teammerge.abandoned.actors.tables.RestScreen;
-import com.teammerge.abandoned.actors.tables.TravelScreen;
+import com.teammerge.abandoned.actors.tables.*;
+import com.teammerge.abandoned.entities.Campfire;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
@@ -54,6 +52,7 @@ public class GameScreen implements Screen {
 
     Table containerTable;
     Player player;
+    Campfire campfire;
     MapCollapse mapGenerator;
     Area[][] map;
 
@@ -76,7 +75,6 @@ public class GameScreen implements Screen {
         lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
 
         // Load Background/s
-
         day = new BackgroundDrawable("images/backgrounds/day.png");
         night = new BackgroundDrawable("images/backgrounds/night.png");
         midnight = new BackgroundDrawable("images/backgrounds/midnight.png");
@@ -85,6 +83,9 @@ public class GameScreen implements Screen {
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
         mapGenerator = new MapCollapse();
         map = mapGenerator.generateMap(mapWidth, mapHeight);
+
+        // Create Instance of Other Entities
+        campfire = new Campfire();
 
         // Set up container table and actor groups
         containerTable = new Table();
@@ -326,6 +327,16 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
+
+        VisTextButton campfireButton = new VisTextButton("Campfire");
+        campfireButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                CampfireScreen overlay = new CampfireScreen(self, player, campfire);
+                stage.addActor(overlay);
+                overlay.setVisible(true);
+            }
+        });
         VisTextButton craftingButton = new VisTextButton("Craft");
 
         // Finalization, arranging actors onto table
@@ -345,6 +356,7 @@ public class GameScreen implements Screen {
         table.row().fillX();
 
         table.add(craftingButton).pad(12).padLeft(0);
+        table.add(campfireButton).pad(12);
 
         return table;
     }

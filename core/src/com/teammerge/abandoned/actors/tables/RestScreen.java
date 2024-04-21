@@ -35,7 +35,7 @@ public class RestScreen extends Table {
         closeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                setVisible(false);
+                remove();
             }
         });
         topBarTable.align(Align.topLeft);
