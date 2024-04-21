@@ -26,7 +26,7 @@ public class OpeningScreen implements Screen {
     private final int mapHeight;
 
     public OpeningScreen(AbandonedGame game, int mapWidth, int mapHeight) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("E:\\IntelliJ\\IntelliJ IDEA Community Edition 2023.3.6\\projects\\abandoned-game\\assets\\fonts\\RobotoCondensed-Light.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Light.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 24;
         font = generator.generateFont(parameter);
