@@ -75,9 +75,10 @@ public class GameScreen implements Screen {
         lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
 
         // Load Background/s
-        day = new BackgroundDrawable("images/backgrounds/day.png");
-        night = new BackgroundDrawable("images/backgrounds/night.png");
-        midnight = new BackgroundDrawable("images/backgrounds/midnight.png");
+        day = new BackgroundDrawable("images/backgrounds/village_Day.PNG");
+        dusk = new BackgroundDrawable("images/backgrounds/village_Dusk.png");
+        night = new BackgroundDrawable("images/backgrounds/village_Night.PNG");
+        midnight = new BackgroundDrawable("images/backgrounds/village_Midnight.png");
 
         // Create Instance of Player and Map
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
@@ -407,7 +408,7 @@ public class GameScreen implements Screen {
                 waitingHours = 18 - hours;
 
                 if (hours > 15) {
-                    containerTable.setBackground(day);
+                    containerTable.setBackground(dusk);
                 }
 
 
@@ -415,7 +416,7 @@ public class GameScreen implements Screen {
                 dayCycle = "EVENING, ";
                 nextCycle = "MIDNIGHT";
                 waitingHours = 24 - hours;
-                containerTable.setBackground(midnight);
+                containerTable.setBackground(night);
             }
 
         }
