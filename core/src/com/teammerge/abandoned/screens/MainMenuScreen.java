@@ -38,7 +38,7 @@ public class MainMenuScreen implements Screen {
 
     TextButton newGameButton, exitButton;
 
-//  TODO: Search about viewports
+    //  TODO: Search about viewports
     public MainMenuScreen(final AbandonedGame game) {
         this.game = game;
         batch = new SpriteBatch();
@@ -203,21 +203,21 @@ public class MainMenuScreen implements Screen {
         smallMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game, 31,31));
+                game.setScreen(new OpeningScreen(game, 31, 31));
             }
         });
         TextButton mediumMapButton = new VisTextButton("Medium Map [97 x 97]");
         mediumMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game, 97,97));
+                game.setScreen(new OpeningScreen(game, 97, 97));
             }
         });
-        TextButton largeMapButton = new VisTextButton("Medium Map [171 x 171]");
+        TextButton largeMapButton = new VisTextButton("Large Map [171 x 171]");
         largeMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game, 171,171));
+                game.setScreen(new OpeningScreen(game, 171, 171));
             }
         });
         table.defaults().size(235,81);
