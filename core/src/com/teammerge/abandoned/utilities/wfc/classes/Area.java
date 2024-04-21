@@ -1,5 +1,6 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
+import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 public class Area {
@@ -7,6 +8,7 @@ public class Area {
     private int distance;
     private String name;
     private double rescueProbability;
+    private Item[] items;
 
     public Area(AreaType type, double rescueProbability) {
         this.type = type;

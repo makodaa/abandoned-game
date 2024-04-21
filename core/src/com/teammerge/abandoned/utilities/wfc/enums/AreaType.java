@@ -1,5 +1,6 @@
 package com.teammerge.abandoned.utilities.wfc.enums;
 
+import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.utilities.wfc.classes.Superpositions;
 
 public enum AreaType {
@@ -249,6 +250,19 @@ public enum AreaType {
                     "St. Bonaventure's",
                     "Veterans",
             };
+        };
+    }
+
+    public String[] getLootTable() {
+        return switch (this) {
+            case RESCUE_AREA -> null;
+            case FOREST -> null;
+            case VILLAGE -> null;
+            case PARK -> null;
+            case COMMERCIAL_BLDG -> null;
+            case MALL -> null;
+            case FARM -> null;
+            case HOSPITAL -> null;
         };
     }
 

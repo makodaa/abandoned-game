@@ -10,7 +10,7 @@ public enum Direction {
     ;
 
     private final Index vector;
-    private String cardinalName;
+    private final String cardinalName;
 
     Direction(String cardinalName, Index vector) {
         this.cardinalName = cardinalName;

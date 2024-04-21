@@ -74,8 +74,13 @@ public class OpeningScreen implements Screen {
 
         game.batch.begin();
         // Draw the current text substring up to the current letter index
-        font.draw(game.batch, displayTexts.get(currentTextIndex).substring(0, currentLetterIndex),
-                Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0, Align.center, false);
+        font.draw(game.batch,
+                displayTexts.get(currentTextIndex).substring(0, currentLetterIndex),
+                Gdx.graphics.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f,
+                0,
+                Align.center,
+                false);
         game.batch.end();
     }
 
