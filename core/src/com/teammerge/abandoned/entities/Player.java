@@ -2,6 +2,7 @@ package com.teammerge.abandoned.entities;
 
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
+import com.teammerge.abandoned.utilities.items.ItemRepository;
 
 import java.util.Random;
 
@@ -21,6 +22,8 @@ public class Player {
         hydration = 80 + random.nextInt( 20);
         energy = 80 + random.nextInt(20);
         position = starting;
+
+        System.out.println(String.join(", ", ItemRepository.getItemIds()));
     }
 
     public void move(Direction direction) {

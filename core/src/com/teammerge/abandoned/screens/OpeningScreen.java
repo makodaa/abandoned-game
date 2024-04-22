@@ -57,6 +57,9 @@ public class OpeningScreen implements Screen {
                 // If text is fully displayed, go to the next text or game screen
                 if (textComplete) {
                     nextTextOrGame();
+                } else {
+                    /// complete the text.
+                    currentLetterIndex = displayTexts.get(currentTextIndex).length();
                 }
                 return true;
             }
