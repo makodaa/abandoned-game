@@ -1,7 +1,11 @@
 package com.teammerge.abandoned.utilities.wfc.enums;
 
 import com.teammerge.abandoned.records.Item;
+import com.teammerge.abandoned.utilities.items.ItemRepository;
 import com.teammerge.abandoned.utilities.wfc.classes.Superpositions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public enum AreaType {
     RESCUE_AREA,
@@ -24,7 +28,7 @@ public enum AreaType {
             case FOREST -> "Fo";
             case VILLAGE -> "Vi";
             case PARK -> "Pa";
-            case COMMERCIAL_BLDG -> "CB";
+            case COMMERCIAL_BLDG -> "Cb";
             case MALL -> "Ma";
             case FARM -> "Fa";
             case HOSPITAL -> "Ho";
@@ -253,17 +257,43 @@ public enum AreaType {
         };
     }
 
+    private HashMap<String, ArrayList<String>> loadedLootTables;
+
+    private void loadLootTables() {
+        if (loadedLootTables != null) return;
+
+        loadedLootTables = new HashMap<>();
+
+        for (AreaType type : AreaType.values()) {
+            loadedLootTables.put(type.getAlias().toUpperCase(), new ArrayList<>());
+        }
+
+        for (Item item : ItemRepository.getAllItems()) {
+            for (String location : item.locationSpawns()) {
+                if (location.trim().isEmpty()) continue;
+
+                if (location.equals("ALL")) {
+                    for (AreaType type: AreaType.values()) {
+                        loadedLootTables.get(type.getAlias().toUpperCase()).add(item.id());
+                    }
+                    continue;
+                }
+
+                ArrayList<String> list = loadedLootTables.get(location.toUpperCase());
+                if (list == null) {
+                    System.out.println("Detected an unknown id: '" + location + "'");
+                    continue;
+                }
+
+                list.add(item.id());
+            }
+        }
+    }
+
     public String[] getLootTable() {
-        return switch (this) {
-            case RESCUE_AREA -> null;
-            case FOREST -> null;
-            case VILLAGE -> null;
-            case PARK -> null;
-            case COMMERCIAL_BLDG -> null;
-            case MALL -> null;
-            case FARM -> null;
-            case HOSPITAL -> null;
-        };
+        loadLootTables();
+
+        return loadedLootTables.get(this.getAlias().toUpperCase()).toArray(new String[0]);
     }
 
     public static final int UNIVERSAL = Superpositions.universal(values());

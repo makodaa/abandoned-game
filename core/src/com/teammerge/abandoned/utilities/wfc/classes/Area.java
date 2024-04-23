@@ -1,14 +1,15 @@
 package com.teammerge.abandoned.utilities.wfc.classes;
 
-import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
+
+import java.util.ArrayList;
 
 public class Area {
     private AreaType type;
     private int distance;
     private String name;
     private double rescueProbability;
-    private Item[] items;
+    private String[] items;
 
     public Area(AreaType type, double rescueProbability) {
         this.type = type;
@@ -19,8 +20,31 @@ public class Area {
         String[] prefixes = type.getPrefixes();
         String[] suffixes = type.getSuffixes();
 
-        // TODO: Change this to something more suitable.
         this.name = prefixes[Utils.random.nextInt(0, prefixes.length)] + " " + suffixes[Utils.random.nextInt(0, suffixes.length)];
+
+        ArrayList<String> items = new ArrayList<>();
+        String[] lootTable = type.getLootTable();
+        for (String item : lootTable) {
+            int countOfThisItem = Utils.random.nextInt(0, 2);
+            for (int j = 0; j < countOfThisItem; ++j) {
+                items.add(item);
+            }
+        }
+
+        this.items = loadItems();
+    }
+
+    private String[] loadItems() {
+        ArrayList<String> items = new ArrayList<>();
+        String[] lootTable = type.getLootTable();
+        for (String item : lootTable) {
+            int countOfThisItem = Utils.random.nextInt(0, 2);
+            for (int j = 0; j < countOfThisItem; ++j) {
+                items.add(item);
+            }
+        }
+
+        return items.toArray(new String[0]);
     }
 
     public AreaType getType() {
@@ -53,5 +77,9 @@ public class Area {
 
     public double setRescueProbability(double value) {
         return this.rescueProbability = value;
+    }
+
+    public String[] getItems() {
+        return this.items;
     }
 }
