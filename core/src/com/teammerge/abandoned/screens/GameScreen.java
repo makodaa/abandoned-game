@@ -33,6 +33,7 @@ import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.InsertionSort;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
+import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.util.*;
 
@@ -169,7 +170,7 @@ public class GameScreen implements Screen {
 
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
-            checkForEvent();
+            checkForWinLoseConditions();
         };
 
 
@@ -336,12 +337,48 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // player.scavenge();
-
                 Index position = player.getPosition();
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
+                DialogScreen dialog = new DialogScreen("Collected", extractedItems.toString());
 
-                showLoadingScreen(new LoadingScreen(self,"Looking around for materials...", new DialogScreen("Collected",extractedItems.toString())));
+                switch(random.nextInt(1,4)) {
+                    case 1:
+//                        If too dark, player has a chance to injure themselves
+                        if ((player.getMinutes()  % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashlight")) {
+//                            10% Chance of Injury
+                            if (random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - random.nextInt(5,11));
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "It was too dark, and you injured yourself");
+                            }
+                        }
+                        break;
+                    case 2:
+//                        If in Village, Commercial Bldg, or Mall, might face against dangerous survivors
+                        if (area.getType() == AreaType.VILLAGE || area.getType() == AreaType.COMMERCIAL_BLDG || area.getType() == AreaType.MALL) {
+//                            10% Chance of getting into a fight
+                            if (random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - random.nextInt(5,16));
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor");
+                            }
+                        }
+                        break;
+                    case 3:
+//                        If in Forest, Park, Village, Farm, might encounter wild animals
+                        if (area.getType() == AreaType.FOREST || area.getType() == AreaType.VILLAGE || area.getType() == AreaType.PARK) {
+//                            10% Chance of getting into a fight
+                            if (random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - random.nextInt(5,16));
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "A snake was hiding around the area and bit you.");
+                            }
+                        }
+                        break;
+                }
+
+                showLoadingScreen(new LoadingScreen(self,"Looking around for materials...", dialog));
 
                 player.getInventory().addAll(extractedItems);
                 InsertionSort.run(player.getInventory(), String::compareTo);
@@ -481,7 +518,7 @@ public class GameScreen implements Screen {
         return font;
     }
 
-    private void checkForEvent(){
+    private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
 //        Checks if a minute has passed, waits a while after any dialog or loading screen
         if (minutes < player.getMinutes() && player.getTimeSinceLastSecond() == 0) {
@@ -498,6 +535,10 @@ public class GameScreen implements Screen {
 //            Checks for win condition
             minutes = player.getMinutes();
         }
+    }
+
+    private void rollForEvents(){
+
     }
 
     public void move(Direction direction) {
