@@ -16,6 +16,14 @@ import com.teammerge.abandoned.records.Item;
 public class InventoryScreen extends Table {
     Player player;
 
+    private String[] currentItems() {
+        return player.getInventory()
+                .stream()
+                .map(Item::of)
+                .map(Item::name)
+                .toArray(String[]::new);
+    }
+
     public InventoryScreen(Player player) {
         Skin skin = VisUI.getSkin();
         this.player = player;
@@ -50,30 +58,58 @@ public class InventoryScreen extends Table {
         List<String> inventoryList = new List<>(skin);
         //TODO get Player Inventory, Modify List Size
 
-        String[] allItemNames = player.getInventory()
-                .stream()
-                .map(Item::of)
-                .map(Item::name)
-                .toArray(String[]::new);
-        inventoryList.setItems(allItemNames);
+        inventoryList.setItems(currentItems());
         inventoryTable.add(inventoryList).expand().fill();
         inventoryScrollPane = new VisScrollPane(inventoryTable);
 
         VisTable currentItemTable = new VisTable();
 
+        Label itemLabel = new VisLabel();
+        itemLabel.setAlignment(Align.center);
+
+        Label descriptionLabel = new VisLabel();
+        descriptionLabel.setAlignment(Align.center);
+        descriptionLabel.setWrap(true);
+
         Item selectedItem = player.getInventory().isEmpty()
                 ? null
                 : Item.of(player.getInventory().getFirst());
 
-        Label itemLabel = new VisLabel(selectedItem == null ? "" : selectedItem.name());
-        itemLabel.setAlignment(Align.center);
-
-        Label descriptionLabel = new VisLabel(selectedItem == null ? "" : selectedItem.description());
-        descriptionLabel.setAlignment(Align.center);
-        descriptionLabel.setWrap(true);
+        if (selectedItem == null) {
+            itemLabel.setText("");
+            descriptionLabel.setText("");
+        } else {
+            itemLabel.setText(selectedItem.name());
+            descriptionLabel.setText(selectedItem.description());
+        }
 
         Table buttonGroupTable = new VisTable();
         TextButton useButton = new VisTextButton("Use", "blue");
+        useButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                int active = inventoryList.getSelectedIndex();
+                Item item = Item.of(player.getInventory().get(active));
+
+                if (item.isUsable()) {
+                    /// Update the stats.
+
+//                    getStage().addActor(new LoadingScreen("Consuming: " + item.name()));
+
+                    player.setEnergy(player.getEnergy() + item.effectEnergy());
+                    player.setCondition(player.getCondition() + item.effectCondition());
+                    player.setHydration(player.getHydration() + item.effectHydration());
+                    player.setFullness(player.getFullness() + item.effectFullness());
+
+                    /// Remove the item from the inventory.
+                    player.getInventory().remove(active);
+
+                    /// Update the UI.
+                    inventoryList.setItems(currentItems());
+                }
+            }
+        });
+
         TextButton throwButton = new VisTextButton("Throw");
         buttonGroupTable.pad(16);
         buttonGroupTable.add(useButton).size(272,80).pad(16);

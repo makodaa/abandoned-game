@@ -22,10 +22,18 @@ import com.teammerge.abandoned.screens.GameScreen;
 public class LoadingScreen extends Table {
     BackgroundDrawable backgroundDrawable;
     ProgressBar progressBar;
+
     private  float elapsedTime;
     private final float duration;
+
     GameScreen screen;
+
     public LoadingScreen() {
+        this("Awesome Loading Transition");
+    }
+
+    public LoadingScreen(String message) {
+
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
         backgroundDrawable.setColor(0f,0f,0f, 235);
         this.elapsedTime = 0f;
@@ -60,7 +68,7 @@ public class LoadingScreen extends Table {
 
 
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
-        Label label = new Label("Awesome Loading Transition", labelStyle);
+        Label label = new Label(message, labelStyle);
         label.setAlignment(Align.center);
 
         defaults().width(270);

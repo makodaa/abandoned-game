@@ -480,8 +480,6 @@ public class GameScreen implements Screen {
 
     public void move(Direction direction) {
         player.move(direction);
-
-        System.out.println(String.join(", ", map[player.getPosition().y()][player.getPosition().x()].getItems()));
     }
 
     public void showLoadingScreen(){
