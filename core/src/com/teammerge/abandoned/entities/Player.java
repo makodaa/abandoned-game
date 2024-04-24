@@ -35,15 +35,15 @@ public class Player {
         timeSinceLastSecond += (long) ms;
         if (timeSinceLastSecond > 60000) {
             timeSinceLastSecond = 0;
-            decay();
             minutes++;
+            decay();
         };
     }
 
     public void decay(){
-        setFullness(fullness - random.nextInt(0,2));
-        setHydration(hydration - random.nextInt(0,2));
-        setEnergy(energy - random.nextInt(0,2));
+        setFullness(fullness - random.nextInt(1,3));
+        setHydration(hydration - random.nextInt(1,3));
+        setEnergy(energy - random.nextInt(1,3));
 
         if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,2));
     }

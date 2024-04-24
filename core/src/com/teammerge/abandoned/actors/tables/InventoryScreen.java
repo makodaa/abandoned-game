@@ -28,7 +28,7 @@ public class InventoryScreen extends Table {
         Skin skin = VisUI.getSkin();
         this.player = player;
         BackgroundDrawable backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
-        backgroundDrawable.setColor(0,0,0, 178);
+        backgroundDrawable.setColor(0,0,0, 102);
         setSize(1280, 800);
         setBackground(backgroundDrawable);
 

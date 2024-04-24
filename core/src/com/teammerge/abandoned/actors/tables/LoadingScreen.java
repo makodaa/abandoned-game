@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.screens.GameScreen;
 
+
 /*
  * TODO: Implement action enum to generate loading text
  * */
@@ -23,21 +24,25 @@ public class LoadingScreen extends Table {
     BackgroundDrawable backgroundDrawable;
     ProgressBar progressBar;
 
+    DialogScreen dialogScreen;
+
     private  float elapsedTime;
     private final float duration;
 
     GameScreen screen;
 
     public LoadingScreen() {
-        this("Awesome Loading Transition");
+        this(null,"Awesome Loading Transition",null);
     }
 
-    public LoadingScreen(String message) {
+    public LoadingScreen(GameScreen screen, String message, DialogScreen dialogScreen) {
 
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
-        backgroundDrawable.setColor(0f,0f,0f, 235);
+        backgroundDrawable.setColor(0f,0f,0f, 205);
         this.elapsedTime = 0f;
         this.duration = 1.75f;
+        this.screen = screen;
+        this.dialogScreen = dialogScreen;
 
         setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         setBackground(backgroundDrawable);
@@ -86,6 +91,7 @@ public class LoadingScreen extends Table {
         progressBar.setValue(progress);
 
         if (elapsedTime >= duration) {
+            if (screen != null && dialogScreen != null) screen.showDialogScreen(dialogScreen);
             remove();
         }
     }

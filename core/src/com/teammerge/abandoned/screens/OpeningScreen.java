@@ -121,7 +121,7 @@ public class OpeningScreen implements Screen {
                     this.cancel();
                 }
             }
-        }, 0, 0.05f);
+        }, 0, 0.75f);
     }
 
     private void nextTextOrGame() {

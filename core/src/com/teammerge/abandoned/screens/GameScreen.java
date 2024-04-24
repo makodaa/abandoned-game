@@ -54,6 +54,7 @@ public class GameScreen implements Screen {
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
 
     LoadingScreen loadingScreen;
+    DialogScreen dialogScreen;
     ProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
     Label currentLocationLabel;
@@ -77,6 +78,7 @@ public class GameScreen implements Screen {
         camera.setToOrtho(false, 1280, 800);
         stage = new Stage(new ScreenViewport());
         loadingScreen = new LoadingScreen();
+        dialogScreen = new DialogScreen();
         isInTransition = false;
 
         // Load Fonts
@@ -165,7 +167,7 @@ public class GameScreen implements Screen {
 
         // FIXME: Current clock speed x 15 for testing purposes, change back to 1
         // FIXME:
-        if (loadingScreen.getStage() == null) player.tick(delta * 1000 * 15);
+        if (loadingScreen.getStage() == null && dialogScreen.getStage() == null)player.tick(delta * 1000 * 15);
 
 
         checkForEvent();
@@ -331,17 +333,20 @@ public class GameScreen implements Screen {
         scavengeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Scavenged the area.");
-
                 // player.scavenge();
 
                 Index position = player.getPosition();
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
-                System.out.println("Extracted: " + extractedItems.toString());
+
+                showLoadingScreen(new LoadingScreen(self,"Looking around for materials...", new DialogScreen("Collected",extractedItems.toString())));
 
                 player.getInventory().addAll(extractedItems);
                 InsertionSort.run(player.getInventory(), String::compareTo);
+
+
+                player.setMinutes(player.getMinutes() + 1);
+                player.decay();
             }
         });
         VisTextButton inventoryButton = new VisTextButton("Inventory");
@@ -401,13 +406,12 @@ public class GameScreen implements Screen {
 
     private void updateAttributeGraphics() {
         conditionBar.setValue(player.getCondition());
-        fullnessBar.setValue(player.getCondition());
+        fullnessBar.setValue(player.getFullness());
         hydrationBar.setValue(player.getHydration());
         energyBar.setValue(player.getEnergy());
     }
 
     private void updateDiurnalCycleGraphics() {
-        // TODO: Refactor, or Change to Two-Cycle Day and Night
         int hours = player.getMinutes() % 24;
         int waitingHours;
         String dayCycle, nextCycle;
@@ -485,6 +489,21 @@ public class GameScreen implements Screen {
     public void showLoadingScreen(){
         loadingScreen = new LoadingScreen();
         stage.addActor(loadingScreen);
+    }
+
+    public void showLoadingScreen(LoadingScreen loadingScreen) {
+        this.loadingScreen = loadingScreen;
+        stage.addActor(loadingScreen);
+    }
+
+    public void showDialogScreen(String title, String message){
+        dialogScreen = new DialogScreen(title, message);
+        stage.addActor(dialogScreen);
+    }
+
+    public void showDialogScreen(DialogScreen dialogScreen){
+        this.dialogScreen = dialogScreen;
+        stage.addActor(dialogScreen);
     }
 
     public Stage getStage() {

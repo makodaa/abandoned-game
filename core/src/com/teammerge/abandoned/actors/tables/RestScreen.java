@@ -21,7 +21,7 @@ public class RestScreen extends Table {
         this.screen = screen;
         this.player = player;
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
-        backgroundDrawable.setColor(127.5f,127.5f,127.5f, 255);
+        backgroundDrawable.setColor(0,0,0, 205);
         setSize(1280, 800);
         setBackground(backgroundDrawable);
 
@@ -65,13 +65,12 @@ public class RestScreen extends Table {
         textButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                screen.showLoadingScreen();
+                screen.showLoadingScreen(new LoadingScreen(screen, "Taking a rest...", new DialogScreen("", "You slept for" + timeForward + "hours")));
                 player.setMinutes(player.getMinutes() + timeForward);
                 player.setEnergy(player.getEnergy() + (5 * timeForward));
                 for (int i = player.getMinutes(); i < player.getMinutes() + timeForward; i++) {
                     player.decay();
                 }
-                setVisible(false);
                 remove();
             }
         });
