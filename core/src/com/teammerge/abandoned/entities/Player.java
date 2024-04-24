@@ -45,7 +45,7 @@ public class Player {
         setHydration(hydration - random.nextInt(1,3));
         setEnergy(energy - random.nextInt(1,3));
 
-        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,2));
+        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,3));
     }
 
     public void setCondition(int condition) { this.condition = Math.min(Math.max(condition,0),100); }

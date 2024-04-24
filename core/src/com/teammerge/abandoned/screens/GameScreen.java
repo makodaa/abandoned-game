@@ -34,10 +34,7 @@ import com.teammerge.abandoned.utilities.InsertionSort;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class GameScreen implements Screen {
@@ -66,7 +63,10 @@ public class GameScreen implements Screen {
     MapCollapse mapGenerator;
     Area[][] map;
 
+    Random random;
+
     boolean isInTransition;
+    int minutes;
 
 
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
@@ -80,6 +80,7 @@ public class GameScreen implements Screen {
         loadingScreen = new LoadingScreen();
         dialogScreen = new DialogScreen();
         isInTransition = false;
+        random = new Random();
 
         // Load Fonts
         mediumFont = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
@@ -95,6 +96,7 @@ public class GameScreen implements Screen {
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
         mapGenerator = new MapCollapse();
         map = mapGenerator.generateMap(mapWidth, mapHeight);
+        minutes = player.getMinutes();
 
         // Create Instance of Other Entities
         campfire = new Campfire();
@@ -165,12 +167,12 @@ public class GameScreen implements Screen {
          * Time stuff (Day, Hours til sundown/ sunrise)
          */
 
-        // FIXME: Current clock speed x 15 for testing purposes, change back to 1
-        // FIXME:
-        if (loadingScreen.getStage() == null && dialogScreen.getStage() == null)player.tick(delta * 1000 * 15);
+        if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
+            player.tick(delta * 1000);
+            checkForEvent();
+        };
 
 
-        checkForEvent();
         updateAttributeGraphics();
         updateLocationGraphics();
         updateDiurnalCycleGraphics();
@@ -454,7 +456,7 @@ public class GameScreen implements Screen {
         hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " HOURS BEFORE " + nextCycle);
 
         // FIXME:
-        debugMilisecondCounterLabel.setText("" + player.timeSinceLastSecond);
+        debugMilisecondCounterLabel.setText("" + player.getTimeSinceLastSecond());
     }
 
 
@@ -480,6 +482,22 @@ public class GameScreen implements Screen {
     }
 
     private void checkForEvent(){
+        Area area = map[player.getPosition().y()][player.getPosition().x()];
+//        Checks if a minute has passed, waits a while after any dialog or loading screen
+        if (minutes < player.getMinutes() && player.getTimeSinceLastSecond() == 0) {
+//            TODO: Create text screens for lose and win screens
+//            Check for lost condition
+            if (player.getCondition() < 5) {
+                showDialogScreen("You Lose", "Skill Issue");
+            }
+//            TODO: Check and Change Formula
+            else if(random.nextDouble() < area.getRescueProbability()){
+//                Calls win ending screen
+                showDialogScreen("You won", "You were spotted by a rescue team");
+            }
+//            Checks for win condition
+            minutes = player.getMinutes();
+        }
     }
 
     public void move(Direction direction) {
