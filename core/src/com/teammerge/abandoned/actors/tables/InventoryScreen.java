@@ -11,6 +11,7 @@ import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
+import com.teammerge.abandoned.records.Item;
 
 public class InventoryScreen extends Table {
     Player player;
@@ -48,16 +49,26 @@ public class InventoryScreen extends Table {
         VisTable inventoryTable = new VisTable();
         List<String> inventoryList = new List<>(skin);
         //TODO get Player Inventory, Modify List Size
-        inventoryList.setItems("Bandage", "Clean Water", "Beef Jerky", "Dried Fruit", "Trash Bag");
+
+        String[] allItemNames = player.getInventory()
+                .stream()
+                .map(Item::of)
+                .map(Item::name)
+                .toArray(String[]::new);
+        inventoryList.setItems(allItemNames);
         inventoryTable.add(inventoryList).expand().fill();
         inventoryScrollPane = new VisScrollPane(inventoryTable);
 
         VisTable currentItemTable = new VisTable();
 
-        Label itemLabel = new VisLabel(inventoryList.getSelected());
+        Item selectedItem = player.getInventory().isEmpty()
+                ? null
+                : Item.of(player.getInventory().getFirst());
+
+        Label itemLabel = new VisLabel(selectedItem == null ? "" : selectedItem.name());
         itemLabel.setAlignment(Align.center);
 
-        Label descriptionLabel = new VisLabel("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ex turpis, pharetra nec neque nec, ultricies maximus tortor. Fusce venenatis arcu vitae odio molestie tempus.");
+        Label descriptionLabel = new VisLabel(selectedItem == null ? "" : selectedItem.description());
         descriptionLabel.setAlignment(Align.center);
         descriptionLabel.setWrap(true);
 
@@ -79,7 +90,10 @@ public class InventoryScreen extends Table {
         inventoryTable.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                itemLabel.setText(inventoryList.getSelected());
+                Item item = Item.of(player.getInventory().get(inventoryList.getSelectedIndex()));
+
+                itemLabel.setText(item.name());
+                descriptionLabel.setText(item.description());
             }
         });
 

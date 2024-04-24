@@ -1,5 +1,7 @@
 package com.teammerge.abandoned.records;
 
+import com.teammerge.abandoned.utilities.items.ItemRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,6 +25,10 @@ public record Item(
         String[] locationSpawns
         // TODO: The necessary item properties, such as description? icon path? What else are needed?
 ) {
+    static public Item of(String id) {
+        return fromRow(ItemRepository.rowOf(id));
+    }
+
     static public Item fromRow(String[] row) {
         return new Item(
                 row[0],

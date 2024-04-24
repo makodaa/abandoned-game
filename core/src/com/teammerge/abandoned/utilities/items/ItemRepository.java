@@ -13,10 +13,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /// TODO: Change strategy. Read from the CSV and dynamically load instead.
-public class ItemRepository {
+public abstract class ItemRepository {
     static private ArrayList<String[]> loadedCsvData = null;
 
     static public List<Item> getAllItems() {
@@ -65,5 +66,15 @@ public class ItemRepository {
         return itemRows
                 .stream()
                 .map((v) -> v[0]).toList().toArray(new String[itemRows.size()]);
+    }
+
+    static public String[] rowOf(String id) {
+        Optional<String[]> found = getItemRows().stream().filter((r) -> r[0].equals(id)).findFirst();
+
+        if (found.isPresent()) {
+            return found.get();
+        }
+
+        throw new Error("Unknown id: '" + id + "'");
     }
 }

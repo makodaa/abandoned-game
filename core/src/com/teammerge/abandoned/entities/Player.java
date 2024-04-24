@@ -2,10 +2,8 @@ package com.teammerge.abandoned.entities;
 
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
-import com.teammerge.abandoned.records.Item;
-import com.teammerge.abandoned.utilities.items.ItemRepository;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Player {
@@ -13,10 +11,13 @@ public class Player {
 
     private Index position;
 
+    private final ArrayList<String> inventory;
+
     public long timeSinceLastSecond;
     Random random = new Random();
 
     public Player(Index starting) {
+        inventory = new ArrayList<>();
         timeSinceLastSecond = 0;
         minutes = random.nextInt(0, 8);
         condition = 80 + random.nextInt( 20);
@@ -87,6 +88,10 @@ public class Player {
 
     public long getTimeSinceLastSecond() {
         return timeSinceLastSecond;
+    }
+
+    public ArrayList<String> getInventory() {
+        return this.inventory;
     }
 
     public Index getPosition() { return this.position; }
