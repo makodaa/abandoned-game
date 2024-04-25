@@ -7,8 +7,6 @@ import com.teammerge.abandoned.records.Index;
 /// Represents a moving 2-dimensional index.
 
 public class Actor {
-    public static final Random random = new Random();
-
     private Location location;
 
     /// Refers to the radius the actor "needs" between other actors.
@@ -16,7 +14,7 @@ public class Actor {
 
     public Actor(Location index) {
         this.location = index;
-        this.sensitivity = (int) Math.floor((6 * random.nextDouble()));
+        this.sensitivity = (int) Math.floor((6 * Utils.random.nextDouble()));
     }
 
     public Location getLocation() {

@@ -128,8 +128,7 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         ArrayList<Index> allRescueAreas = new ArrayList<>();
         for (int y = 0; y < map.length; ++y) {
             for (int x = 0; x < map[y].length; ++x) {
-                int collapsedValue = map[y][x];
-                if (AreaType.from(collapsedValue) == AreaType.RESCUE_AREA) {
+                if (AreaType.from(map[y][x]) == AreaType.RESCUE_AREA) {
                     allRescueAreas.add(new Index(y, x));
                 }
             }
