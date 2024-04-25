@@ -2,8 +2,8 @@ package com.teammerge.abandoned;
 
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.kotcrab.vis.ui.VisUI;
 import com.teammerge.abandoned.screens.MainMenuScreen;
 
 /*
@@ -18,6 +18,7 @@ public class AbandonedGame extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		VisUI.load();
 		setScreen(new MainMenuScreen(this));
 	}
 

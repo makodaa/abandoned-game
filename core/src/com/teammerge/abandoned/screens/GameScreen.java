@@ -50,6 +50,8 @@ public class GameScreen implements Screen {
     public BackgroundDrawable day, dusk, night, midnight;
 
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
+    private final int mapWidth;
+    private final int mapHeight;
 
     LoadingScreen loadingScreen;
     DialogScreen dialogScreen;
@@ -66,7 +68,7 @@ public class GameScreen implements Screen {
 
     Random random;
 
-    boolean isInTransition;
+    boolean isInTransition, isGameDone;
     int minutes;
 
 
@@ -74,6 +76,8 @@ public class GameScreen implements Screen {
         // Load camera, stage, and assets
         self = this;
         this.game = game;
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 800);
@@ -81,6 +85,7 @@ public class GameScreen implements Screen {
         loadingScreen = new LoadingScreen();
         dialogScreen = new DialogScreen();
         isInTransition = false;
+        isGameDone = false;
         random = new Random();
 
         // Load Fonts
@@ -183,6 +188,9 @@ public class GameScreen implements Screen {
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
             checkForWinLoseConditions();
+            if(isGameDone){
+                game.setScreen(new GameOverScreen(game, mapWidth, mapHeight));
+            }
         };
 
 
@@ -538,14 +546,17 @@ public class GameScreen implements Screen {
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
             if (player.getCondition() < 5) {
-                showDialogScreen("You Lose", "Skill Issue");
+//                Calls lose ending screen
+                showDialogScreen("You ded, ded as hell", "Skill Issue");
+                isGameDone = true;
             }
 //            TODO: Check and Change Formula
+//            Checks for win condition
             else if(random.nextDouble() < area.getRescueProbability()){
 //                Calls win ending screen
-                showDialogScreen("You won", "You were spotted by a rescue team");
+                showDialogScreen("You unfortunately live", "You were spotted by a rescue team");
+                isGameDone = true;
             }
-//            Checks for win condition
             minutes = player.getMinutes();
         }
     }
