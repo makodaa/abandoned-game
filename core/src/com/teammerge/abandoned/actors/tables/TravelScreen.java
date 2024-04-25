@@ -16,8 +16,7 @@ import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
-
-import java.util.Random;
+import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 
 public class TravelScreen extends Table {
     BackgroundDrawable backgroundDrawable;
@@ -99,7 +98,7 @@ public class TravelScreen extends Table {
         /*
         * Disables button when statistics are too low
         * Computation 2 energy per distance
-         */
+        */
         distanceBetweenAreas = Math.abs(targetArea.getDistance() - currentArea.getDistance());
         if (player.getEnergy() < (distanceBetweenAreas * 2) + 10){
             choice.setText("Not Enough Energy");
@@ -124,15 +123,16 @@ public class TravelScreen extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 DialogScreen dialog = new DialogScreen("Arrived at " + targetArea.getName(),"text");
-                Random random = new Random();
+
                 if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
-                    if (random.nextDouble() > 0.90) {
+                    if (Utils.random.nextDouble() > 0.90) {
                         dialog = new DialogScreen("Arrived at " + targetArea.getName(), "You got injured along the way because it was too dark.");
-                        player.setCondition(player.getCondition() - random.nextInt(5, 11));
+                        player.setCondition(player.getCondition() - Utils.random.nextInt(5, 11));
                     }
                 }
 
-                screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + targetArea.getName(), dialog));
+                LoadingScreen loadingScreen = new LoadingScreen(screen, "Travelling to " + targetArea.getName(), dialog);
+                screen.showLoadingScreen(loadingScreen);
                 player.setMinutes(player.getMinutes() + (distanceBetweenAreas / 5));
                 player.setEnergy(player.getEnergy() - (distanceBetweenAreas * 2));
                 for (int i = player.getMinutes(); i < 3 * (player.getMinutes() + (distanceBetweenAreas / 5)); i++) {

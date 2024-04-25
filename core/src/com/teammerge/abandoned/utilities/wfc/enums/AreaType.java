@@ -295,6 +295,15 @@ public enum AreaType {
 
         return loadedLootTables.get(this.getAlias().toUpperCase()).toArray(new String[0]);
     }
+    
+    public String getBackgroundFolders() {
+        return switch (this) {
+            case RESCUE_AREA -> "rescue_camp";
+            case FOREST, PARK -> "forest";
+            case VILLAGE, FARM -> "village";
+            case COMMERCIAL_BLDG, MALL, HOSPITAL -> "city";
+        };
+    }
 
     public static final int UNIVERSAL = Superpositions.universal(values());
 }

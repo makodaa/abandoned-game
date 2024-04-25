@@ -65,7 +65,14 @@ public class RestScreen extends Table {
         textButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                screen.showLoadingScreen(new LoadingScreen(screen, "Taking a rest...", new DialogScreen("", "You slept for" + timeForward + "hours")));
+                LoadingScreen loadingScreen = new LoadingScreen(
+                        screen,
+                        "Taking a rest...",
+                        new DialogScreen(
+                                "",
+                                "You slept for " + timeForward + " hour" + (timeForward <= 1 ? "" : "s")));
+
+                screen.showLoadingScreen(loadingScreen);
                 player.setMinutes(player.getMinutes() + timeForward);
                 player.setEnergy(player.getEnergy() + (5 * timeForward));
                 for (int i = player.getMinutes(); i < player.getMinutes() + timeForward; i++) {
