@@ -10,7 +10,7 @@ public class Area {
     private int distance;
     private String name;
     private double rescueProbability;
-    private String[] items;
+    private final String[] items;
 
     public Area(AreaType type, double rescueProbability) {
         this.type = type;
@@ -29,7 +29,7 @@ public class Area {
         ArrayList<String> items = new ArrayList<>();
         String[] lootTable = type.getLootTable();
         for (String item : lootTable) {
-            int countOfThisItem = Utils.random.nextInt(0, 2);
+            int countOfThisItem = Utils.random.nextInt(0, 3);
             for (int j = 0; j < countOfThisItem; ++j) {
                 items.add(item);
             }

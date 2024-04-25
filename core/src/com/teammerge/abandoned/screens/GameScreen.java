@@ -47,7 +47,7 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
     BitmapFont mediumFont, regular, lightFont;
 
-    BackgroundDrawable day, dusk, night, midnight;
+    public BackgroundDrawable day, dusk, night, midnight;
 
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
 
@@ -87,17 +87,15 @@ public class GameScreen implements Screen {
         mediumFont = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
         lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
 
-        // Load Background/s
-        day = new BackgroundDrawable("images/backgrounds/village_Day.PNG");
-        dusk = new BackgroundDrawable("images/backgrounds/village_Dusk.png");
-        night = new BackgroundDrawable("images/backgrounds/village_Night.PNG");
-        midnight = new BackgroundDrawable("images/backgrounds/village_Midnight.png");
 
         // Create Instance of Player and Map
         player = new Player(new Index(mapWidth / 2, mapHeight / 2));
         mapGenerator = new MapCollapse();
         map = mapGenerator.generateMap(mapWidth, mapHeight);
         minutes = player.getMinutes();
+
+        // Load Background/s
+        loadBackgrounds(map[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundFolders());
 
         // Create Instance of Other Entities
         campfire = new Campfire();
@@ -122,6 +120,20 @@ public class GameScreen implements Screen {
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
 
+    }
+
+    private void loadBackgrounds() {
+        day = new BackgroundDrawable("images/backgrounds/day.png");
+        dusk = new BackgroundDrawable("images/backgrounds/day.png");
+        night = new BackgroundDrawable("images/backgrounds/night.png");
+        midnight = new BackgroundDrawable("images/backgrounds/midnight.png");
+    }
+
+    private void loadBackgrounds(String folder) {
+        day = new BackgroundDrawable("images/backgrounds/" + folder + "/day.png");
+        dusk = new BackgroundDrawable("images/backgrounds/" + folder + "/dusk.png");
+        night = new BackgroundDrawable("images/backgrounds/" + folder + "/night.png");
+        midnight = new BackgroundDrawable("images/backgrounds/" + folder + "/midnight.png");
     }
 
     public Area[][] getMap() {
@@ -314,7 +326,7 @@ public class GameScreen implements Screen {
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                RestScreen overlay = new RestScreen(player,self);
+                RestScreen overlay = new RestScreen(player, self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -440,6 +452,7 @@ public class GameScreen implements Screen {
 
     private void updateLocationGraphics() {
         Area area = map[player.getPosition().y()][player.getPosition().x()];
+
         currentLocationLabel.setText((area.getName()).toUpperCase());
     }
 
@@ -543,6 +556,9 @@ public class GameScreen implements Screen {
 
     public void move(Direction direction) {
         player.move(direction);
+
+        Index position = player.getPosition();
+        loadBackgrounds(map[position.y()][position.x()].getType().getBackgroundFolders());
     }
 
     public void showLoadingScreen(){
