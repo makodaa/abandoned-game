@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/// TODO: Change strategy. Read from the CSV and dynamically load instead.
 public abstract class ItemRepository {
     static private ArrayList<String[]> loadedCsvData = null;
 
@@ -33,7 +32,7 @@ public abstract class ItemRepository {
         Path path = Gdx.files.internal("csv/item_info.csv").file().toPath();
 
         try (Reader reader = Files.newBufferedReader(path);
-             CSVReader csvReader = new CSVReader(reader)) {
+            CSVReader csvReader = new CSVReader(reader)) {
             String[] line;
             while ((line = csvReader.readNext()) != null) {
                 list.add(line);

@@ -2,8 +2,10 @@ package com.teammerge.abandoned.entities;
 
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
+import com.teammerge.abandoned.utilities.InsertionSort;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Player {
@@ -95,4 +97,14 @@ public class Player {
     }
 
     public Index getPosition() { return this.position; }
+
+    public void addAllItems(String ...item) {
+        inventory.addAll(Arrays.asList(item));
+        InsertionSort.run(inventory, String::compareTo);
+    }
+
+    public void addItem(String item) {
+        inventory.add(item);
+        InsertionSort.run(inventory, String::compareTo);
+    }
 }

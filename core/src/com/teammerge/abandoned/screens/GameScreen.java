@@ -400,10 +400,7 @@ public class GameScreen implements Screen {
 
                 showLoadingScreen(new LoadingScreen(self,"Looking around for materials...", dialog));
 
-                player.getInventory().addAll(extractedItems);
-                InsertionSort.run(player.getInventory(), String::compareTo);
-
-
+                player.addAllItems(extractedItems.toArray(String[]::new));
                 player.setMinutes(player.getMinutes() + 1);
                 player.decay();
             }
@@ -428,6 +425,14 @@ public class GameScreen implements Screen {
             }
         });
         VisTextButton craftingButton = new VisTextButton("Craft");
+        craftingButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                CraftingScreen overlay = new CraftingScreen(player, self);
+                stage.addActor(overlay);
+                overlay.setVisible(true);
+            }
+        });
 
         // Finalization, arranging actors onto table
         padTable(table);
@@ -575,6 +580,10 @@ public class GameScreen implements Screen {
     public void showLoadingScreen(){
         loadingScreen = new LoadingScreen();
         stage.addActor(loadingScreen);
+    }
+
+    public void showLoadingScreen(String title, String message) {
+        showLoadingScreen(new LoadingScreen(this, message, new DialogScreen(title, message)));
     }
 
     public void showLoadingScreen(LoadingScreen loadingScreen) {

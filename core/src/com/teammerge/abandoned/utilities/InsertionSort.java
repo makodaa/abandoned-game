@@ -15,4 +15,16 @@ public abstract class InsertionSort {
             input.set(j + 1, key);
         }
     }
+
+    public static <T> void run(T[] input, Comparator<T> comparator) {
+        for (int i = 1; i < input.length; ++i) {
+            T key = input[i];
+
+            int j = i - 1;
+            for (; j >= 0 && comparator.compare(input[j], key) > 0; --j) {
+                input[j + 1] = input[j];
+            }
+            input[j + 1] = key;
+        }
+    }
 }
