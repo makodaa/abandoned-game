@@ -21,9 +21,11 @@ public class GameOverScreen implements Screen {
     private final BitmapFont font;
     private final List<String> displayLeftTexts, displayRightTexts;
     private int currentTextIndex = 0;
-    private int currentLeftLetterIndex = 0;
+    private int currentLetterIndex = 0;
     private int currentRightLetterIndex = 0;
+    private int currentLeftLetterIndex = 0;
     private boolean textComplete = false;
+    private boolean displayingLeftText;
 
     Player player;
 
@@ -43,11 +45,11 @@ public class GameOverScreen implements Screen {
         // TODO: Modify the text
         displayLeftTexts.add(
                 "Days Survived " +
-                "\n\nDistance Travelled " +
-                "\n\nItems Gathered" +
-                "\n\nItems Crafted" +
-                "\n\nInjuries Faced" +
-                "\n\nInjuries Treated");
+                        "\n\nDistance Travelled " +
+                        "\n\nItems Gathered" +
+                        "\n\nItems Crafted" +
+                        "\n\nInjuries Faced" +
+                        "\n\nInjuries Treated");
 
         displayRightTexts.add("0" +
                 "\n\n" + "0" +
@@ -60,6 +62,8 @@ public class GameOverScreen implements Screen {
         // Start displaying the first text
         displayCurrentText();
 
+        displayingLeftText = true;
+
         // Set up input listener
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
@@ -68,61 +72,61 @@ public class GameOverScreen implements Screen {
                 if (textComplete) {
                     nextTextOrGame();
                 } else {
-                    /// complete the text.
-                    currentLeftLetterIndex = displayLeftTexts.get(currentTextIndex).length();
-                    currentRightLetterIndex = displayRightTexts.get(currentTextIndex).length();
+                    /// complete the text
+                    if(displayingLeftText){
+                        currentLetterIndex = displayLeftTexts.get(currentTextIndex).length();
+                    } else {
+                        currentLetterIndex = displayRightTexts.get(currentTextIndex).length();
+                    }
                 }
                 return true;
             }
         });
     }
+
     @Override
     public void show() {
-
     }
 
-    @Override
-    public void render(float v) {
+    public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
-        // Draw the current text substring up to the current letter index
+        // Draw the left text substring up to the current letter index
         font.draw(game.batch,
                 displayLeftTexts.get(currentTextIndex).substring(0, currentLeftLetterIndex),
-                150,
+                100,
                 Gdx.graphics.getHeight() - 150,
                 0,
                 Align.left,
                 false);
+
+        // Draw the right text substring up to the current letter index
         font.draw(game.batch,
                 displayRightTexts.get(currentTextIndex).substring(0, currentRightLetterIndex),
-                Gdx.graphics.getWidth() - 150,
+                Gdx.graphics.getWidth() - 100,
                 Gdx.graphics.getHeight() - 150,
                 0,
                 Align.right,
                 false);
+
         game.batch.end();
     }
-
     @Override
-    public void resize(int i, int i1) {
-
+    public void resize(int width, int height) {
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
@@ -130,34 +134,43 @@ public class GameOverScreen implements Screen {
         font.dispose();
     }
 
-    // TODO: Modify, make right text display first before left text
     private void displayCurrentText() {
         // Start displaying the current text with letter delay
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                if (currentLeftLetterIndex < displayLeftTexts.get(currentTextIndex).length()) {
-                    currentLeftLetterIndex++;
-                    currentRightLetterIndex++;
+                if (displayingLeftText) {
+                    if (currentLeftLetterIndex < displayLeftTexts.get(currentTextIndex).length()) {
+                        currentLeftLetterIndex++;
+                    } else {
+                        // If all letters are displayed, mark textComplete as true
+                        textComplete = true;
+                        displayingLeftText = false; // Switch to displaying right text
+                        currentRightLetterIndex = 0; // Reset letter index for the next text
+                        displayCurrentText(); // Start displaying the right text
+                    }
                 } else {
-                    // If all letters are displayed, mark textComplete as true
-                    textComplete = true;
-                    this.cancel();
+                    if (currentRightLetterIndex < displayRightTexts.get(currentTextIndex).length()) {
+                        currentRightLetterIndex++;
+                    } else {
+                        // If all letters are displayed, mark textComplete as true
+                        textComplete = true;
+                        this.cancel();
+                    }
                 }
             }
-        }, 0, 0.75f);
+        }, 0, 0.2f);
     }
 
     private void nextTextOrGame() {
         currentTextIndex++;
         if (currentTextIndex < displayLeftTexts.size()) {
             // If there are more texts to display, reset currentLetterIndex and start displaying the next text.
-            currentLeftLetterIndex = 0;
-            currentRightLetterIndex = 0;
+            currentLetterIndex = 0;
             textComplete = false;
             displayCurrentText();
         } else {
-            // If all texts are displayed, transition to the Main Menu Screen
+            // If all texts are displayed, transition to the game screen
             game.setScreen(new MainMenuScreen(game));
         }
     }
