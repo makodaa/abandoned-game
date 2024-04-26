@@ -91,7 +91,7 @@ public record Item(
             }
 
             recipes.add(new Recipe(
-                    getRecipeSourceEntries(limit, split).toArray(new RecipeSourceEntry[0]),
+                    getRecipeSourceEntries(limit, split),
                     resultCount,
                     output
             ));
@@ -100,7 +100,7 @@ public record Item(
         return recipes.toArray(new Recipe[0]);
     }
 
-    private static ArrayList<RecipeSourceEntry> getRecipeSourceEntries(int limit, String[] split) {
+    private static RecipeSourceEntry[] getRecipeSourceEntries(int limit, String[] split) {
         ArrayList<RecipeSourceEntry> entries = new ArrayList<>();
         for (int i = 0; i <= limit; ++i) {
             boolean isPaired = isInteger(split[i]);
@@ -119,6 +119,6 @@ public record Item(
                 i += 1;
             }
         }
-        return entries;
+        return entries.toArray(RecipeSourceEntry[]::new);
     }
 }

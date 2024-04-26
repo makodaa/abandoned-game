@@ -574,7 +574,9 @@ public class GameScreen implements Screen {
         player.move(direction);
 
         Index position = player.getPosition();
-        loadBackgrounds(map[position.y()][position.x()].getType().getBackgroundFolders());
+        Area area = map[position.y()][position.x()];
+
+        loadBackgrounds(area.getType().getBackgroundFolders());
     }
 
     public void showLoadingScreen(){

@@ -157,8 +157,6 @@ public class CraftingScreen extends Table {
                             .filter(id -> id.equals(entry.id()))
                             .count();
 
-                        System.out.println("RECIPE: " + recipe.resultId());
-                        System.out.println("ENTRY: " + entry.id());
                         Item item = Item.of(entry.id());
                         Label requirementLabel = new VisLabel(item.name() + "(" + countInInventory + "/" + entry.count() + ")") {{
                             setAlignment(Align.center);
@@ -274,8 +272,6 @@ public class CraftingScreen extends Table {
                                     .filter(id -> id.equals(entry.id()))
                                     .count();
 
-                            System.out.println("RECIPE: " + recipe.resultId());
-                            System.out.println("ENTRY: " + entry.id());
                             Item item = Item.of(entry.id());
                             Label requirementLabel = new VisLabel(item.name() + "(" + countInInventory + "/" + entry.count() + ")") {{
                                 setAlignment(Align.center);
