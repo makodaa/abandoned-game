@@ -39,6 +39,7 @@ public class FishTrapScreen extends Table {
         setBackground(backgroundDrawable);
 
         FreeTypeFontGenerator mediumGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Medium.ttf"));
+        FreeTypeFontGenerator regularGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 36;
         BitmapFont topBarMediumFont = mediumGenerator.generateFont(parameter);
@@ -46,7 +47,7 @@ public class FishTrapScreen extends Table {
         BitmapFont titleMediumFont = mediumGenerator.generateFont(parameter);
         parameter.size = 24;
         BitmapFont textMediumFont = mediumGenerator.generateFont(parameter);
-        BitmapFont textRegularFont = mediumGenerator.generateFont(parameter);
+        BitmapFont textRegularFont = regularGenerator.generateFont(parameter);
 
 
         // Load Skin, Drawable, and Icons

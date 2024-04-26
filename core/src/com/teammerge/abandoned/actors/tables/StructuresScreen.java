@@ -10,19 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.kotcrab.vis.ui.widget.VisImageButton;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.screens.GameScreen;
 
-public class BuildScreen extends Table {
+public class StructuresScreen extends Table {
 
     Player player;
     GameScreen screen;
     BackgroundDrawable backgroundDrawable;
-    public BuildScreen(GameScreen screen, Player player) {
+    public StructuresScreen(GameScreen screen, Player player) {
         this.screen = screen;
         this.player = player;
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
@@ -66,29 +63,39 @@ public class BuildScreen extends Table {
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.2f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), textRegularFont);
 
-        ImageButton.ImageButtonStyle campfireButtonStyle = new ImageButton.ImageButtonStyle();
+        ImageTextButton.ImageTextButtonStyle campfireButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        campfireButtonStyle.font = textRegularFont;
+        campfireButtonStyle.fontColor = Color.WHITE;
         campfireButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
         campfireButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
         campfireButtonStyle.checked = campfireButtonStyle.down;
         campfireButtonStyle.imageUp = skin.newDrawable("campfire_icon");
         campfireButtonStyle.imageDown = campfireButtonStyle.imageUp;
 
-        ImageButton.ImageButtonStyle fishTrapButtonStyle = new ImageButton.ImageButtonStyle();
+        ImageTextButton.ImageTextButtonStyle fishTrapButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        fishTrapButtonStyle.font = textRegularFont;
+        fishTrapButtonStyle.fontColor = Color.WHITE;
         fishTrapButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
         fishTrapButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
         fishTrapButtonStyle.checked = fishTrapButtonStyle.down;
         fishTrapButtonStyle.imageUp = skin.newDrawable("fish_trap_icon");
         fishTrapButtonStyle.imageDown = fishTrapButtonStyle.imageUp;
 
-        ImageButton.ImageButtonStyle deadfallTrapButtonStyle = new ImageButton.ImageButtonStyle();
+        ImageTextButton.ImageTextButtonStyle deadfallTrapButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        deadfallTrapButtonStyle.font = textRegularFont;
+        deadfallTrapButtonStyle.fontColor = Color.WHITE;
         deadfallTrapButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
         deadfallTrapButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
         deadfallTrapButtonStyle.checked = deadfallTrapButtonStyle.down;
         deadfallTrapButtonStyle.imageUp = skin.newDrawable("deadfall_trap_icon");
         deadfallTrapButtonStyle.imageDown = deadfallTrapButtonStyle.imageUp;
 
-
-        ImageButton campfireButton = new ImageButton(campfireButtonStyle);
+        ImageTextButton campfireButton = new ImageTextButton("CAMPFIRE",campfireButtonStyle);
+        campfireButton.clearChildren();
+        campfireButton.add(campfireButton.getImage()).spaceBottom(27);
+        campfireButton.row();
+        campfireButton.add(campfireButton.getLabel());
+        campfireButton.getLabel().setAlignment(Align.bottom);
         campfireButton.pad(90);
         campfireButton.addListener(new ChangeListener() {
             @Override
@@ -97,7 +104,11 @@ public class BuildScreen extends Table {
                 remove();
             }
         });
-        ImageButton fishTrapButton = new ImageButton(fishTrapButtonStyle);
+        ImageTextButton fishTrapButton = new ImageTextButton("FISH TRAP",fishTrapButtonStyle);
+        fishTrapButton.clearChildren();
+        fishTrapButton.add(fishTrapButton.getImage()).spaceBottom(27);
+        fishTrapButton.row();
+        fishTrapButton.add(fishTrapButton.getLabel());
         fishTrapButton.pad(90);
         fishTrapButton.addListener(new ChangeListener() {
             @Override
@@ -107,7 +118,11 @@ public class BuildScreen extends Table {
             }
         });
 
-        ImageButton deadfallTrapButton = new ImageButton(deadfallTrapButtonStyle);
+        ImageTextButton deadfallTrapButton = new ImageTextButton("DEADFALL TRAP",deadfallTrapButtonStyle);
+        deadfallTrapButton.clearChildren();
+        deadfallTrapButton.add(deadfallTrapButton.getImage()).spaceBottom(27);
+        deadfallTrapButton.row();
+        deadfallTrapButton.add(deadfallTrapButton.getLabel());
         deadfallTrapButton.pad(90);
         deadfallTrapButton.addListener(new ChangeListener() {
             @Override

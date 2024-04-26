@@ -32,7 +32,6 @@ import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
-import com.teammerge.abandoned.utilities.InsertionSort;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
@@ -345,7 +344,7 @@ public class GameScreen implements Screen {
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                RestScreen overlay = new RestScreen(player,self);
+                BaseScreen overlay = new BaseScreen(player,self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -430,7 +429,7 @@ public class GameScreen implements Screen {
         campfireButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                BuildScreen overlay = new BuildScreen(self,player);
+                StructuresScreen overlay = new StructuresScreen(self,player);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
