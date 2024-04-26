@@ -35,7 +35,7 @@ public class FishTrapScreen extends Table {
         backgroundDrawable.setColor(0,0,0, 205);
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
         backgroundDrawable.setColor(0,0,0, 205);
-        setSize(1280, 800);
+        setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         setBackground(backgroundDrawable);
 
         FreeTypeFontGenerator mediumGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Medium.ttf"));
@@ -129,6 +129,7 @@ public class FishTrapScreen extends Table {
 
         pad(18.0f);
         defaults().spaceBottom(9);
+        align(Align.top);
         add(topBarTable).top().fillX().right();
         row();
         add(baitInformationLabel).left();

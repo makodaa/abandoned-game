@@ -35,7 +35,7 @@ public class CampfireScreen extends Table {
         this.campfire = screen.getCampfire();
         backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
         backgroundDrawable.setColor(0,0,0, 205);
-        setSize(1280, 800);
+        setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         setBackground(backgroundDrawable);
 
         FreeTypeFontGenerator mediumGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Medium.ttf"));

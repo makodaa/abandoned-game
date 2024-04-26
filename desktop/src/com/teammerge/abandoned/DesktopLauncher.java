@@ -1,5 +1,7 @@
 package com.teammerge.abandoned;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.teammerge.abandoned.AbandonedGame;
@@ -10,6 +12,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Abandoned (in-development)");
 		config.setWindowedMode(1280, 800);
+//		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		config.setForegroundFPS(60);
 		config.useVsync(true);
 		new Lwjgl3Application(new AbandonedGame(), config);

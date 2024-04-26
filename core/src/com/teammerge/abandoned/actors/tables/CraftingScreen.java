@@ -1,5 +1,6 @@
 package com.teammerge.abandoned.actors.tables;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -90,7 +91,7 @@ public class CraftingScreen extends Table {
 
         /// [Layouts]
         Skin skin = VisUI.getSkin();
-        this.setSize(1280, 800);
+        setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.align(Align.topLeft);
 
         Table topBarTable = new VisTable();

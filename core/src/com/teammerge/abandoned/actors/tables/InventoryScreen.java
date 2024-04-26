@@ -1,5 +1,6 @@
 package com.teammerge.abandoned.actors.tables;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -31,7 +32,7 @@ public class InventoryScreen extends Table {
         this.player = player;
         BackgroundDrawable backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
         backgroundDrawable.setColor(0,0,0, 102);
-        setSize(1280, 800);
+        setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         setBackground(backgroundDrawable);
 
 //        Creating Actors

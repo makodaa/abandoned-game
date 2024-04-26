@@ -84,7 +84,7 @@ public class GameScreen implements Screen {
         this.mapHeight = mapHeight;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1280, 800);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(new ScreenViewport());
         loadingScreen = new LoadingScreen();
         dialogScreen = new DialogScreen();
@@ -113,7 +113,7 @@ public class GameScreen implements Screen {
 
         // Set up container table and actor groups
         containerTable = new Table();
-        containerTable.setSize(1280, 800);
+        containerTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         Table timeAreaTable = createTimeAreaTable();
         Table attributesTable = createAttributesTable();
