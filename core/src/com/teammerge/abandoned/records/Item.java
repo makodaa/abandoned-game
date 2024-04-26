@@ -3,6 +3,7 @@ package com.teammerge.abandoned.records;
 import com.teammerge.abandoned.utilities.items.ItemRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

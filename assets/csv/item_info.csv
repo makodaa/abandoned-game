@@ -22,9 +22,9 @@ stick,Stick,1,,,,,no,yes,yes,firewood 3,VI;PA;FO;FA,,"Long, Durable sticks / Who
 firewood,Firewood,4,,,,,no,yes,no,,VI;PA;FO;FA,,Notably large and flammable pieces of wood.
 hardwood,Hardwood,8,,,,,no,yes,no,,VI;PA;FO;FA,,"Harder wood, best used for crafting."
 rubbish,Rubbish,1,,,,,no,yes,no,,ALL,,I don't see a use for this.
-backpack,Backpack,,,,,,no,yes,yes,3 cloth ; 1 rope,VI;MA,,A backpack for storing items. Increases Inventory Space
+backpack,Backpack,,,,,,no,yes,yes,3 cloth 1 rope,VI;MA,,A backpack for storing items. Increases Inventory Space
 matches,Matches,0.1,,,,,no,yes,no,,VI;CB;MA,,The best fire starters.
-fire_starter,Fire Starter,2,,,,,no,no,yes,2 wood ; 1 stick,,,Let's hope this works.
+fire_starter,Fire Starter,2,,,,,no,no,yes,2 hardwood 1 stick,,,Let's hope this works.
 spear,Spear,2,,,,,no,no,yes,1 hardwood,,,A wooden spear created from hard wood. Allows hunting.
 flashlight,Flashlight,1,,,,,no,yes,no,,VI;CB;MA,,"A functioning flashlight, a rare find. Removes disabilities brought by darkness"
 axe,Axe,1,,,,,no,yes,no,,VI;FO;CB;MA,,Here's Johnny. Increases wood yield.
