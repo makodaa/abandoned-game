@@ -27,7 +27,9 @@ import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.actors.tables.*;
 import com.teammerge.abandoned.entities.Campfire;
+import com.teammerge.abandoned.entities.FishBasketTrap;
 import com.teammerge.abandoned.entities.Player;
+import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.InsertionSort;
@@ -63,6 +65,8 @@ public class GameScreen implements Screen {
     Table containerTable;
     Player player;
     Campfire campfire;
+    FishBasketTrap fishBasketTrap;
+    DeadfallTrap deadfallTrap;
     MapCollapse mapGenerator;
     Area[][] map;
 
@@ -104,6 +108,8 @@ public class GameScreen implements Screen {
 
         // Create Instance of Other Entities
         campfire = new Campfire();
+        fishBasketTrap = new FishBasketTrap();
+        deadfallTrap = new DeadfallTrap();
 
         // Set up container table and actor groups
         containerTable = new Table();
@@ -188,6 +194,11 @@ public class GameScreen implements Screen {
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
             checkForWinLoseConditions();
+
+            if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
+                checkForStructureEvents();
+            }
+
             if(isGameDone){
                 game.setScreen(new GameOverScreen(game, mapWidth, mapHeight));
             }
@@ -334,7 +345,7 @@ public class GameScreen implements Screen {
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                RestScreen overlay = new RestScreen(player, self);
+                RestScreen overlay = new RestScreen(player,self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -415,11 +426,11 @@ public class GameScreen implements Screen {
             }
         });
 
-        VisTextButton campfireButton = new VisTextButton("Campfire");
+        VisTextButton campfireButton = new VisTextButton("Build");
         campfireButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                CampfireScreen overlay = new CampfireScreen(self, player, campfire);
+                BuildScreen overlay = new BuildScreen(self,player);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -465,7 +476,6 @@ public class GameScreen implements Screen {
 
     private void updateLocationGraphics() {
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-
         currentLocationLabel.setText((area.getName()).toUpperCase());
     }
 
@@ -522,7 +532,6 @@ public class GameScreen implements Screen {
         debugMilisecondCounterLabel.setText("" + player.getTimeSinceLastSecond());
     }
 
-
     protected interface KeyHandler {
         void run();
     }
@@ -544,9 +553,9 @@ public class GameScreen implements Screen {
         return font;
     }
 
+//    Waits for the next minute and checks if the player met the condition for winning and losing
     private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-//        Checks if a minute has passed, waits a while after any dialog or loading screen
         if (minutes < player.getMinutes() && player.getTimeSinceLastSecond() == 0) {
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
@@ -555,23 +564,40 @@ public class GameScreen implements Screen {
                 showDialogScreen("You ded, ded as hell", "Skill Issue");
                 isGameDone = true;
             }
+//            Checks win condition;
 //            TODO: Check and Change Formula
+
 //            Checks for win condition
             else if(random.nextDouble() < area.getRescueProbability()){
 //                Calls win ending screen
                 showDialogScreen("You unfortunately live", "You were spotted by a rescue team");
                 isGameDone = true;
             }
+
             minutes = player.getMinutes();
         }
     }
 
-    private void rollForEvents(){
-
+    public void checkForStructureEvents(){
+//        If a trap is set up, chance for player to catch small animals
+        if (0.40 < random.nextDouble()) {
+            if (fishBasketTrap.isBuilt() && 0 < fishBasketTrap.getBaitRemaining()) {
+                fishBasketTrap.collect(player);
+                showDialogScreen(new DialogScreen("Your trapped went off","You caught some fishes"));
+            }
+        }
+//        If a campfire is set up, chance for passive regen of condition <3
+        if (0.60 < random.nextDouble()){
+            if (campfire.isBuilt() && 0 < campfire.getSecondsRemaining()) {
+                player.setCondition(player.getCondition() + 5);
+            }
+        }
     }
 
     public void move(Direction direction) {
         player.move(direction);
+        campfire = new Campfire();
+        fishBasketTrap = new FishBasketTrap();
 
         Index position = player.getPosition();
         Area area = map[position.y()][position.x()];
@@ -605,5 +631,17 @@ public class GameScreen implements Screen {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public Campfire getCampfire() {
+        return campfire;
+    }
+
+    public FishBasketTrap getFishTrap() {
+        return fishBasketTrap;
+    }
+
+    public DeadfallTrap getSmallAnimalTrap() {
+        return deadfallTrap;
     }
 }

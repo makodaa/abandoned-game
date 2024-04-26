@@ -1,10 +1,13 @@
 package com.teammerge.abandoned.entities;
 
+import java.util.Random;
+
 public class Campfire {
 
     // Define an instance of player to access inventory
     private float secondsRemaining;
     private boolean isBuilt;
+
     public Campfire() {
         isBuilt = false;
         secondsRemaining = 0;
@@ -22,35 +25,57 @@ public class Campfire {
         return isBuilt;
     }
 
-    public void build(Player player){
-        // Remove 3 Firewood from Player
-        isBuilt = true;
+    public void setBuilt(boolean built) {
+        isBuilt = built;
     }
-    public void leave(){
-        isBuilt = false;
+
+    public void build(Player player) {
+        // Remove 3 Firewood from Player
+        for (int i = 0; i < 3; i++) player.getInventory().remove("firewood");
+        setBuilt(true);
     }
 
     // Takes Player as parameter and modifies inventory, if fire starter 70% to light, if matches 95% to light
-    public void light(Player Player){
+    public boolean lightByMatches(Player player) {
         // Removes a tinder and a match from player
-        secondsRemaining = 120;
+        Random random = new Random();
+        if (0.10 < random.nextDouble()) {
+            player.getInventory().remove("matches");
+            player.getInventory().remove("tinder");
+            setSecondsRemaining(120);
+        }
+        return 0 < getSecondsRemaining();
     }
 
-    // Takes Player as parameter, modifies inventory, if tinder +10s, if Firewood +2h , if Hardwood +6h
-    public void addWood(Player player){
-        switch(10){
-            case 1:
-                secondsRemaining += 10;
-                break;
-            case 2:
-                secondsRemaining += 30;
-                break;
-            case 3:
-                secondsRemaining += 120;
-                break;
-            case 4:
-                secondsRemaining += 360;
-                break;
+    public boolean lightByFireStarter(Player player) {
+        // Removes a tinder and a match from player
+        Random random = new Random();
+        if (0.20 < random.nextDouble()) {
+            player.getInventory().remove("tinder");
+            setSecondsRemaining(120);
         }
+
+        return 0 < getSecondsRemaining();
+    }
+
+
+    // Takes Player as parameter, modifies inventory, if tinder +30s, if Firewood +2h , if Hardwood +6h
+    public void addTinder(Player player) {
+        player.getInventory().remove("tinder");
+        setSecondsRemaining(getSecondsRemaining() + 30);
+    }
+
+    public void addFirewood(Player player) {
+        player.getInventory().remove("firewood");
+        setSecondsRemaining(getSecondsRemaining() + 120);
+    }
+
+    public void addHardwood(Player player) {
+        player.getInventory().remove("hardwood");
+        setSecondsRemaining(getSecondsRemaining() + 360);
+    }
+
+    public Campfire getCampfire() {
+        return this;
     }
 }

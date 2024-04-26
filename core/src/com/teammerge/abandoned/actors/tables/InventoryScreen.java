@@ -13,6 +13,8 @@ import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.records.Item;
 
+import java.util.Arrays;
+
 public class InventoryScreen extends Table {
     Player player;
 
@@ -58,7 +60,8 @@ public class InventoryScreen extends Table {
         List<String> inventoryList = new List<>(skin);
         //TODO get Player Inventory, Modify List Size
 
-        inventoryList.setItems(currentItems());
+        inventoryList.setItems(Arrays.stream(currentItems()).distinct().toArray(String[]::new));
+
         inventoryTable.add(inventoryList).expand().fill();
         inventoryScrollPane = new VisScrollPane(inventoryTable);
 

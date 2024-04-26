@@ -38,7 +38,7 @@ public class Player {
         if (timeSinceLastSecond > 60000) {
             timeSinceLastSecond = 0;
             minutes++;
-            decay(); 
+            decay();
         };
     }
 
