@@ -1,7 +1,6 @@
 package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -32,6 +31,7 @@ public class CraftingScreen extends Table {
     private record Tuple2<T1, T2>(T1 obj1, T2 obj2) {}
 
     private final String[] idsOfItemsThatCanBeCrafted;
+    public int itemsCrafted;
 
     private String[] currentItems() {
         return player.getInventory()
@@ -82,9 +82,9 @@ public class CraftingScreen extends Table {
         }}.get(new Tuple2<>(canCraft(a), canCraft(b))));
 
         this.idsOfItemsThatCanBeCrafted = itemList
-            .stream()
-            .map(Item::id)
-            .toArray(String[]::new);
+                .stream()
+                .map(Item::id)
+                .toArray(String[]::new);
 
         int selectedIndex = 0;
         Item selectedItem = Item.of(idsOfItemsThatCanBeCrafted[selectedIndex]);
@@ -231,6 +231,7 @@ public class CraftingScreen extends Table {
                 }
 
                 screen.showLoadingScreen("Success", "Crafting: " + item.name());
+                screen.setItemsCrafted();
                 player.addItem(item.id());
             }
         });
