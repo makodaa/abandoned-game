@@ -198,7 +198,7 @@ public class GameScreen implements Screen {
             if(isGameDone){
                 game.setScreen(new GameOverScreen(game, this));
             }
-        };
+        }
 
 
         updateAttributeGraphics();
