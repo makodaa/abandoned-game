@@ -51,8 +51,6 @@ public class GameScreen implements Screen {
     public BackgroundDrawable day, dusk, night, midnight;
 
     private final HashSet<Class<?>> activeScreens = new HashSet<>();
-    private final int mapWidth;
-    private final int mapHeight;
 
     LoadingScreen loadingScreen;
     DialogScreen dialogScreen;
@@ -72,15 +70,13 @@ public class GameScreen implements Screen {
     Random random;
 
     boolean isInTransition, isGameDone;
-    int minutes;
+    int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted;
 
 
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
         // Load camera, stage, and assets
         self = this;
         this.game = game;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -193,14 +189,14 @@ public class GameScreen implements Screen {
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
 //            TODO: uncomment
-//            checkForWinLoseConditions();
+            checkForWinLoseConditions();
 
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
             }
 
             if(isGameDone){
-                game.setScreen(new GameOverScreen(game, mapWidth, mapHeight));
+                game.setScreen(new GameOverScreen(game, this));
             }
         };
 
@@ -370,6 +366,7 @@ public class GameScreen implements Screen {
                 Index position = player.getPosition();
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
+                itemsCollected = itemsCollected + extractedItems.size();
                 DialogScreen dialog = new DialogScreen("Collected", extractedItems.toString());
 
                 switch(random.nextInt(1,4)) {
@@ -489,6 +486,7 @@ public class GameScreen implements Screen {
         int hours = player.getMinutes() % 24;
         int waitingHours;
         String dayCycle, nextCycle;
+        daysPassed = player.getMinutes() / 24;
 
         // Following conditions check if time is 0AM - 12AM, and 1PM - 11PM
         if (0 <= hours && hours < 12) {
@@ -524,7 +522,9 @@ public class GameScreen implements Screen {
 
         }
         // FIXME:
-        daysPassedLabel.setText("DAY " + (player.getMinutes() / 24));
+
+        daysPassedLabel.setText("DAY " + daysPassed);
+
         hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " HOURS BEFORE " + nextCycle);
 
         // FIXME:
@@ -561,8 +561,8 @@ public class GameScreen implements Screen {
 //            Check for lost condition
             if (player.getCondition() < 5) {
 //                Calls lose ending screen
-                showDialogScreen("You ded, ded as hell", "Skill Issue");
-//                isGameDone = true;
+                gameEndingScene = 1;
+                  isGameDone = true;
             }
 //            Checks win condition;
 //            TODO: Check and Change Formula
@@ -570,8 +570,8 @@ public class GameScreen implements Screen {
 //            Checks for win condition
             else if(random.nextDouble() < area.getRescueProbability()){
 //                Calls win ending screen
-                showDialogScreen("You unfortunately live", "You were spotted by a rescue team");
-//                isGameDone = true;
+                gameEndingScene = 2;
+                isGameDone = true;
             }
 
             minutes = player.getMinutes();
@@ -623,6 +623,11 @@ public class GameScreen implements Screen {
         this.dialogScreen = dialogScreen;
         stage.addActor(dialogScreen);
     }
+
+    public void setItemsCrafted(){
+        this.itemsCrafted++;
+    }
+
 
     public Stage getStage() {
         return stage;
