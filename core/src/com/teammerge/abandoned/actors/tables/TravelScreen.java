@@ -69,6 +69,7 @@ public class TravelScreen extends Table {
         skin.add("farm_icon", new Texture(Gdx.files.internal("images/icons/map/farm.png")));
         skin.add("hospital_icon", new Texture(Gdx.files.internal("images/icons/map/hospital.png")));
         skin.add("circle", new Texture(Gdx.files.internal("images/icons/map/circle.png")));
+        skin.add("question_mark", new Texture(Gdx.files.internal("images/icons/map/question_mark.png")));
 
         Table topBarTable = new Table();
 
@@ -92,7 +93,7 @@ public class TravelScreen extends Table {
         row().expandX().fillX().fillY();
 
 
-        Table atlasTable = createMapGraphics(skin,screen.getMap());
+        Table atlasTable = createMapGraphics(skin);
         Label surroundingAreasLabel = new Label("ATLAS", new Label.LabelStyle(topBarMediumFont,Color.WHITE));
         add(surroundingAreasLabel).colspan(2).left().row();
         add(atlasTable).top();
@@ -132,7 +133,7 @@ public class TravelScreen extends Table {
         add(moveButtonTable);
     }
 
-    private Table createMapGraphics(Skin skin, Area[][] map){
+    private Table createMapGraphics(Skin skin){
 
         List<List<Area>> visibleMap = new ArrayList<>();
         int up = player.getPosition().y() - 5;
@@ -141,11 +142,11 @@ public class TravelScreen extends Table {
         int right = player.getPosition().x() + 5;
 
         for (int i = up; i <= down; i++) {
-            if (up < 0 || map.length < down) continue;
+            if (up < 0 || screen.getMap().length < down) continue;
             List<Area> row = new ArrayList<>();
             for (int j = left; j <= right; j++) {
-                if (left < 0 || map[i].length < right) continue;
-                row.add(map[i][j]);
+                if (left < 0 || screen.getMap()[i].length < right) continue;
+                row.add(screen.getMap()[i][j]);
             }
             visibleMap.add(row);
         }
@@ -157,12 +158,17 @@ public class TravelScreen extends Table {
                     table.add(new Image(skin.newDrawable("circle",Color.GOLD))).size(30);
                     continue;
                 }
+                if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
+                    table.add(new Image(skin.newDrawable("question_mark",Color.DARK_GRAY))).size(40);
+                    continue;
+                }
                 switch (area.getType()) {
-                    case VILLAGE -> table.add(new Image(skin.newDrawable("village_icon"))).size(40).pad(0.5f);
-                    case FOREST, PARK, RESCUE_AREA -> table.add(new Image(skin.newDrawable("forest_icon"))).size(40).pad(0.5f);
-                    case MALL, COMMERCIAL_BLDG -> table.add(new Image(skin.newDrawable("city_icon"))).size(40).pad(0.5f);
-                    case FARM -> table.add(new Image(skin.newDrawable("farm_icon"))).size(40).pad(0.5f);
-                    case HOSPITAL -> table.add(new Image(skin.newDrawable("hospital_icon"))).size(40).pad(0.5f);
+                    case VILLAGE -> table.add(new Image(skin.newDrawable("village_icon"))).size(40);
+                    case FOREST, PARK -> table.add(new Image(skin.newDrawable("forest_icon"))).size(40);
+                    case RESCUE_AREA -> table.add(new Image(skin.newDrawable("forest_icon",Color.RED))).size(40);
+                    case MALL, COMMERCIAL_BLDG -> table.add(new Image(skin.newDrawable("city_icon"))).size(40);
+                    case FARM -> table.add(new Image(skin.newDrawable("farm_icon"))).size(40);
+                    case HOSPITAL -> table.add(new Image(skin.newDrawable("hospital_icon"))).size(40);
                 }
             }
             table.row();
@@ -233,6 +239,7 @@ public class TravelScreen extends Table {
         card.add(description).width(600).colspan(2).fillX();
 
         Button.ButtonStyle buttonStyle = new Button.ButtonStyle(skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.2f)), skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.5f)), skin.newDrawable("white",new Color(0.0f,0.0f,0.0f, 0.0f)));
+        buttonStyle.disabled = skin.newDrawable("white",new Color(0.2f,0.1f,0.1f,0.3f));
 
         Button button = new Button(card,buttonStyle);
 
@@ -244,15 +251,18 @@ public class TravelScreen extends Table {
         if (player.getEnergy() < (distanceBetweenAreas * 2) + 10){
 //            button.setText("Not Enough Energy");
             button.setDisabled(true);
+            areaNameLabel.setColor(Color.DARK_GRAY);
+            description.setColor(Color.DARK_GRAY);
+            areaIcon.setColor(Color.DARK_GRAY);
         }
 
         /*
         * Conceal area name when dark
-        * TODO: Work on UI
         * */
         if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
-//            button.setText("??? | It's too hard to see.");
-//            button.getLabel().setColor(Color.RED);
+            areaNameLabel.setText("???");
+            description.setText("You can't figure out the place");
+            areaIcon.setDrawable(skin.newDrawable("question_mark"));
         }
 
         /// TODO: Work on the layout of the buttons.

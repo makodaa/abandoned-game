@@ -192,7 +192,8 @@ public class GameScreen implements Screen {
 
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
-            checkForWinLoseConditions();
+//            TODO: uncomment
+//            checkForWinLoseConditions();
 
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
@@ -257,7 +258,6 @@ public class GameScreen implements Screen {
         Pixmap pixmap = new Pixmap(10, 18, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
-        Texture white = new Texture(pixmap);
         skin.add("white", new Texture(pixmap));
 
         ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle(skin.newDrawable("white", new Color(0,0,0,0.3f)),  new TextureRegionDrawable(new TextureRegion(new Texture(pixmap))));
@@ -419,7 +419,7 @@ public class GameScreen implements Screen {
         inventoryButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                InventoryScreen overlay = new InventoryScreen(player);
+                InventoryScreen overlay = new InventoryScreen(self,player);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -555,13 +555,14 @@ public class GameScreen implements Screen {
 //    Waits for the next minute and checks if the player met the condition for winning and losing
     private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-        if (minutes < player.getMinutes() && player.getTimeSinceLastSecond() == 0) {
+        if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
+            System.out.println(area.getRescueProbability());
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
             if (player.getCondition() < 5) {
 //                Calls lose ending screen
                 showDialogScreen("You ded, ded as hell", "Skill Issue");
-                isGameDone = true;
+//                isGameDone = true;
             }
 //            Checks win condition;
 //            TODO: Check and Change Formula
@@ -570,7 +571,7 @@ public class GameScreen implements Screen {
             else if(random.nextDouble() < area.getRescueProbability()){
 //                Calls win ending screen
                 showDialogScreen("You unfortunately live", "You were spotted by a rescue team");
-                isGameDone = true;
+//                isGameDone = true;
             }
 
             minutes = player.getMinutes();
@@ -602,11 +603,6 @@ public class GameScreen implements Screen {
         Area area = map[position.y()][position.x()];
 
         loadBackgrounds(area.getType().getBackgroundFolders());
-    }
-
-    public void showLoadingScreen(){
-        loadingScreen = new LoadingScreen();
-        stage.addActor(loadingScreen);
     }
 
     public void showLoadingScreen(String title, String message) {
