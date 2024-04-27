@@ -25,7 +25,7 @@ public class GameOverScreen implements Screen {
     private boolean displayingLeftText;
     private boolean displayingCentralText;
 
-    private String gameEndText = "";
+    private final String gameEndText;
     private final int gameEndingScene, daysPassed, itemsCollected, itemsCrafted;
     GameScreen gameScreen;
 
