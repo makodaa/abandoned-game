@@ -14,11 +14,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -36,7 +35,9 @@ import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
+
 import java.util.*;
+import java.util.List;
 
 
 public class GameScreen implements Screen {
@@ -332,22 +333,42 @@ public class GameScreen implements Screen {
 
     public Table createActionButtonsTable() {
 
+
         // Create Table
         Table table = new Table();
 
-        // Create Rest Button that opens up RestScreen
-        VisTextButton restButton = new VisTextButton("Rest");
+        ///Textures
+
+        Texture restTexture = new Texture(Gdx.files.internal("images/icons/buttons/Sleep.png"));
+        Texture travelTexture = new Texture(Gdx.files.internal("images/icons/buttons/Travel.png"));
+        Texture scavengeTexture = new Texture(Gdx.files.internal("images/icons/buttons/Scavenge.png"));
+        Texture inventoryTexture = new Texture(Gdx.files.internal("images/icons/buttons/Inventory.png"));
+        Texture craftTexture = new Texture(Gdx.files.internal("images/icons/buttons/Craft.png"));
+        Texture buildTexture = new Texture(Gdx.files.internal("images/icons/buttons/Build.png"));
+
+
+        /// REST BUTTON TEXTURE AND IMPLEMENTATION.
+
+        TextureRegion restTR = new TextureRegion(restTexture);
+        TextureRegionDrawable restTRD = new TextureRegionDrawable(restTR);
+        ImageButton restButton = new ImageButton(restTRD);
+
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+
                 BaseScreen overlay = new BaseScreen(player,self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
         });
 
-        /// TRAVEL BUTTON IMPLEMENTATION.
-        VisTextButton travelButton = new VisTextButton("Travel");
+
+        /// TRAVEL BUTTON TEXTURE AND IMPLEMENTATION.
+        TextureRegion travelTR = new TextureRegion(travelTexture);
+        TextureRegionDrawable travelTRD = new TextureRegionDrawable(travelTR);
+        ImageButton travelButton = new ImageButton(travelTRD);
+
         travelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -358,7 +379,12 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        VisTextButton scavengeButton = new VisTextButton("Scavenge");
+
+        ///SCAVENGE BUTTON TEXTURE AND IMPLEMENTATION
+        TextureRegion scavengeTR = new TextureRegion(scavengeTexture);
+        TextureRegionDrawable scavengeTRD = new TextureRegionDrawable(scavengeTR);
+        ImageButton scavengeButton = new ImageButton(scavengeTRD);
+
         scavengeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -412,7 +438,10 @@ public class GameScreen implements Screen {
                 player.decay();
             }
         });
-        VisTextButton inventoryButton = new VisTextButton("Inventory");
+        ///INVENTORY BUTTON TEXTURE AND IMPLEMENTATION
+        TextureRegion inventoryTR = new TextureRegion(inventoryTexture);
+        TextureRegionDrawable inventoryTRD = new TextureRegionDrawable(inventoryTR);
+        ImageButton inventoryButton = new ImageButton(inventoryTRD);
         inventoryButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -422,7 +451,10 @@ public class GameScreen implements Screen {
             }
         });
 
-        VisTextButton campfireButton = new VisTextButton("Build");
+        ///CAMPFIRE BUTTON TEXTURE AND IMPLEMENTATION
+        TextureRegion campfireTR = new TextureRegion(buildTexture);
+        TextureRegionDrawable campfireTRD = new TextureRegionDrawable(campfireTR);
+        ImageButton campfireButton = new ImageButton(campfireTRD);
         campfireButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -431,7 +463,10 @@ public class GameScreen implements Screen {
                 overlay.setVisible(true);
             }
         });
-        VisTextButton craftingButton = new VisTextButton("Craft");
+        ///CRAFT BUTTON TEXTURE AND IMPLEMENTATION
+        TextureRegion craftTR = new TextureRegion(craftTexture);
+        TextureRegionDrawable craftTRD = new TextureRegionDrawable(craftTR);
+        ImageButton craftingButton = new ImageButton(craftTRD);
         craftingButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
