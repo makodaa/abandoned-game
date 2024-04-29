@@ -90,7 +90,9 @@ public class GameOverScreen implements Screen {
 
                 // If both left and right texts are fully displayed, go to the next text or game screen
                 if (textComplete && currentRightLetterIndex == displayRightTexts.getFirst().length()) {
-                    game.setScreen(new MainMenuScreen(game));
+                    game.screen.dispose();
+                    game.screen = new MainMenuScreen(game);
+                    game.setScreen(game.screen);
                 } else if (currentCentralLetterIndex == displayCentralTexts.getFirst().length()) {
                     nextText();
                 } else if (displayingCentralText) {
