@@ -39,7 +39,7 @@ public class Actor {
             }
 
             double distance = this.location.squareDistance(other.location);
-            if (distance < sensitivity * sensitivity) {
+            if (distance < sensitivity * sensitivity || distance < other.sensitivity * other.sensitivity) {
                 /// We should consider this when separating.
                 Location difference = this.location.difference(other.location).normalized().divide(distance);
                 steer.addToSelf(difference);
