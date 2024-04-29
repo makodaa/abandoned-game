@@ -320,7 +320,6 @@ public class GameScreen implements Screen, Serializable {
         mediumFont.dispose();
         batch.dispose();
         stage.dispose();
-        dispose();
         if (runSerializingThread != null) {
             runSerializingThread.set(false);
         }
