@@ -17,13 +17,14 @@ import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
+import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
+import jdk.jshell.execution.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class TravelScreen extends Table {
@@ -63,12 +64,15 @@ public class TravelScreen extends Table {
         pixmap.fill();
         skin.add("white", new Texture(pixmap));
         skin.add("close_icon", new Texture(Gdx.files.internal("images/icons/close.png")));
-        skin.add("city_icon", new Texture(Gdx.files.internal("images/icons/map/city.png")));
-        skin.add("forest_icon", new Texture(Gdx.files.internal("images/icons/map/forest.png")));
-        skin.add("village_icon", new Texture(Gdx.files.internal("images/icons/map/village.png")));
-        skin.add("farm_icon", new Texture(Gdx.files.internal("images/icons/map/farm.png")));
-        skin.add("hospital_icon", new Texture(Gdx.files.internal("images/icons/map/hospital.png")));
         skin.add("circle", new Texture(Gdx.files.internal("images/icons/map/circle.png")));
+        skin.add("rescue_area_icon", new Texture(Gdx.files.internal("images/icons/map/rescue_area.png")));
+        skin.add("forest_icon", new Texture(Gdx.files.internal("images/icons/map/forest.png")));
+        skin.add("park_icon", new Texture(Gdx.files.internal("images/icons/map/park.png")));
+        skin.add("farm_icon", new Texture(Gdx.files.internal("images/icons/map/farm.png")));
+        skin.add("village_icon", new Texture(Gdx.files.internal("images/icons/map/village.png")));
+        skin.add("mall_icon", new Texture(Gdx.files.internal("images/icons/map/city.png")));
+        skin.add("district_icon", new Texture(Gdx.files.internal("images/icons/map/district.png")));
+        skin.add("hospital_icon", new Texture(Gdx.files.internal("images/icons/map/hospital.png")));
         skin.add("question_mark", new Texture(Gdx.files.internal("images/icons/map/question_mark.png")));
 
         Table topBarTable = new Table();
@@ -135,7 +139,7 @@ public class TravelScreen extends Table {
 
     private Table createMapGraphics(Skin skin){
 
-        List<List<Area>> visibleMap = new ArrayList<>();
+        List<List<Map.Entry<Index,Area>>> visibleMap = new ArrayList<>();
         int up = player.getPosition().y() - 5;
         int down = player.getPosition().y() + 5;
         int left = player.getPosition().x() - 5;
@@ -143,33 +147,33 @@ public class TravelScreen extends Table {
 
         for (int i = up; i <= down; i++) {
             if (up < 0 || screen.getMap().length < down) continue;
-            List<Area> row = new ArrayList<>();
+            List<Map.Entry<Index,Area>> row = new ArrayList<>();
             for (int j = left; j <= right; j++) {
                 if (left < 0 || screen.getMap()[i].length < right) continue;
-                row.add(screen.getMap()[i][j]);
+                row.add(new AbstractMap.SimpleEntry<>(new Index(i,j),screen.getMap()[i][j]));
             }
             visibleMap.add(row);
         }
 
         Table table = new Table();
-        for (List<Area> row : visibleMap) {
-            for (Area area : row) {
+        for (List<Map.Entry<Index,Area>> row : visibleMap) {
+            for (Map.Entry <Index,Area> entry : row) {
+                var index = entry.getKey();
+                var area = entry.getValue();
                 if (area == screen.getMap()[player.getPosition().y()][player.getPosition().x()]) {
                     table.add(new Image(skin.newDrawable("circle",Color.GOLD))).size(30);
                     continue;
                 }
-                if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
-                    table.add(new Image(skin.newDrawable("question_mark",Color.DARK_GRAY))).size(40);
+
+                if(player.getAreasVisited().contains(index)) {
+                    table.add(new Image(skin.newDrawable(area.getType().getIconKey(),Color.WHITE))).size(40);
                     continue;
                 }
-                switch (area.getType()) {
-                    case VILLAGE -> table.add(new Image(skin.newDrawable("village_icon"))).size(40);
-                    case FOREST, PARK -> table.add(new Image(skin.newDrawable("forest_icon"))).size(40);
-                    case RESCUE_AREA -> table.add(new Image(skin.newDrawable("forest_icon",Color.RED))).size(40);
-                    case MALL, COMMERCIAL_BLDG -> table.add(new Image(skin.newDrawable("city_icon"))).size(40);
-                    case FARM -> table.add(new Image(skin.newDrawable("farm_icon"))).size(40);
-                    case HOSPITAL -> table.add(new Image(skin.newDrawable("hospital_icon"))).size(40);
+                if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
+                    table.add(new Image(skin.newDrawable("question_mark",Color.GRAY))).size(40);
+                    continue;
                 }
+                    table.add(new Image(skin.newDrawable(area.getType().getIconKey(),Color.GRAY))).size(40);
             }
             table.row();
         }
@@ -194,47 +198,14 @@ public class TravelScreen extends Table {
         Label description = new Label("", new Label.LabelStyle(textLightFont,Color.WHITE));
         description.setWrap(true);
         description.setWidth(500);
-        switch (targetArea.getType()) {
-            case VILLAGE -> {
-                description.setText("A safe subdivision with water and vegetation. Can Find leftover emergency supplies and rations.");
-                areaIcon = new Image(skin.newDrawable("village_icon",Color.WHITE));
-            }
-            case FOREST -> {
-                description.setText("A deep, lush forest. Can find scrap wood, vegetation, and wildlife");
-                areaIcon = new Image(skin.newDrawable("forest_icon",Color.WHITE));
-            }
-            case PARK -> {
-                description.setText("The middle ground between nature and the city. Can find water, wood, wildlife, and emergency supplies");
-                areaIcon = new Image(skin.newDrawable("forest_icon",Color.WHITE));
-            }
-            case RESCUE_AREA -> {
-                description.setText("Safety in-sight.");
-                areaIcon = new Image(skin.newDrawable("forest_icon",Color.WHITE));
-//            TODO: lmao
-            }
-            case MALL -> {
-                description.setText("Palamig muna, init eh. Can find emergency supplies, and survival equipment ");
-                areaIcon = new Image(skin.newDrawable("city_icon",Color.WHITE));
-            }
-            case COMMERCIAL_BLDG -> {
-                description.setText("Something Shops. Can find emergency supplies, survival equipment, ");
-                areaIcon = new Image(skin.newDrawable("city_icon",Color.WHITE));
-            }
-            case FARM -> {
-                description.setText("Something Farm.");
-                areaIcon = new Image(skin.newDrawable("farm_icon",Color.WHITE));
-            }
-            case HOSPITAL -> {
-                description.setText("Something Hospital. Can find rations and medical supplies");
-                areaIcon = new Image(skin.newDrawable("hospital_icon",Color.WHITE));
-            }
-        }
+        description.setText(targetArea.getType().getDescriptions()[Utils.random.nextInt(0,targetArea.getType().getDescriptions().length)]);
+        areaIcon.setDrawable(skin.newDrawable(targetArea.getType().getIconKey(),Color.WHITE));
 
         card.pad(18.0f);
         card.add(directionLabel).left().fillX();
         card.add(areaIcon).size(45).right();
         card.row().expandX().fillX();
-        card.add(areaNameLabel).colspan(2).fillX();
+        card.add(areaNameLabel).fillX();
         card.row().expandX().fillX();
         card.add(description).width(600).colspan(2).fillX();
 
@@ -244,21 +215,31 @@ public class TravelScreen extends Table {
         Button button = new Button(card,buttonStyle);
 
         /*
-        * Disables button when statistics are too low
+        * Disable button when energy is too low
         * Computation 2 energy per distance
         */
         distanceBetweenAreas = Math.abs(targetArea.getDistance() - currentArea.getDistance());
         if (player.getEnergy() < (distanceBetweenAreas * 2) + 10){
-//            button.setText("Not Enough Energy");
             button.setDisabled(true);
             areaNameLabel.setColor(Color.DARK_GRAY);
             description.setColor(Color.DARK_GRAY);
+            description.setText("You don't have energy to travel");
             areaIcon.setColor(Color.DARK_GRAY);
         }
 
         /*
-        * Conceal area name when dark
+        * Disable button when inventory is too heavy
         * */
+        if(player.getInventory().stream().mapToDouble(item -> Item.of(item).getWeight()).sum() > player.getInventoryCapacity()) {
+            button.setDisabled(true);
+            areaNameLabel.setColor(Color.DARK_GRAY);
+            description.setColor(Color.DARK_GRAY);
+            description.setText("You are carrying too many items.");
+            areaIcon.setColor(Color.DARK_GRAY);
+        }
+        /*
+         * Conceal area name when dark
+         * */
         if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
             areaNameLabel.setText("???");
             description.setText("You can't figure out the place");
@@ -283,6 +264,7 @@ public class TravelScreen extends Table {
                 player.setMinutes(player.getMinutes() + (distanceBetweenAreas / 5));
                 player.setEnergy(player.getEnergy() - (distanceBetweenAreas * 2));
                 screen.setDistanceTravelled(screen.getDistanceTravelled() + distanceBetweenAreas);
+                player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
                 for (int i = player.getMinutes(); i < 3 * (player.getMinutes() + (distanceBetweenAreas / 5)); i++) {
                     player.decay();
                 }

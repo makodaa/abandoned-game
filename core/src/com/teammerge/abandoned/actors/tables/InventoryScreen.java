@@ -19,6 +19,7 @@ import com.teammerge.abandoned.screens.GameScreen;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class InventoryScreen extends Table {
     Player player;
@@ -109,6 +110,10 @@ public class InventoryScreen extends Table {
                 ? null
                 : Item.of(player.getInventory().getFirst());
 
+        Label inventoryCapacityLabel = new Label("",new Label.LabelStyle(titleRegularFont,Color.WHITE));
+        inventoryCapacityLabel.setText("CAPACITY: " + player.getInventory().stream().mapToDouble(item -> Item.of(item).getWeight()).sum() + "/" + player.getInventoryCapacity());
+        inventoryCapacityLabel.setAlignment(Align.right);
+
         Table buttonGroupTable = new Table();
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.2f)), skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.5f)), skin.newDrawable("white",new Color(0.0f,0.0f,0.0f, 0.0f)), buttonRegularFont);
         buttonStyle.disabledFontColor = Color.DARK_GRAY;
@@ -134,6 +139,7 @@ public class InventoryScreen extends Table {
                     /// Update the UI.
                     inventoryList.setItems(Arrays.stream(currentItems()).distinct().toArray(String[]::new));
                     quantityList.setItems(Arrays.stream(currentItems()).distinct().map(e -> Collections.frequency(java.util.List.of(currentItems()),e)).toArray(Integer[]::new));
+                    inventoryCapacityLabel.setText("CAPACITY: " + player.getInventory().stream().mapToDouble(el -> Item.of(el).getWeight()).sum() + "/" + player.getInventoryCapacity());
 
                     /// Count the item use
 //                    screen.setItemsUsed();
@@ -150,6 +156,7 @@ public class InventoryScreen extends Table {
                 /// Update the UI.
                 inventoryList.setItems(Arrays.stream(currentItems()).distinct().toArray(String[]::new));
                 quantityList.setItems(Arrays.stream(currentItems()).distinct().map(e -> Collections.frequency(java.util.List.of(currentItems()),e)).toArray(Integer[]::new));
+                inventoryCapacityLabel.setText("CAPACITY: " + player.getInventory().stream().mapToDouble(item -> Item.of(item).getWeight()).sum() + "/" + player.getInventoryCapacity());
             }
         });
 
@@ -201,6 +208,8 @@ public class InventoryScreen extends Table {
         } else {
             add(inventoryScrollPane).fill();
             add(selectedItemTable).fillY();
+            row();
+            add(inventoryCapacityLabel).colspan(2).expand().fillX().bottom();
         }
     }
 }

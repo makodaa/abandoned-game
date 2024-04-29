@@ -19,7 +19,7 @@ public class Area implements Serializable {
         this.type = type;
         this.rescueProbability = rescueProbability;
 
-        this.distance = Utils.random.nextInt(31, 73);
+        this.distance = Utils.random.nextInt(10, 25);
 
         String[] prefixes = type.getPrefixes();
         String[] suffixes = type.getSuffixes();

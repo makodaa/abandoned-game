@@ -121,4 +121,8 @@ public record Item(
         }
         return entries.toArray(RecipeSourceEntry[]::new);
     }
+
+    public double getWeight() {
+        return weight;
+    }
 }

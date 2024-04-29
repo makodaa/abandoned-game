@@ -8,6 +8,7 @@ import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Player implements Serializable {
@@ -17,8 +18,12 @@ public class Player implements Serializable {
 
     private final ArrayList<String> inventory;
 
+
     public long timeSinceLastSecond;
 
+    public float inventoryCapacity;
+
+    private HashSet<Index> areasVisited;
     public Player(Index starting) {
         inventory = new ArrayList<>();
         timeSinceLastSecond = 0;
@@ -28,6 +33,8 @@ public class Player implements Serializable {
         hydration = 80 + Utils.random.nextInt( 20);
         energy = 80 + Utils.random.nextInt(20);
         position = starting;
+        areasVisited = new HashSet<>();
+        areasVisited.add(starting);
     }
 
     public void move(Direction direction) {
@@ -108,4 +115,17 @@ public class Player implements Serializable {
         inventory.add(item);
         InsertionSort.run(inventory, String::compareTo);
     }
+
+    public float getInventoryCapacity() {
+        return inventoryCapacity;
+    }
+
+    public void setInventoryCapacity(float inventoryCapacity) {
+        this.inventoryCapacity = inventoryCapacity;
+    }
+
+    public HashSet<Index> getAreasVisited() {
+        return areasVisited;
+    }
+
 }

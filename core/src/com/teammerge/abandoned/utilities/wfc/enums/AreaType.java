@@ -22,7 +22,7 @@ public enum AreaType implements Serializable {
     public static AreaType from(int index) {
         return AreaType.values()[index];
     }
-    
+
     public String getAlias() {
         return switch (this) {
             case RESCUE_AREA -> "Ra";
@@ -52,6 +52,7 @@ public enum AreaType implements Serializable {
 
     /**
      * Returns possible suffixes for area names, such as "Chevalier [School]" or "Mangrove [Farm]."
+     *
      * @return the array of suffixes
      */
     // TODO: Add more options. Possibly change this when needed.
@@ -61,7 +62,7 @@ public enum AreaType implements Serializable {
             case FOREST -> new String[]{"Forest", "Grove", "Reserve"};
             case VILLAGE -> new String[]{"Village", "Subdivision", "Homes", "Hills"};
             case PARK -> new String[]{"Park", "Reserve", "Plaza"};
-            case COMMERCIAL_BLDG -> new String[]{"Complex","District", "Avenue", "Junction"};
+            case COMMERCIAL_BLDG -> new String[]{"Complex", "District", "Avenue", "Junction"};
             case MALL -> new String[]{"Malls", "Super Mall",};
             case FARM -> new String[]{"Farm", "Fields", "Acres", "Pastures"};
             case HOSPITAL -> new String[]{"Hospital", "Clinic", "Medical Centre"};
@@ -69,9 +70,10 @@ public enum AreaType implements Serializable {
     }
 
     /**
-    * Returns possible prefixes for area names, such as "Blue rose [suffix]"
-    * @return array of name combination
-    */
+     * Returns possible prefixes for area names, such as "Blue rose [suffix]"
+     *
+     * @return array of prefixes
+     */
     public String[] getPrefixes() {
         return switch (this) {
             case RESCUE_AREA -> new String[]{
@@ -258,6 +260,72 @@ public enum AreaType implements Serializable {
         };
     }
 
+    /**
+     * Returns possible descriptions for areas
+     *
+     * @return array of descriptions
+     * */
+    public String[] getDescriptions(){
+        return switch (this){
+            case RESCUE_AREA -> new String[]{
+                    "Safety in-sight.",
+                    "A makeshift haven amid the chaos, where hope flickers in the eyes of survivors awaiting salvation.",
+
+            };
+            case FOREST -> new String[]{
+                    "A deep, lush forest. Can find scrap wood, vegetation, and wildlife",
+                    "Nature's fortress, where ancient trees whisper secrets and danger lurks beneath every shadow.",
+                    "Nature reclaims its dominion, where eerie whispers and tangled undergrowth cloak the remnants of civilization's retreat.",
+                    "Nature's cathedral, where towering trees stand sentinel over forgotten trails and hidden secrets buried beneath a carpet of fallen leaves."
+            };
+            case VILLAGE -> new String[]{
+                    "A safe subdivision with water and vegetation. Can Find leftover emergency supplies and rations.",
+                    "Deserted streets bear witness to the absence of life, with decaying homes and shattered memories strewn among forgotten dreams.",
+                    "Silent streets wind through deserted homes, where curtains flutter in the wind as if mourning the absence of life that once filled these quiet corners."
+            };
+            case PARK -> new String[]{
+                    "The middle ground between nature and the city. Can find water, wood, wildlife, and emergency supplies",
+                    "Once vibrant with laughter and joy, now a haunting tableau of overgrown pathways and rusting play structures, frozen in time.",
+                    "A sanctuary reclaimed by nature's embrace, where tangled vines ensnare forgotten benches and crumbling statues stand as silent sentinels in a sea of greenery."
+            };
+            case COMMERCIAL_BLDG -> new String[]{
+                    "Shops, Shops, and Shops. Can find emergency supplies and survival equipment",
+                    "Empty storefronts and shattered glass reflect the hollow echoes of consumerism, where commerce once thrived but now lies dormant.",
+                    "Empty shelves and shattered displays bear witness to the frenzy of looting that preceded the collapse, leaving behind a ghostly reminder of bustling commerce now reduced to silence.",
+                    ""
+            };
+            case MALL -> new String[]{
+                    "Palamig muna, init e",
+                    "Can find emergency supplies, and survival equipment ",
+                    "A labyrinth of desolation, where empty corridors and shattered skylights cast shadows upon the relics of consumer culture, now reclaimed by decay.",
+                    "A sprawling monument to excess and abandonment, where escalators stand motionless and echoes of past footfalls fade into the eerie stillness of empty storefronts."
+            };
+            case FARM -> new String[]{
+                    "A Farm. Can find scraps, rations, and equipment.",
+                    "Fields lie fallow, machinery rusts beneath open skies, and abandoned homesteads stand as silent monuments to humanity's struggle for survival.",
+                    "Fields lie fallow beneath a vast sky, where the remnants of crops sway in the breeze like ghostly echoes of a once-thriving agricultural community."
+            };
+            case HOSPITAL -> new String[]{
+                    "A Hospital. Can find rations and medical supplies",
+                    "A haunting sanctuary of broken promises and lost battles, where the stale scent of antiseptic mingles with the specter of despair, echoing through empty corridors.",
+                    "A grim mausoleum of shattered hopes and fading memories, where the scent of decay mingles with the sterile chill of abandoned operating rooms, now haunted by the specter of lives lost."
+            };
+        };
+    }
+
+    public String getIconKey() {
+        return switch(this){
+            case RESCUE_AREA -> "rescue_area_icon";
+            case FOREST -> "forest_icon";
+            case VILLAGE -> "village_icon";
+            case PARK -> "park_icon";
+            case COMMERCIAL_BLDG -> "district_icon";
+            case MALL -> "mall_icon";
+            case FARM -> "farm_icon";
+            case HOSPITAL -> "hospital_icon";
+        };
+    }
+
     private HashMap<String, ArrayList<String>> loadedLootTables;
 
     private void loadLootTables() {
@@ -274,7 +342,7 @@ public enum AreaType implements Serializable {
                 if (location.trim().isEmpty()) continue;
 
                 if (location.equals("ALL")) {
-                    for (AreaType type: AreaType.values()) {
+                    for (AreaType type : AreaType.values()) {
                         loadedLootTables.get(type.getAlias().toUpperCase()).add(item.id());
                     }
                     continue;
@@ -296,7 +364,7 @@ public enum AreaType implements Serializable {
 
         return loadedLootTables.get(this.getAlias().toUpperCase()).toArray(new String[0]);
     }
-    
+
     public String getBackgroundFolders() {
         return switch (this) {
             case RESCUE_AREA -> "rescue_camp";
