@@ -61,7 +61,7 @@ public class StructuresScreen extends Table {
         topBarTable.add(titlelabel).expandX().fillX().right();
         topBarTable.add(closeButton).right();
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.2f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), textRegularFont);
+//        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.2f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)), textRegularFont);
 
         ImageTextButton.ImageTextButtonStyle campfireButtonStyle = new ImageTextButton.ImageTextButtonStyle();
         campfireButtonStyle.font = textRegularFont;

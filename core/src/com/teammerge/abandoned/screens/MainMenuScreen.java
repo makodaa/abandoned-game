@@ -2,9 +2,7 @@ package com.teammerge.abandoned.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -12,15 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
-import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 
 import java.io.*;
 
@@ -31,7 +25,7 @@ public class MainMenuScreen implements Screen {
     private final Stage stage;
     private final SpriteBatch batch;
 
-    private GameScreen gameScreen;
+    private final GameScreen gameScreen;
 
     public static final int row_height = Gdx.graphics.getHeight() / 16;
     public static final int col_width = Gdx.graphics.getWidth() / 16;
@@ -41,35 +35,37 @@ public class MainMenuScreen implements Screen {
 
     TextButton loadGameButton, newGameButton, exitButton;
 
-    //  TODO: Search about viewports
+    Texture background;
+
     public MainMenuScreen(final AbandonedGame game) {
         this.game = game;
         batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1280, 800);
+        background = new Texture(Gdx.files.internal("images/main_menu_background.png"));
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(stage); // Never Forget
 
         difficultyScreen = createDifficultyScreen();
 
 //      Creating H1, H2 fonts
-        h1 = generateFont("fonts/TheoVanDoesburg.TTF", 60);
-        h2 = generateFont("fonts/TheoVanDoesburg.TTF", 28);
+        h1 = generateFont("fonts/TheoVanDoesburg.TTF", 108);
+        h2 = generateFont("fonts/TheoVanDoesburg.TTF", 36);
 
         titleLabel = new Label("Abandoned", new Label.LabelStyle(h1,Color.WHITE));
-        titleLabel.setPosition(col_width,Gdx.graphics.getHeight() - row_height * 3);
+        titleLabel.setPosition(col_width,Gdx.graphics.getHeight() - row_height * 4f);
 
         gameScreen = loadGameScreen();
 //        Creating New Game Button
 
         if (gameScreen != null) {
-            loadGameButton = createTextButton("Continue Game (" + gameScreen.daysPassed + " days)", h2);
+            loadGameButton = createTextButton("Continue Game",h2);
             loadGameButton.setPosition((float) col_width, Gdx.graphics.getHeight() - row_height * 6);
             loadGameButton.addListener(new InputListener() {
 
                 @Override
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                    loadGameButton.getLabel().setColor(Color.YELLOW);
+                    loadGameButton.getLabel().setColor(Color.GOLD);
                 }
 
                 @Override
@@ -86,13 +82,13 @@ public class MainMenuScreen implements Screen {
         }
 
 //        Creating New Game Button
-        newGameButton = createTextButton(gameScreen == null ? "New Game" : "Reset Game", h2);
-        newGameButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 7);
+        newGameButton = createTextButton(gameScreen == null ? "New Game" : "Overwrite Game", h2);
+        newGameButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 7.5f);
         newGameButton.addListener(new InputListener() {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                newGameButton.getLabel().setColor(Color.YELLOW);
+                newGameButton.getLabel().setColor(Color.GOLD);
             }
 
             @Override
@@ -101,20 +97,20 @@ public class MainMenuScreen implements Screen {
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                stage.addActor(createDifficultyScreen());
-                game.setScreen(gameScreen = new GameScreen(game,31,31));
+                stage.addActor(createDifficultyScreen());
+//                game.setScreen(gameScreen = new GameScreen(game,31,31));
                 return false;
             }
         });
 
 //        Creating Exit Button
         exitButton = createTextButton("Exit", h2);
-        exitButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 8);
+        exitButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 9);
         exitButton.addListener(new InputListener() {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                exitButton.getLabel().setColor(Color.YELLOW);
+                exitButton.getLabel().setColor(Color.GOLD);
             }
 
             @Override
@@ -150,6 +146,9 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(background,0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
         stage.act();
         stage.draw();
     }
@@ -234,65 +233,123 @@ public class MainMenuScreen implements Screen {
     private Table createDifficultyScreen() {
         Table table = new Table();
 
-        BackgroundDrawable white = new BackgroundDrawable("images/plain_white_background.png");
-        white.setColor(0,0,0,205);
-        BackgroundDrawable grey = new BackgroundDrawable("images/plain_white_background.png");
-        grey.setColor(127,127,127,255);
 
-        table.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        table.setBackground(white);
-
-        BitmapFont robotoMedium = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
-        Label.LabelStyle labelStyle = new Label.LabelStyle(robotoMedium, Color.WHITE);
+        FreeTypeFontGenerator mediumGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Medium.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 36;
+        BitmapFont topBarMediumFont = mediumGenerator.generateFont(parameter);
+        parameter.size = 24;
+        BitmapFont textRegularFont = mediumGenerator.generateFont(parameter);
 
 
+        // Load Skin, Drawable, and Icons
+        Skin skin = new Skin();
+        Pixmap pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
+        skin.add("close_icon", new Texture(Gdx.files.internal("images/icons/close.png")));
+        skin.add("easy_icon", new Texture(Gdx.files.internal("images/icons/difficulties/easy.png")));
+        skin.add("medium_icon", new Texture(Gdx.files.internal("images/icons/difficulties/medium.png")));
+        skin.add("hard_icon", new Texture(Gdx.files.internal("images/icons/difficulties/hard.png")));
 
-        TextButton closeButton = createTextButton("X",robotoMedium);
-        closeButton.getLabel().setSize(36, 36);
+
+        Table topBarTable = new Table();
+        Label titlelabel = new Label("SELECT DIFFICULTY", new Label.LabelStyle(topBarMediumFont,Color.WHITE));
+        ImageButton closeButton = new ImageButton(skin.newDrawable("close_icon"));
+        closeButton.pad(18.0f);
         closeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 table.remove();
             }
         });
-        Label label = new Label("Choose Difficulty", labelStyle);
+        topBarTable.add(titlelabel).expandX().fillX().right();
+        topBarTable.add(closeButton).right();
 
-        Table topBarGroup = new Table();
-        topBarGroup.add(closeButton).size(72).left().spaceRight(9);
-        topBarGroup.add(label).left();
+        table.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        table.setBackground(skin.newDrawable("white",new Color(0,0,0,0.8f )));
 
-        TextButton smallMapButton = new VisTextButton("Small Map [31 x 31]");
+        ImageTextButton.ImageTextButtonStyle smallMapButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        smallMapButtonStyle.font = textRegularFont;
+        smallMapButtonStyle.fontColor = Color.WHITE;
+        smallMapButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
+        smallMapButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
+        smallMapButtonStyle.checked = smallMapButtonStyle.down;
+        smallMapButtonStyle.imageUp = skin.newDrawable("easy_icon");
+        smallMapButtonStyle.imageDown = smallMapButtonStyle.imageUp;
+
+        ImageTextButton.ImageTextButtonStyle mediumMapButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        mediumMapButtonStyle.font = textRegularFont;
+        mediumMapButtonStyle.fontColor = Color.WHITE;
+        mediumMapButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
+        mediumMapButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
+        mediumMapButtonStyle.checked = mediumMapButtonStyle.down;
+        mediumMapButtonStyle.imageUp = skin.newDrawable("medium_icon");
+        mediumMapButtonStyle.imageDown = mediumMapButtonStyle.imageUp;
+
+        ImageTextButton.ImageTextButtonStyle largeMapButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        largeMapButtonStyle.font = textRegularFont;
+        largeMapButtonStyle.fontColor = Color.WHITE;
+        largeMapButtonStyle.up = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.2f));
+        largeMapButtonStyle.down = skin.newDrawable("white",new Color(0.5f,0.5f,0.5f,0.5f));
+        largeMapButtonStyle.checked = largeMapButtonStyle.down;
+        largeMapButtonStyle.imageUp = skin.newDrawable("hard_icon");
+        largeMapButtonStyle.imageDown = largeMapButtonStyle.imageUp;
+
+
+        ImageTextButton smallMapButton = new ImageTextButton("SMALL MAP\n[31 x 31]",smallMapButtonStyle);
+        smallMapButton.clearChildren();
+        smallMapButton.add(smallMapButton.getImage()).spaceBottom(27);
+        smallMapButton.row();
+        smallMapButton.add(smallMapButton.getLabel());
+        smallMapButton.getLabel().setAlignment(Align.bottom);
+        smallMapButton.pad(63);
         smallMapButton.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent changeEvent, Actor actor) {
                 game.setScreen(new OpeningScreen(game, 31, 31));
             }
         });
-        TextButton mediumMapButton = new VisTextButton("Medium Map [97 x 97]");
+
+        ImageTextButton mediumMapButton = new ImageTextButton("MEDIUM MAP\n[97 x 97]",mediumMapButtonStyle);
+        mediumMapButton.clearChildren();
+        mediumMapButton.add(mediumMapButton.getImage()).spaceBottom(27);
+        mediumMapButton.row();
+        mediumMapButton.add(mediumMapButton.getLabel());
+        mediumMapButton.getLabel().setAlignment(Align.bottom);
+        mediumMapButton.pad(63);
         mediumMapButton.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new OpeningScreen(game, 97, 97));
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                game.setScreen(new OpeningScreen(game, 97,97));
             }
         });
-        TextButton largeMapButton = new VisTextButton("Large Map [171 x 171]");
+
+        ImageTextButton largeMapButton = new ImageTextButton("LARGE MAP\n[171 x 171]",largeMapButtonStyle);
+        largeMapButton.clearChildren();
+        largeMapButton.add(largeMapButton.getImage()).spaceBottom(27);
+        largeMapButton.row();
+        largeMapButton.add(largeMapButton.getLabel());
+        largeMapButton.getLabel().setAlignment(Align.bottom);
+        largeMapButton.pad(63);
         largeMapButton.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new OpeningScreen(game, 171, 171));
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                game.setScreen(new OpeningScreen(game, 171,171));
             }
         });
-        table.defaults().size(235,81);
+
+
+
+
+        table.pad(18.0f);
         table.align(Align.topLeft);
-        table.add(topBarGroup);
+        table.add(topBarTable).colspan(3).height(72).expandX().fillX().left();
         table.row();
-        table.align(Align.center);
-        table.add(smallMapButton).spaceBottom(9);
-        table.row();
-        table.add(mediumMapButton).spaceBottom(9);
-        table.row();
-        table.add(largeMapButton).spaceBottom(9);
-        table.row().expand().fill();
+        table.add(smallMapButton).size(300,300).expandY().fill();
+        table.add(mediumMapButton).size(300,300).expandY().fill();
+        table.add(largeMapButton).size(300,300).expandY().fill();
         return table;
     }
 
