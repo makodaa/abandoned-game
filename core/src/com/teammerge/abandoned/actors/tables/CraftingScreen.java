@@ -114,13 +114,14 @@ public class CraftingScreen extends Table {
         this.align(Align.topLeft);
 
         skin.add("close_icon", new Texture(Gdx.files.internal("images/icons/close.png")));
-
         List.ListStyle inventorystyle = new List.ListStyle(titleRegularFont, Color.WHITE, Color.GRAY, skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.2f)));
-
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.2f)), skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.5f)), skin.newDrawable("white",new Color(0.0f,0.0f,0.0f, 0.0f)), buttonRegularFont);
+        buttonStyle.disabledFontColor = Color.DARK_GRAY;
+        buttonStyle.disabled = skin.newDrawable("white",new Color(0.2f,0.1f,0.1f,0.3f));
 
         Table topBarTable = new Table();
 
-        topBarTable.align(Align.top);
+        topBarTable.align(Align.topLeft);
 
         Label titlelabel = new Label("CRAFTING", new Label.LabelStyle(topBarMediumFont, Color.WHITE));
 
@@ -150,17 +151,18 @@ public class CraftingScreen extends Table {
 
 
             VisTable currentItemTable = new VisTable();
+            currentItemTable.align(Align.topLeft);
             currentItemTable.pad(32);
 
-            Label.LabelStyle labelStyle = new Label.LabelStyle(lightGenerator.generateFont(parameter), Color.WHITE);
+            Label.LabelStyle labelStyle = new Label.LabelStyle(regularGenerator.generateFont(parameter), Color.WHITE);
 
             Label itemLabel = new VisLabel("", labelStyle);
-            itemLabel.setAlignment(Align.center);
+            itemLabel.setAlignment(Align.left);
             currentItemTable.add(itemLabel).fillX().spaceBottom(32);
             currentItemTable.row().expandX().fillX();
 
             Label descriptionLabel = new VisLabel("", labelStyle);
-            descriptionLabel.setAlignment(Align.center);
+            descriptionLabel.setAlignment(Align.left);
             descriptionLabel.setWrap(true);
             currentItemTable.add(descriptionLabel).expand().fill();
             currentItemTable.row().expandX().fill();
@@ -169,12 +171,14 @@ public class CraftingScreen extends Table {
                 pad(16);
             }}).fill();
             currentItemTable.row().expandX().fillX();
+            currentItemTable.align(Align.topLeft);
 
             this.requirementsTable = new VisTable();
                 Label requirementsLabel = new VisLabel("Requirements:", labelStyle);
-                requirementsLabel.setAlignment(Align.center);
-                requirementsTable.add(requirementsLabel).fill();
+                requirementsLabel.setAlignment(Align.topLeft);
+                requirementsTable.add(requirementsLabel).fillX().left();
                 requirementsTable.row().expandX().fill();
+
 
                 for (int i = 0; i < selectedItem.recipes().length; ++i) {
                     var recipe = selectedItem.recipes()[i];
@@ -182,7 +186,7 @@ public class CraftingScreen extends Table {
 
                     if (i > 0) {
                         Label orLabel = new VisLabel("OR: ", labelStyle) {{
-                            setAlignment(Align.center);
+                            setAlignment(Align.left);
                         }};
                         requirementGroupTable.add(orLabel).fill();
                         requirementGroupTable.row().expandX().fill();
@@ -196,7 +200,7 @@ public class CraftingScreen extends Table {
 
                         Item item = Item.of(entry.id());
                         Label requirementLabel = new VisLabel(item.name() + "(" + countInInventory + "/" + entry.count() + ")", labelStyle) {{
-                            setAlignment(Align.center);
+                            setAlignment(Align.left);
                         }};
                         requirementGroupTable.add(requirementLabel).fill();
                         requirementGroupTable.row().expandX().fill();
@@ -211,10 +215,12 @@ public class CraftingScreen extends Table {
             Table buttonGroupTable = new VisTable();
                 buttonGroupTable.pad(16);
 
-                TextButton craftButton = new VisTextButton("Craft", "blue");
+                TextButton craftButton = new TextButton("Craft", buttonStyle);
+                craftButton.align(Align.right);
                 buttonGroupTable.add(craftButton).size(272f,80f).pad(16f);
             currentItemTable.add(buttonGroupTable).fillX();
-        this.add(currentItemTable).fillX();
+            this.add(currentItemTable).fillX();
+            currentItemTable.add(craftButton).left();
 
         /// [Content]
 
@@ -231,7 +237,6 @@ public class CraftingScreen extends Table {
             craftButton.setText("Not enough items");
             craftButton.setDisabled(true);
         }
-
 
         /// [Event Listeners]
 
@@ -282,19 +287,21 @@ public class CraftingScreen extends Table {
 
                 requirementsTable.clear();
                     Label requirementsLabel = new VisLabel("Requirements:", labelStyle);
-                        requirementsLabel.setAlignment(Align.center);
-                    requirementsTable.add(requirementsLabel).fill();
+                    requirementsLabel.setAlignment(Align.left);
+                    requirementsTable.add(requirementsLabel).expandX().left();
                     requirementsTable.row().expandX().fill();
+
 
                     for (int i = 0; i < selectedItem.recipes().length; ++i) {
                         var recipe = selectedItem.recipes()[i];
                         Table requirementGroupTable = new VisTable();
+                        requirementGroupTable.align(Align.topLeft);
 
                         if (i > 0) {
                             Label orLabel = new VisLabel("OR: ", labelStyle) {{
-                                setAlignment(Align.center);
+                                setAlignment(Align.left);
                             }};
-                            requirementGroupTable.add(orLabel).fill();
+                            requirementGroupTable.add(orLabel).fill().padLeft(50);
                             requirementGroupTable.row().expandX().fill();
                         }
 
@@ -306,7 +313,7 @@ public class CraftingScreen extends Table {
 
                             Item item = Item.of(entry.id());
                             Label requirementLabel = new VisLabel(item.name() + "(" + countInInventory + "/" + entry.count() + ")", labelStyle) {{
-                                setAlignment(Align.center);
+                                setAlignment(Align.left);
                             }};
                             requirementGroupTable.add(requirementLabel).fill();
                             requirementGroupTable.row().expandX().fill();
