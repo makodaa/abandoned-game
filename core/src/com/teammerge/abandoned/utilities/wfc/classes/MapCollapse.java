@@ -42,12 +42,16 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
 
     public String renderProbability(double[][] map) {
         StringBuilder buffer = new StringBuilder();
-        for (double[] row : map) {
-            for (double active : row) {
-                if (active <= 0) {
+        for (int y = 0; y < map.length; ++y) {
+            double[] row = map[y];
+            for (int x = 0; x < row.length; ++x) {
+                double active = row[x];
+
+                if (y == map.length / 2 && x == map[y].length / 2) {
+                    buffer.append("+");
+                } else if (active <= 0) {
                     buffer.append(" ");
                 } else {
-                    System.out.println(active);
                     buffer.append(Character.toString(64 + (int)Math.floor(active * 26)));
                 }
                 buffer.append(" ");
@@ -127,8 +131,12 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         } while (change);
 
         for (Actor actor : Arrays.stream(actors).skip(1).toList()) {
+            if (actor.getLocation().squareDistance(origin) <= 6 * 6)
+                continue;
+
             partialCollapse(wave, actor.getLocation().asIndex(), AreaType.RESCUE_AREA.ordinal());
         }
+
         fullCollapse(wave);
 
         for (int y = 0; y < wave.length; ++y) {
