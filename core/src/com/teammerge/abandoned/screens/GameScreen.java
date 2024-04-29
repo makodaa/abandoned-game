@@ -317,7 +317,9 @@ public class GameScreen implements Screen, Serializable {
 
     @Override
     public void dispose() {
-        runSerializingThread.set(false);
+        if (runSerializingThread != null) {
+            runSerializingThread.set(false);
+        }
     }
 
     private Label createLabel(String text, BitmapFont font, Color color) {
