@@ -26,7 +26,7 @@ public class GameOverScreen implements Screen {
     private boolean displayingCentralText;
 
     private final String gameEndText;
-    private final int gameEndingScene, daysPassed, itemsCollected, itemsCrafted;
+    private final int gameEndingScene, daysPassed, itemsCollected, itemsCrafted, itemsUsed;
     GameScreen gameScreen;
 
     public GameOverScreen(AbandonedGame game, GameScreen gameScreen) {
@@ -39,6 +39,7 @@ public class GameOverScreen implements Screen {
         this.daysPassed = gameScreen.daysPassed;
         this.itemsCollected = gameScreen.itemsCollected;
         this.itemsCrafted = gameScreen.itemsCrafted;
+        this.itemsUsed = gameScreen.itemsUsed;
         this.game = game;
 
 
@@ -59,11 +60,11 @@ public class GameOverScreen implements Screen {
         displayCentralTexts.add("Congratulations!\n"+ gameEndText);
         displayCentralTexts.add("RAWR");
 
-        displayLeftTexts.add(
-                "Days Survived " +
+        displayLeftTexts.add("Days Survived " +
                         "\n\nDistance Travelled" +
                         "\n\nItems Gathered" +
                         "\n\nItems Crafted" +
+                        "\n\nItems Used" +
                         "\n\nInjuries Faced" +
                         "\n\nInjuries Treated");
 
@@ -72,8 +73,9 @@ public class GameOverScreen implements Screen {
                 "\n\n" + "0" +
                 "\n\n" + itemsCollected +
                 "\n\n" + itemsCrafted +
+                "\n\n" + itemsUsed +
                 "\n\n" + "0" +
-                "\n\n" + "0");
+                "\n\n" + "0" );
         // Add more texts as needed
 
         // Start displaying the first text
@@ -199,7 +201,7 @@ public class GameOverScreen implements Screen {
             // If there's another central text to display
             if (displayCentralTexts.size() > 1) {
                 // Remove the current central text
-                displayCentralTexts.remove(0);
+                displayCentralTexts.removeFirst();
                 // Reset index and start displaying the next central text
                 currentCentralLetterIndex = 0;
                 displayCurrentText();

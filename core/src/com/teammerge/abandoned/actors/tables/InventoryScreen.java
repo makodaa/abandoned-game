@@ -10,20 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisScrollPane;
 import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.screens.GameScreen;
-import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class InventoryScreen extends Table {
     Player player;
@@ -147,6 +142,9 @@ public class InventoryScreen extends Table {
                     /// Update the UI.
                     inventoryList.setItems(Arrays.stream(currentItems()).distinct().toArray(String[]::new));
                     quantityList.setItems(Arrays.stream(currentItems()).distinct().map(e -> Collections.frequency(java.util.List.of(currentItems()),e)).toArray(Integer[]::new));
+
+                    /// Count the item use
+                    screen.setItemsUsed();
                 }
             }
         });

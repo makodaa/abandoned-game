@@ -3,11 +3,7 @@ package com.teammerge.abandoned.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,19 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.actors.tables.*;
 import com.teammerge.abandoned.entities.Campfire;
+import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.entities.FishBasketTrap;
 import com.teammerge.abandoned.entities.Player;
-import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
@@ -37,13 +30,12 @@ import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -75,7 +67,7 @@ public class GameScreen implements Screen, Serializable {
     transient AtomicBoolean runSerializingThread;
     transient Thread serializingThread;
     boolean isInTransition, isGameDone;
-    int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted;
+    int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted, itemsUsed;
 
     transient private HashSet<Integer> activeKeys = new HashSet<>();
     transient private HashMap<Integer, KeyHandler> listeners = new HashMap<>();
@@ -744,7 +736,7 @@ public class GameScreen implements Screen, Serializable {
     public void setItemsCrafted(){
         this.itemsCrafted++;
     }
-
+    public void setItemsUsed() { this.itemsUsed++; }
 
     public Stage getStage() {
         return stage;
