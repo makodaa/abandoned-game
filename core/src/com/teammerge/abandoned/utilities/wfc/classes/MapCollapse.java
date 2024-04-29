@@ -40,8 +40,26 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
         return buffer.toString();
     }
 
+    public String renderProbability(double[][] map) {
+        StringBuilder buffer = new StringBuilder();
+        for (double[] row : map) {
+            for (double active : row) {
+                if (active <= 0) {
+                    buffer.append(" ");
+                } else {
+                    System.out.println(active);
+                    buffer.append(Character.toString(64 + (int)Math.floor(active * 26)));
+                }
+                buffer.append(" ");
+            }
+            buffer.append('\n');
+        }
+
+        return buffer.toString();
+    }
+
     @Override
-    protected int[] getWeights() { return new int[]{1, 3, 1, 5, 2, 5, 5, 5}; }
+    protected int[] getWeights() { return new int[]{0, 3, 1, 5, 2, 5, 5, 5}; }
 
     public int[][] generateWave(Board board) {
         int height = board.size();
@@ -69,44 +87,46 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
 
         int[][] wave = generateWave(board);
 
-        Actor[] actors = new Actor[16];
+        Actor[] actors = new Actor[1 + ((width + height) / 2) / 4];
 
-        for (int i = 0; i < actors.length; ++i) {
+        actors[0] = new Actor(Actor.Location.fromPoint(height / 2, width / 2));
+        actors[0].setSensitivity(24);
+
+        for (int i = 1; i < actors.length; ++i) {
             actors[i] = new Actor(
                     Actor.Location.fromPoint(
                             Utils.random.nextInt(0, height),
                             Utils.random.nextInt(0, width)));
         }
 
-        int count = 0;
         Actor.Location[] previousMovements = new Actor.Location[actors.length];
         boolean change = false;
         do {
             change = false;
 
             Actor.Location[] movements = new Actor.Location[actors.length];
-            for (int i = 0; i < actors.length; ++i) {
+            for (int i = 1; i < actors.length; ++i) {
                 Actor actor = actors[i];
                 Actor.Location movement = actor.separate(actors);
 
                 movements[i] = movement;
             }
 
-            for (int i = 0; i < actors.length; ++i) {
+            for (int i = 1; i < actors.length; ++i) {
                 actors[i].getLocation()
                         .addToSelf(movements[i])
                         .constrainSelfX(0, width - 1)
                         .constrainSelfY(0, height - 1);
             }
 
-            for (int i = 0; i < movements.length; ++i) {
+            for (int i = 1; i < movements.length; ++i) {
                 change = change || !movements[i].equals(previousMovements[i]);
             }
 
             previousMovements = movements;
-        } while (count++ < 60 && change);
+        } while (change);
 
-        for (Actor actor : actors) {
+        for (Actor actor : Arrays.stream(actors).skip(1).toList()) {
             partialCollapse(wave, actor.getLocation().asIndex(), AreaType.RESCUE_AREA.ordinal());
         }
         fullCollapse(wave);
@@ -163,10 +183,14 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
                         new Index(y, x - 1),
                 };
 
-                rescueProbabilityMatrix[y][x] = Math.max(
-                        rescueProbabilityMatrix[y][x],
-                        (radiusOfArea - Math.sqrt(squareDistance)) / Math.sqrt(squareDistance)
-                );
+                if (squareDistance <= 1e-16) {
+                    rescueProbabilityMatrix[y][x] = 1.0;
+                } else {
+                    rescueProbabilityMatrix[y][x] = Math.max(
+                            rescueProbabilityMatrix[y][x],
+                            (radiusOfArea - Math.sqrt(squareDistance)) / radiusOfArea
+                    );
+                }
 
                 queue.addAll(Arrays.asList(neighbors));
             }
@@ -189,6 +213,8 @@ public class MapCollapse extends BacktrackingWaveFunctionCollapse {
                 );
             }
         }
+
+        System.out.println(renderProbability(rescueProbabilityMatrix));
 
         return areas;
     }
