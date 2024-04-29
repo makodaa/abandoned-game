@@ -10,7 +10,7 @@ cooked_fish,Cooked Fish,2,,30,,15,yes,no,yes,raw_fish,,,"Cooked Fish, safe to ea
 raw_avian,Raw Avian,2,-40,10,,5,yes,no,no,,,,"Caught Avian, not safe to eat. Restores fullness"
 cooked_avian,Cooked Avian,1,,20,,10,yes,no,yes,raw_avian,,,"Cooked Avian, safe to eat and stores well. Restores fullness"
 rotten_meat,Rotten Meat,2,-20,10,,,yes,no,no,,,,It gone bad. Restores fullness.
-bait,Bait, 0.5,,,,,no,no,yes,raw_avian 5 . cooked_avian 3 . edible_berries 1,,,"Bait for traps"
+bait,Bait, 0.5,,,,,no,no,yes,raw_avian 5 . cooked_avian 3 . edible_berries 1,,,"Small Pieces of bait for setting up traps"
 bandages,Bandages,1,10,,,,yes,yes,yes,2 cloth,CB;VI;HO;MA,,Magical Bandages. Restores Condition
 medicine,Medicine,0.5,20,,,-10,yes,yes,no,,HO;VI;MA,,Some old all around medicine. Restores Condition
 first_aid_kit,First Aid Kit,2,40,,,,yes,yes,no,,HO;MA,,"A complete first aid kit, could treat any injury. Restores Condition"
@@ -21,12 +21,11 @@ plastic,Plastic,0.5,,,,,no,yes,no,,ALL,,Some sheets of plastic. Remember to Recy
 tinder,Tinder,0.2,,,,,no,no,yes,paper . firewood 5,,,"Tinder for starting fires, not the app."
 stick,Stick,1,,,,,no,yes,yes,firewood 3,VI;PA;FO;FA,,"Long, Durable sticks / Who's a good boy?"
 firewood,Firewood,4,,,,,no,yes,no,,VI;PA;FO;FA,,Notably large and flammable pieces of wood.
-hardwood,Hardwood,8,,,,,no,yes,no,,VI;PA;FO;FA,,"Harder wood, best used for crafting."
+hardwood,Hardwood,8,,,,,no,yes,no,,VI;PA;FO;FA,,"Solid. Best used for crafting equipment."
 rubbish,Rubbish,1,,,,,no,yes,no,,ALL,,I don't see a use for this.
 backpack,Backpack,,,,,,no,yes,yes,3 cloth 1 rope,VI;MA,,A backpack for storing items. Increases Inventory Space
 matches,Matches,0.1,,,,,no,yes,no,,VI;CB;MA,,The best fire starters.
 fire_starter,Fire Starter,2,,,,,no,no,yes,2 hardwood 1 stick,,,Let's hope this works.
-spear,Spear,2,,,,,no,no,yes,1 hardwood,,,A wooden spear created from hard wood. Allows hunting.
 flashlight,Flashlight,1,,,,,no,yes,no,,VI;CB;MA,,"A functioning flashlight, a rare find. Removes disabilities brought by darkness"
-axe,Axe,1,,,,,no,yes,no,,VI;FO;CB;MA,,Here's Johnny. Increases wood yield.
+axe,Axe,6,,,,,no,yes,no,,VI;FO;CB;MA,,Here's Johnny. Increases yield in gathering wood
 paper,Paper,0.2,,,,,no,yes,no,,ALL;,,Paper.

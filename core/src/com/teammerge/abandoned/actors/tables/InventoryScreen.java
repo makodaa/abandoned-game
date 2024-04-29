@@ -102,6 +102,9 @@ public class InventoryScreen extends Table {
         Label itemLabel = new Label("", new Label.LabelStyle(topBarMediumFont, Color.WHITE));
         itemLabel.setAlignment(Align.left);
 
+        Label weightLabel = new Label("", new Label.LabelStyle(topBarMediumFont,Color.DARK_GRAY));
+        weightLabel.setAlignment(Align.left);
+
         Label descriptionLabel = new Label("", new Label.LabelStyle(titleRegularFont,Color.WHITE));
         descriptionLabel.setAlignment(Align.left);
         descriptionLabel.setWrap(true);
@@ -166,6 +169,7 @@ public class InventoryScreen extends Table {
             useButton.setDisabled(true);
         } else {
             itemLabel.setText(selectedItem.name().toUpperCase());
+            weightLabel.setText(("WEIGHT: " + selectedItem.getWeight()).toUpperCase());
             descriptionLabel.setText(selectedItem.description());
             useButton.setDisabled(!selectedItem.isUsable());
         }
@@ -177,7 +181,9 @@ public class InventoryScreen extends Table {
 
 
         selectedItemTable.pad(9.0f);
-        selectedItemTable.add(itemLabel).fillX().spaceBottom(32);
+        selectedItemTable.add(itemLabel).fillX();
+        selectedItemTable.row().expandX().fillX();
+        selectedItemTable.add(weightLabel).fillX().spaceBottom(32);
         selectedItemTable.row().expandX().fillX();
         selectedItemTable.add(descriptionLabel);
         selectedItemTable.row().expand().fill();
@@ -190,6 +196,7 @@ public class InventoryScreen extends Table {
                 Item item = Item.of(player.getInventory().stream().distinct().toList().get(inventoryList.getSelectedIndex()));
 
                 itemLabel.setText(item.name().toUpperCase());
+                weightLabel.setText(("WEIGHT: " +item.getWeight()).toUpperCase());
                 descriptionLabel.setText(item.description());
                 useButton.setDisabled(!item.isUsable());
             }

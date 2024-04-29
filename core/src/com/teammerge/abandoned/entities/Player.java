@@ -33,6 +33,7 @@ public class Player implements Serializable {
         hydration = 80 + Utils.random.nextInt( 20);
         energy = 80 + Utils.random.nextInt(20);
         position = starting;
+        inventoryCapacity = Utils.random.nextInt(15, 31);
         areasVisited = new HashSet<>();
         areasVisited.add(starting);
     }
