@@ -316,6 +316,11 @@ public class GameScreen implements Screen, Serializable {
 
     @Override
     public void dispose() {
+        lightFont.dispose();
+        mediumFont.dispose();
+        batch.dispose();
+        stage.dispose();
+        dispose();
         if (runSerializingThread != null) {
             runSerializingThread.set(false);
         }

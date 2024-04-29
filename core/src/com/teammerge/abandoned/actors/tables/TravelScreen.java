@@ -10,9 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.entities.Player;
 import com.teammerge.abandoned.enums.Direction;
@@ -21,8 +18,6 @@ import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.Utils;
-import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
-import jdk.jshell.execution.Util;
 
 import java.util.*;
 import java.util.List;
@@ -31,7 +26,6 @@ public class TravelScreen extends Table {
     BackgroundDrawable backgroundDrawable;
     Player player;
     GameScreen screen;
-    int distanceBetweenAreas;
 
     BitmapFont topBarMediumFont, titleMediumFont, textLightFont, textRegularFont;
 
@@ -183,10 +177,6 @@ public class TravelScreen extends Table {
 
     private Button createMoveOption(Skin skin, Direction direction) {
 
-
-        Index currentIndex = player.getPosition();
-        Area currentArea = screen.getMap()[currentIndex.y()][currentIndex.x()];
-
         Index targetIndex = player.getPosition().add(direction.getVector());
         Area targetArea = screen.getMap()[targetIndex.y()][targetIndex.x()];
 
@@ -194,6 +184,8 @@ public class TravelScreen extends Table {
         Table card = new Table();
         Label directionLabel = new Label(direction.getCardinalName().toUpperCase(),new Label.LabelStyle(textRegularFont, Color.DARK_GRAY));
         Label areaNameLabel = new Label(targetArea.getName(), new Label.LabelStyle(textRegularFont,Color.WHITE));
+        Label distanceLabel = new Label(targetArea.getDistance() + " km", new Label.LabelStyle(textRegularFont,Color.WHITE));
+        distanceLabel.setAlignment(Align.right);
         Image areaIcon = new Image(skin.newDrawable("white"));
         Label description = new Label("", new Label.LabelStyle(textLightFont,Color.WHITE));
         description.setWrap(true);
@@ -206,6 +198,7 @@ public class TravelScreen extends Table {
         card.add(areaIcon).size(45).right();
         card.row().expandX().fillX();
         card.add(areaNameLabel).fillX();
+        card.add(distanceLabel).fillX();
         card.row().expandX().fillX();
         card.add(description).width(600).colspan(2).fillX();
 
@@ -218,8 +211,7 @@ public class TravelScreen extends Table {
         * Disable button when energy is too low
         * Computation 2 energy per distance
         */
-        distanceBetweenAreas = Math.abs(targetArea.getDistance() - currentArea.getDistance());
-        if (player.getEnergy() < (distanceBetweenAreas * 2) + 10){
+        if (player.getEnergy() < (Math.abs(targetArea.getDistance()) * 2)){
             button.setDisabled(true);
             areaNameLabel.setColor(Color.DARK_GRAY);
             description.setColor(Color.DARK_GRAY);
@@ -261,13 +253,12 @@ public class TravelScreen extends Table {
                 }
 
                 screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + areaNameLabel.getText(), dialog));
-                player.setMinutes(player.getMinutes() + (distanceBetweenAreas / 5));
-                player.setEnergy(player.getEnergy() - (distanceBetweenAreas * 2));
-                screen.setDistanceTravelled(screen.getDistanceTravelled() + distanceBetweenAreas);
+                player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 5));
+                player.setEnergy(player.getEnergy() - (targetArea.getDistance()));
+                screen.setDistanceTravelled((screen.getDistanceTravelled() + targetArea.getDistance()));
+                System.out.println(screen.getDistanceTravelled());
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
-                for (int i = player.getMinutes(); i < 3 * (player.getMinutes() + (distanceBetweenAreas / 5)); i++) {
-                    player.decay();
-                }
+                for (int i = 0; i < targetArea.getDistance(); i++) player.decay();
                 screen.move(direction);
                 closeScreen();
             }

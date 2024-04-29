@@ -37,13 +37,13 @@ public class OpeningScreen implements Screen {
         this.mapHeight = mapHeight;
 
         displayTexts = new ArrayList<>();
-        displayTexts.add("I woke up from my slumber expecting an ordinary morning" +
-                "\nWhat awaits me is something out of a movie" +
-                "\nWhat should be a bustling street full of noises is now completely silent devoid of people");
-        displayTexts.add("Seriously, what a troublesome situation" +
-                "\nAll alone in the middle of a city somewhere without any tools at my disposal" +
-                "\nNo information, No necessities, Nothing");
-        displayTexts.add("But would I die?");
+        displayTexts.add("\"Im sorry sir, but we were ordered to not go back to the city for any more patrols.\"");
+        displayTexts.add("\"The city is in shambles, with falling debris, broken wires, and no signal. " +
+                "It's too risky for us to send down units.\"");
+        displayTexts.add("\"You'd have to make your way to our rescue zones outside the city\"");
+        displayTexts.add("\"They're is quite far out, so we advise that you go look around for any leftover supplies and equipment.\"");
+        displayTexts.add("\"I'll be sending you the direction and distance estimate\"");
+        displayTexts.add("\"We don't know what dangers you will face in the city. Would you lose?\"");
         displayTexts.add("Nah, I'd live");
         // Add more texts as needed
 
@@ -106,6 +106,7 @@ public class OpeningScreen implements Screen {
     @Override
     public void dispose() {
         font.dispose();
+
     }
 
     private void displayCurrentText() {
@@ -121,7 +122,7 @@ public class OpeningScreen implements Screen {
                     this.cancel();
                 }
             }
-        }, 0, 0.75f);
+        }, 0, 0.05f);
     }
 
     private void nextTextOrGame() {
