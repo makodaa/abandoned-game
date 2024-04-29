@@ -109,14 +109,6 @@ public class InventoryScreen extends Table {
                 ? null
                 : Item.of(player.getInventory().getFirst());
 
-        if (selectedItem == null) {
-            itemLabel.setText("");
-            descriptionLabel.setText("");
-        } else {
-            itemLabel.setText(selectedItem.name().toUpperCase());
-            descriptionLabel.setText(selectedItem.description());
-        }
-
         Table buttonGroupTable = new Table();
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.2f)), skin.newDrawable("white",new Color(0.5f,0.5f,0.5f, 0.5f)), skin.newDrawable("white",new Color(0.0f,0.0f,0.0f, 0.0f)), buttonRegularFont);
         buttonStyle.disabledFontColor = Color.DARK_GRAY;
@@ -161,6 +153,16 @@ public class InventoryScreen extends Table {
             }
         });
 
+        if (selectedItem == null) {
+            itemLabel.setText("");
+            descriptionLabel.setText("");
+            useButton.setDisabled(true);
+        } else {
+            itemLabel.setText(selectedItem.name().toUpperCase());
+            descriptionLabel.setText(selectedItem.description());
+            useButton.setDisabled(!selectedItem.isUsable());
+        }
+
         buttonGroupTable.align(Align.bottomRight);
         buttonGroupTable.pad(16);
         buttonGroupTable.add(useButton).size(135,63).pad(16);
@@ -182,6 +184,7 @@ public class InventoryScreen extends Table {
 
                 itemLabel.setText(item.name().toUpperCase());
                 descriptionLabel.setText(item.description());
+                useButton.setDisabled(!item.isUsable());
             }
         });
 

@@ -10,7 +10,7 @@ cooked_fish,Cooked Fish,2,,30,,15,yes,no,yes,raw_fish,,,"Cooked Fish, safe to ea
 raw_avian,Raw Avian,2,-40,10,,5,yes,no,no,,,,"Caught Avian, not safe to eat. Restores fullness"
 cooked_avian,Cooked Avian,1,,20,,10,yes,no,yes,raw_avian,,,"Cooked Avian, safe to eat and stores well. Restores fullness"
 rotten_meat,Rotten Meat,2,-20,10,,,yes,no,no,,,,It gone bad. Restores fullness.
-bait,bait, 0.5,,,,,no,no,yes,raw_avian 5 . cooked_avian 3 . edible_berries 1,,,"Bait for traps"
+bait,Bait, 0.5,,,,,no,no,yes,raw_avian 5 . cooked_avian 3 . edible_berries 1,,,"Bait for traps"
 bandages,Bandages,1,10,,,,yes,yes,yes,2 cloth,CB;VI;HO;MA,,Magical Bandages. Restores Condition
 medicine,Medicine,0.5,20,,,-10,yes,yes,no,,HO;VI;MA,,Some old all around medicine. Restores Condition
 first_aid_kit,First Aid Kit,2,40,,,,yes,yes,no,,HO;MA,,"A complete first aid kit, could treat any injury. Restores Condition"
