@@ -22,7 +22,7 @@ public class Player implements Serializable {
     public Player(Index starting) {
         inventory = new ArrayList<>();
         timeSinceLastSecond = 0;
-        minutes = Utils.random.nextInt(0, 8);
+        minutes = Utils.random.nextInt(6, 10);
         condition = 80 + Utils.random.nextInt( 20);
         fullness = 80 + Utils.random.nextInt( 20);
         hydration = 80 + Utils.random.nextInt( 20);
@@ -44,11 +44,11 @@ public class Player implements Serializable {
     }
 
     public void decay(){
-        setFullness(fullness - Utils.random.nextInt(1,3));
-        setHydration(hydration - Utils.random.nextInt(1,3));
-        setEnergy(energy - Utils.random.nextInt(1,3));
+        setFullness(fullness - 2);
+        setHydration(hydration - 2);
+        setEnergy(energy - 2);
 
-        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - Utils.random.nextInt(0,3));
+        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - Utils.random.nextInt(1,4));
     }
 
     public void setCondition(int condition) { this.condition = Math.min(Math.max(condition,0),100); }

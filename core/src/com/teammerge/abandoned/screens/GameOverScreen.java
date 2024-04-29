@@ -25,21 +25,21 @@ public class GameOverScreen implements Screen {
     private boolean displayingLeftText;
     private boolean displayingCentralText;
 
-    private final String gameEndText;
-    private final int gameEndingScene, daysPassed, itemsCollected, itemsCrafted, itemsUsed;
     GameScreen gameScreen;
 
     public GameOverScreen(AbandonedGame game, GameScreen gameScreen) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Light.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 24;
+        parameter.size = 36;
         font = generator.generateFont(parameter);
         generator.dispose();
-        this.gameEndingScene = gameScreen.gameEndingScene;
-        this.daysPassed = gameScreen.daysPassed;
-        this.itemsCollected = gameScreen.itemsCollected;
-        this.itemsCrafted = gameScreen.itemsCrafted;
-        this.itemsUsed = gameScreen.itemsUsed;
+        int gameEndingScene = gameScreen.gameEndingScene;
+        int daysPassed = gameScreen.daysPassed;
+        int itemsCollected = gameScreen.itemsCollected;
+        int itemsCrafted = gameScreen.itemsCrafted;
+        int distanceTravelled = gameScreen.getDistanceTravelled();
+        int injuriesFaced = gameScreen.getInjuriesFaced();
+        int injuriesTreated = gameScreen.getInjuriesTreated();
         this.game = game;
 
 
@@ -48,11 +48,10 @@ public class GameOverScreen implements Screen {
         displayRightTexts = new ArrayList<>();
         displayCentralTexts = new ArrayList<>();
 
-        System.out.println(gameScreen.gameEndingScene);
-
         // TODO: Modify the text
 
-        if(gameScreen.gameEndingScene == 1){
+        String gameEndText;
+        if(gameEndingScene == 1){
             gameEndText = "You forgot to breath and are now completely dead";
         } else {
             gameEndText = "A rescue helicopter sees you and are now successfully rescued";
@@ -60,22 +59,31 @@ public class GameOverScreen implements Screen {
         displayCentralTexts.add("Congratulations!\n"+ gameEndText);
         displayCentralTexts.add("RAWR");
 
-        displayLeftTexts.add("Days Survived " +
-                        "\n\nDistance Travelled" +
-                        "\n\nItems Gathered" +
-                        "\n\nItems Crafted" +
-                        "\n\nItems Used" +
-                        "\n\nInjuries Faced" +
-                        "\n\nInjuries Treated");
+        displayLeftTexts.add(
+                gameEndingScene == 1 ? "Better Luck Next Time!" : """
+                        You Survived!
+
+                        Days Survived\s
+
+                        Distance Travelled
+
+                        Items Gathered
+
+                        Items Crafted
+
+                        Injuries Faced
+
+                        Injuries Treated""");
 
 
-        displayRightTexts.add( daysPassed +
-                "\n\n" + "0" +
+        displayRightTexts.add(
+                "\n\n"+
+                        daysPassed +
+                "\n\n" + distanceTravelled +
                 "\n\n" + itemsCollected +
                 "\n\n" + itemsCrafted +
-                "\n\n" + itemsUsed +
-                "\n\n" + "0" +
-                "\n\n" + "0" );
+                "\n\n" + injuriesFaced +
+                "\n\n" + injuriesTreated);
         // Add more texts as needed
 
         // Start displaying the first text
@@ -195,7 +203,7 @@ public class GameOverScreen implements Screen {
                     }
                 }
             }
-        }, 0, 0.2f);
+        }, 0.75f, 0.05f);
     }
 
     private void nextText(){
@@ -203,7 +211,7 @@ public class GameOverScreen implements Screen {
             // If there's another central text to display
             if (displayCentralTexts.size() > 1) {
                 // Remove the current central text
-                displayCentralTexts.removeFirst();
+                displayCentralTexts.remove(0);
                 // Reset index and start displaying the next central text
                 currentCentralLetterIndex = 0;
                 displayCurrentText();

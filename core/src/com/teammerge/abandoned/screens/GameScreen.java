@@ -67,7 +67,7 @@ public class GameScreen implements Screen, Serializable {
     transient AtomicBoolean runSerializingThread;
     transient Thread serializingThread;
     boolean isInTransition, isGameDone;
-    int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted, itemsUsed;
+    int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted, distanceTravelled, injuriesFaced, injuriesTreated;
 
     transient private HashSet<Integer> activeKeys = new HashSet<>();
     transient private HashMap<Integer, KeyHandler> listeners = new HashMap<>();
@@ -271,8 +271,6 @@ public class GameScreen implements Screen, Serializable {
 //            TODO: uncomment
             checkForWinLoseConditions();
 
-
-
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
             }
@@ -473,7 +471,7 @@ public class GameScreen implements Screen, Serializable {
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
                 itemsCollected = itemsCollected + extractedItems.size();
-                DialogScreen dialog = new DialogScreen("Collected", extractedItems.toString());
+                DialogScreen dialog = new DialogScreen("Scavenge Completed", extractedItems.isEmpty() ? "There was nothing to be found" : "Collected " + extractedItems.toString().replaceAll("[\\[\\]]", ""));
 
                 switch(Utils.random.nextInt(1,4)) {
                     case 1:
@@ -484,6 +482,7 @@ public class GameScreen implements Screen, Serializable {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,11));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "It was too dark, and you injured yourself");
+                                setInjuriesFaced(getInjuriesTreated() + 1);
                             }
                         }
                         break;
@@ -495,6 +494,7 @@ public class GameScreen implements Screen, Serializable {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor");
+                                setInjuriesFaced(getInjuriesFaced() + 1);
                             }
                         }
                         break;
@@ -506,6 +506,7 @@ public class GameScreen implements Screen, Serializable {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "A snake was hiding around the area and bit you.");
+                                setInjuriesFaced(getInjuriesFaced() + 1);
                             }
                         }
                         break;
@@ -666,8 +667,7 @@ public class GameScreen implements Screen, Serializable {
 //    Waits for the next minute and checks if the player met the condition for winning and losing
     private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-        if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
-            System.out.println(area.getRescueProbability());
+        if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() % 30000 == 0) {
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
             if (player.getCondition() < 5) {
@@ -738,7 +738,7 @@ public class GameScreen implements Screen, Serializable {
     public void setItemsCrafted(){
         this.itemsCrafted++;
     }
-    public void setItemsUsed() { this.itemsUsed++; }
+
 
     public Stage getStage() {
         return stage;
@@ -754,5 +754,29 @@ public class GameScreen implements Screen, Serializable {
 
     public DeadfallTrap getSmallAnimalTrap() {
         return deadfallTrap;
+    }
+
+    public int getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
+    public void setDistanceTravelled(int distanceTravelled) {
+        this.distanceTravelled = distanceTravelled;
+    }
+
+    public int getInjuriesFaced() {
+        return injuriesFaced;
+    }
+
+    public void setInjuriesFaced(int injuriesFaced) {
+        this.injuriesFaced = injuriesFaced;
+    }
+
+    public int getInjuriesTreated() {
+        return injuriesTreated;
+    }
+
+    public void setInjuriesTreated(int injuriesTreated) {
+        this.injuriesTreated = injuriesTreated;
     }
 }

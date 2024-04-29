@@ -144,7 +144,7 @@ public class InventoryScreen extends Table {
                     quantityList.setItems(Arrays.stream(currentItems()).distinct().map(e -> Collections.frequency(java.util.List.of(currentItems()),e)).toArray(Integer[]::new));
 
                     /// Count the item use
-                    screen.setItemsUsed();
+//                    screen.setItemsUsed();
                 }
             }
         });
@@ -153,10 +153,8 @@ public class InventoryScreen extends Table {
         throwButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                int active = inventoryList.getSelectedIndex();
-                Item item = Item.of(player.getInventory().stream().distinct().toList().get(active));
                 /// Remove the item from the inventory.
-                player.getInventory().remove(player.getInventory().stream().distinct().toList().get(active));
+                player.getInventory().remove(player.getInventory().stream().distinct().toList().get(inventoryList.getSelectedIndex()));
                 /// Update the UI.
                 inventoryList.setItems(Arrays.stream(currentItems()).distinct().toArray(String[]::new));
                 quantityList.setItems(Arrays.stream(currentItems()).distinct().map(e -> Collections.frequency(java.util.List.of(currentItems()),e)).toArray(Integer[]::new));

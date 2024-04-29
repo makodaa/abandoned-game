@@ -279,9 +279,10 @@ public class TravelScreen extends Table {
                     }
                 }
 
-                screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + targetArea.getName(), dialog));
+                screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + areaNameLabel.getText(), dialog));
                 player.setMinutes(player.getMinutes() + (distanceBetweenAreas / 5));
                 player.setEnergy(player.getEnergy() - (distanceBetweenAreas * 2));
+                screen.setDistanceTravelled(screen.getDistanceTravelled() + distanceBetweenAreas);
                 for (int i = player.getMinutes(); i < 3 * (player.getMinutes() + (distanceBetweenAreas / 5)); i++) {
                     player.decay();
                 }

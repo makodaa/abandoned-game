@@ -29,3 +29,4 @@ fire_starter,Fire Starter,2,,,,,no,no,yes,2 hardwood 1 stick,,,Let's hope this w
 spear,Spear,2,,,,,no,no,yes,1 hardwood,,,A wooden spear created from hard wood. Allows hunting.
 flashlight,Flashlight,1,,,,,no,yes,no,,VI;CB;MA,,"A functioning flashlight, a rare find. Removes disabilities brought by darkness"
 axe,Axe,1,,,,,no,yes,no,,VI;FO;CB;MA,,Here's Johnny. Increases wood yield.
+paper,Paper,0.2,,,,,no,yes,no,,ALL;,,Paper.

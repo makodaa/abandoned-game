@@ -49,7 +49,7 @@ public class LoadingScreen extends Table {
 
         // Creating Blank Skin with Plain White Drawable
         Skin skin = new Skin();
-        Pixmap pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap(10, 12, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
         skin.add("white", new Texture(pixmap));
@@ -61,13 +61,13 @@ public class LoadingScreen extends Table {
 
         // Creating the Progress Bar
         progressBar = new ProgressBar(0, 1, 0.01f, false, barStyle);
-        progressBar.setSize(270, progressBar.getPrefHeight());
+        progressBar.setSize(600, 15);
         progressBar.setValue(0f);
 
         // Label for action distinction
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 18;
+        parameter.size = 32;
         BitmapFont font = generator.generateFont(parameter);
         generator.dispose();
 
@@ -76,10 +76,10 @@ public class LoadingScreen extends Table {
         Label label = new Label(message, labelStyle);
         label.setAlignment(Align.center);
 
-        defaults().width(270);
+        defaults();
         add(label).center();
         row();
-        add(progressBar);
+        add(progressBar).width(500);
         row();
     }
 

@@ -11,7 +11,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("Abandoned (in-development)");
-		config.setWindowedMode(1280, 800);
+		config.setWindowedMode(1920, 1080);
+//		config.setWindowedMode(1280, 800);
 //		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		config.setForegroundFPS(60);
 		config.useVsync(true);
