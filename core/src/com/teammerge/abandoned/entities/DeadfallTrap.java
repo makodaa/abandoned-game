@@ -1,8 +1,9 @@
 package com.teammerge.abandoned.entities;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class DeadfallTrap {
+public class DeadfallTrap implements Serializable {
     boolean isBuilt;
     int baitRemaining;
 

@@ -294,7 +294,6 @@ public class TravelScreen extends Table {
     }
 
     private void closeScreen() {
-        screen.getActiveScreens().remove(TravelScreen.class);
         setVisible(false);
     }
 }

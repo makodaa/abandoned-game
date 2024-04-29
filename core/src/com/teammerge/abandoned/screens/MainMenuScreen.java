@@ -22,6 +22,8 @@ import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 
+import java.io.*;
+
 public class MainMenuScreen implements Screen {
 
     private final AbandonedGame game;
@@ -29,13 +31,15 @@ public class MainMenuScreen implements Screen {
     private final Stage stage;
     private final SpriteBatch batch;
 
+    private GameScreen gameScreen;
+
     public static final int row_height = Gdx.graphics.getHeight() / 16;
     public static final int col_width = Gdx.graphics.getWidth() / 16;
     BitmapFont h1, h2;
     Label titleLabel;
     Table difficultyScreen;
 
-    TextButton newGameButton, exitButton;
+    TextButton loadGameButton, newGameButton, exitButton;
 
     //  TODO: Search about viewports
     public MainMenuScreen(final AbandonedGame game) {
@@ -55,9 +59,35 @@ public class MainMenuScreen implements Screen {
         titleLabel = new Label("Abandoned", new Label.LabelStyle(h1,Color.WHITE));
         titleLabel.setPosition(col_width,Gdx.graphics.getHeight() - row_height * 3);
 
+        gameScreen = loadGameScreen();
 //        Creating New Game Button
-        newGameButton = createTextButton("New Game", h2);
-        newGameButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 6);
+
+        if (gameScreen != null) {
+            loadGameButton = createTextButton("Continue Game (" + gameScreen.daysPassed + " days)", h2);
+            loadGameButton.setPosition((float) col_width, Gdx.graphics.getHeight() - row_height * 6);
+            loadGameButton.addListener(new InputListener() {
+
+                @Override
+                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                    loadGameButton.getLabel().setColor(Color.YELLOW);
+                }
+
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                    loadGameButton.getLabel().setColor(Color.WHITE);
+                }
+
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    game.setScreen(GameScreen.fromSerialized(game, gameScreen));
+                    return false;
+                }
+            });
+        }
+
+//        Creating New Game Button
+        newGameButton = createTextButton(gameScreen == null ? "New Game" : "Reset Game", h2);
+        newGameButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 7);
         newGameButton.addListener(new InputListener() {
 
             @Override
@@ -72,14 +102,14 @@ public class MainMenuScreen implements Screen {
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //                stage.addActor(createDifficultyScreen());
-                game.setScreen(new GameScreen(game,31,31));
+                game.setScreen(gameScreen = new GameScreen(game,31,31));
                 return false;
             }
         });
 
 //        Creating Exit Button
         exitButton = createTextButton("Exit", h2);
-        exitButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 7);
+        exitButton.setPosition((float)col_width, Gdx.graphics.getHeight() - row_height * 8);
         exitButton.addListener(new InputListener() {
 
             @Override
@@ -101,6 +131,9 @@ public class MainMenuScreen implements Screen {
 
 //        Telling stage to include following actors in render
         stage.addActor(titleLabel);
+        if (gameScreen != null) {
+            stage.addActor(loadGameButton);
+        }
         stage.addActor(newGameButton);
         stage.addActor(exitButton);
 
@@ -147,6 +180,37 @@ public class MainMenuScreen implements Screen {
         h2.dispose();
         stage.dispose();
         batch.dispose();
+
+        if (gameScreen != null) {
+            gameScreen.dispose();
+        }
+    }
+
+    private GameScreen loadGameScreen() {
+        String path = Gdx.files.internal("saves/save_file.txt").path();
+        File file = new File(path);
+        if (!file.isFile()) {
+            var unused = file.getParentFile().mkdirs();
+
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Failed to create file: " + e.getMessage());
+                return null;
+            }
+        }
+
+
+        try (FileInputStream fileInputStream = new FileInputStream(path);
+             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+            return (GameScreen)objectInputStream.readObject();
+        } catch (IOException e) {
+            System.out.println("IOException: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     private TextButton createTextButton(String text, BitmapFont font) {

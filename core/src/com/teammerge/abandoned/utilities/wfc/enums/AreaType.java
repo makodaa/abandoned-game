@@ -4,10 +4,11 @@ import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.utilities.items.ItemRepository;
 import com.teammerge.abandoned.utilities.wfc.classes.Superpositions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public enum AreaType {
+public enum AreaType implements Serializable {
     RESCUE_AREA,
     FOREST,
     VILLAGE,

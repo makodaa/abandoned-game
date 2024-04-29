@@ -1,6 +1,8 @@
 package com.teammerge.abandoned.records;
 
-public record Index(int y, int x) {
+import java.io.Serializable;
+
+public record Index(int y, int x) implements Serializable {
     public Index add(Index other) {
         return new Index(this.y + other.y, this.x + other.x);
     }

@@ -14,12 +14,14 @@ public class AbandonedGame extends Game {
 
 	// TODO: declare viewport width, height
 	public SpriteBatch batch;
+
+	public MainMenuScreen screen;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		VisUI.load();
-		setScreen(new MainMenuScreen(this));
+		setScreen(screen = new MainMenuScreen(this));
 	}
 
 	@Override
@@ -30,5 +32,6 @@ public class AbandonedGame extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		screen.dispose();
 	}
 }

@@ -1,8 +1,9 @@
 package com.teammerge.abandoned.entities;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Campfire {
+public class Campfire implements Serializable {
 
     // Define an instance of player to access inventory
     private float secondsRemaining;

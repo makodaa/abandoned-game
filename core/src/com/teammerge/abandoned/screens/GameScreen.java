@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,50 +34,109 @@ import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
+import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, Serializable {
+    transient AbandonedGame game;
+    transient SpriteBatch batch;
+    transient Stage stage;
+    transient OrthographicCamera camera;
+    transient BitmapFont mediumFont, regular, lightFont;
 
-    final AbandonedGame game;
-    final SpriteBatch batch;
-    final Stage stage;
-    final GameScreen self;
-    OrthographicCamera camera;
-    BitmapFont mediumFont, regular, lightFont;
+    transient public BackgroundDrawable day, dusk, night, midnight;
 
-    public BackgroundDrawable day, dusk, night, midnight;
+    transient LoadingScreen loadingScreen;
+    transient DialogScreen dialogScreen;
+    transient ProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
+    transient Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
+    transient Label currentLocationLabel;
+    transient Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
 
-    private final HashSet<Class<?>> activeScreens = new HashSet<>();
+    transient Table containerTable;
 
-    LoadingScreen loadingScreen;
-    DialogScreen dialogScreen;
-    ProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
-    Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
-    Label currentLocationLabel;
-    Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
-
-    Table containerTable;
     Player player;
     Campfire campfire;
     FishBasketTrap fishBasketTrap;
     DeadfallTrap deadfallTrap;
-    MapCollapse mapGenerator;
+    transient MapCollapse mapGenerator;
     Area[][] map;
 
-    Random random;
-
+    transient AtomicBoolean runSerializingThread;
+    transient Thread serializingThread;
     boolean isInTransition, isGameDone;
     int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted;
 
+    transient private HashSet<Integer> activeKeys = new HashSet<>();
+    transient private HashMap<Integer, KeyHandler> listeners = new HashMap<>();
+
+    public static GameScreen fromSerialized(final AbandonedGame game, GameScreen serialized) {
+        serialized.serializingThread = serialized.createSerializingThread();
+        serialized.game = game;
+        serialized.batch = new SpriteBatch();
+        serialized.camera = new OrthographicCamera();
+        serialized.camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        serialized.stage = new Stage(new ScreenViewport());
+        serialized.loadingScreen = new LoadingScreen();
+        serialized.dialogScreen = new DialogScreen();
+        serialized.isInTransition = false;
+        serialized.isGameDone = false;
+
+        serialized.mediumFont = serialized.generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
+        serialized.lightFont = serialized.generateFont("fonts/RobotoCondensed-Light.ttf", 22);
+
+        serialized.loadBackgrounds(serialized.map[serialized.player.getPosition().y()][serialized.player.getPosition().x()].getType().getBackgroundFolders());
+
+
+        // Set up container table and actor groups
+        serialized.containerTable = new Table();
+        serialized.containerTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Table timeAreaTable = serialized.createTimeAreaTable();
+        Table attributesTable = serialized.createAttributesTable();
+        Table actionButtonsTable = serialized.createActionButtonsTable();
+
+        serialized.padTable(serialized.containerTable);
+        serialized.containerTable.align(Align.topRight);
+        serialized.containerTable.add(timeAreaTable).fillX();
+        serialized.containerTable.row().expand();
+        serialized.containerTable.add(actionButtonsTable).expandX().fillX();
+        serialized.containerTable.row().expand().fill();
+        serialized.containerTable.align(Align.bottomLeft);
+        serialized.containerTable.add(attributesTable);
+
+        serialized.stage.addActor(serialized.containerTable);
+        Gdx.input.setInputProcessor(serialized.stage);
+
+        serialized.mapGenerator = new MapCollapse();
+
+//        transient BitmapFont regular; <-- Unimplemented anywhere.
+
+        serialized.activeKeys = new HashSet<>();
+        serialized.listeners = new HashMap<>();
+
+        /// Specials.
+
+
+
+        return serialized;
+    }
 
     public GameScreen(final AbandonedGame game, int mapWidth, int mapHeight) {
+        /// Load the serializing thread
+        serializingThread = createSerializingThread();
+
         // Load camera, stage, and assets
-        self = this;
         this.game = game;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -86,7 +146,6 @@ public class GameScreen implements Screen {
         dialogScreen = new DialogScreen();
         isInTransition = false;
         isGameDone = false;
-        random = new Random();
 
         // Load Fonts
         mediumFont = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
@@ -127,13 +186,46 @@ public class GameScreen implements Screen {
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
 
+        activeKeys = new HashSet<>();
+        listeners = new HashMap<>();
+
+        /// FIXME: Remove this for release.
+        addKeyListener(Input.Keys.Q, () -> {
+            map = mapGenerator.generateMap(mapWidth, mapHeight);
+            loadBackgrounds(map[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundFolders());
+        });
+
     }
 
-    private void loadBackgrounds() {
-        day = new BackgroundDrawable("images/backgrounds/day.png");
-        dusk = new BackgroundDrawable("images/backgrounds/day.png");
-        night = new BackgroundDrawable("images/backgrounds/night.png");
-        midnight = new BackgroundDrawable("images/backgrounds/midnight.png");
+    private Thread createSerializingThread() {
+        GameScreen self = this;
+        runSerializingThread = new AtomicBoolean();
+        runSerializingThread.set(true);
+
+        Thread thread = new Thread(() -> {
+            while (runSerializingThread.get()) {
+                System.out.println("Saving the file.");
+                String path = Gdx.files.internal("saves/save_file.txt").path();
+                try (FileOutputStream fileOutputStream = new FileOutputStream(path);
+                        ObjectOutputStream objectOutputStream  = new ObjectOutputStream(fileOutputStream)) {
+                        objectOutputStream.writeObject(self);
+                    } catch (IOException e) {
+                        System.out.println("Something went wrong saving the state: " + String.join("\n", Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
+                        runSerializingThread.set(false);
+                };
+
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    /// If it fails, just terminate.
+                    runSerializingThread.set(false);
+                }
+            }
+        });
+        thread.start();
+
+        return thread;
     }
 
     private void loadBackgrounds(String folder) {
@@ -146,11 +238,6 @@ public class GameScreen implements Screen {
     public Area[][] getMap() {
         return this.map;
     }
-
-    public HashSet<Class<?>> getActiveScreens() {
-        return this.activeScreens;
-    }
-
 
     @Override
     public void show() {
@@ -192,6 +279,8 @@ public class GameScreen implements Screen {
 //            TODO: uncomment
             checkForWinLoseConditions();
 
+
+
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
             }
@@ -228,7 +317,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        runSerializingThread.set(false);
     }
 
     private Label createLabel(String text, BitmapFont font, Color color) {
@@ -332,7 +421,7 @@ public class GameScreen implements Screen {
     }
 
     public Table createActionButtonsTable() {
-
+        GameScreen self = this;
 
         // Create Table
         Table table = new Table();
@@ -356,8 +445,7 @@ public class GameScreen implements Screen {
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
-                BaseScreen overlay = new BaseScreen(player,self);
+                BaseScreen overlay = new BaseScreen(player, self);
                 stage.addActor(overlay);
                 overlay.setVisible(true);
             }
@@ -372,11 +460,9 @@ public class GameScreen implements Screen {
         travelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (activeScreens.add(TravelScreen.class)) {
-                    TravelScreen overlay = new TravelScreen(player, self);
-                    stage.addActor(overlay);
-                    overlay.setVisible(true);
-                }
+                TravelScreen overlay = new TravelScreen(player, self);
+                stage.addActor(overlay);
+                overlay.setVisible(true);
             }
         });
 
@@ -395,13 +481,13 @@ public class GameScreen implements Screen {
                 itemsCollected = itemsCollected + extractedItems.size();
                 DialogScreen dialog = new DialogScreen("Collected", extractedItems.toString());
 
-                switch(random.nextInt(1,4)) {
+                switch(Utils.random.nextInt(1,4)) {
                     case 1:
 //                        If too dark, player has a chance to injure themselves
                         if ((player.getMinutes()  % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashlight")) {
 //                            10% Chance of Injury
-                            if (random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - random.nextInt(5,11));
+                            if (Utils.random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,11));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "It was too dark, and you injured yourself");
                             }
@@ -411,8 +497,8 @@ public class GameScreen implements Screen {
 //                        If in Village, Commercial Bldg, or Mall, might face against dangerous survivors
                         if (area.getType() == AreaType.VILLAGE || area.getType() == AreaType.COMMERCIAL_BLDG || area.getType() == AreaType.MALL) {
 //                            10% Chance of getting into a fight
-                            if (random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - random.nextInt(5,16));
+                            if (Utils.random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor");
                             }
@@ -422,8 +508,8 @@ public class GameScreen implements Screen {
 //                        If in Forest, Park, Village, Farm, might encounter wild animals
                         if (area.getType() == AreaType.FOREST || area.getType() == AreaType.VILLAGE || area.getType() == AreaType.PARK) {
 //                            10% Chance of getting into a fight
-                            if (random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - random.nextInt(5,16));
+                            if (Utils.random.nextDouble() > 0.85) {
+                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "A snake was hiding around the area and bit you.");
                             }
@@ -570,10 +656,6 @@ public class GameScreen implements Screen {
         void run();
     }
 
-    private final HashSet<Integer> activeKeys = new HashSet<>();
-
-    private final HashMap<Integer, KeyHandler> listeners = new HashMap<>();
-
     private void addKeyListener(int key, KeyHandler handler) {
         listeners.put(key, handler);
     }
@@ -603,7 +685,7 @@ public class GameScreen implements Screen {
 //            TODO: Check and Change Formula
 
 //            Checks for win condition
-            else if(random.nextDouble() < area.getRescueProbability()){
+            else if(Utils.random.nextDouble() < area.getRescueProbability()){
 //                Calls win ending screen
                 gameEndingScene = 2;
                 isGameDone = true;
@@ -615,14 +697,14 @@ public class GameScreen implements Screen {
 
     public void checkForStructureEvents(){
 //        If a trap is set up, chance for player to catch small animals
-        if (0.40 < random.nextDouble()) {
+        if (0.40 < Utils.random.nextDouble()) {
             if (fishBasketTrap.isBuilt() && 0 < fishBasketTrap.getBaitRemaining()) {
                 fishBasketTrap.collect(player);
                 showDialogScreen(new DialogScreen("Your trapped went off","You caught some fishes"));
             }
         }
 //        If a campfire is set up, chance for passive regen of condition <3
-        if (0.60 < random.nextDouble()){
+        if (0.60 < Utils.random.nextDouble()){
             if (campfire.isBuilt() && 0 < campfire.getSecondsRemaining()) {
                 player.setCondition(player.getCondition() + 5);
             }

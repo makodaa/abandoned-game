@@ -1,8 +1,9 @@
 package com.teammerge.abandoned.entities;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class FishBasketTrap {
+public class FishBasketTrap implements Serializable {
     boolean isBuilt;
     int baitRemaining;
 

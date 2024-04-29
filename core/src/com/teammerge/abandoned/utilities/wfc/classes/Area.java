@@ -2,10 +2,11 @@ package com.teammerge.abandoned.utilities.wfc.classes;
 
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Area {
+public class Area implements Serializable {
     private AreaType type;
     private int distance;
     private String name;
