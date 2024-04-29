@@ -57,6 +57,7 @@ public class GameOverScreen implements Screen {
             gameEndText = "A rescue helicopter sees you and are now successfully rescued";
         }
         displayCentralTexts.add("Congratulations!\n"+ gameEndText);
+        displayCentralTexts.add("RAWR");
 
         displayLeftTexts.add(
                 "Days Survived " +
@@ -195,10 +196,20 @@ public class GameOverScreen implements Screen {
 
     private void nextText(){
         if (displayingCentralText){
-            currentCentralLetterIndex = 0;
-            displayingLeftText = true;
-            displayingCentralText = false;
-            displayCurrentText();
+            // If there's another central text to display
+            if (displayCentralTexts.size() > 1) {
+                // Remove the current central text
+                displayCentralTexts.remove(0);
+                // Reset index and start displaying the next central text
+                currentCentralLetterIndex = 0;
+                displayCurrentText();
+            } else {
+                // If there are no more central texts, switch to displaying left text
+                currentCentralLetterIndex = 0;
+                displayingLeftText = true;
+                displayingCentralText = false;
+                displayCurrentText();
+            }
         }
     }
 
