@@ -4,7 +4,9 @@ import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Area implements Serializable {
     private AreaType type;
@@ -76,8 +78,11 @@ public class Area implements Serializable {
     }
 
     public List<String> extract() {
-        int count = Utils.random.nextInt(0, items.length);
-        /// random sampling.
+        int length = (int)Arrays.stream(items)
+                .filter(Objects::nonNull)
+                .count();
+
+        int count = Utils.random.nextInt(0, (int)Math.ceil(items.length / 1.5));
         ArrayList<String> chosen = new ArrayList<>();
         for (int i = 0; i < count; ++i) {
             int currentIndex = -1;

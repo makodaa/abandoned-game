@@ -13,9 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.actors.tables.*;
@@ -23,17 +26,21 @@ import com.teammerge.abandoned.entities.Campfire;
 import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.entities.FishBasketTrap;
 import com.teammerge.abandoned.entities.Player;
+import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
+import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.MapCollapse;
 import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -271,6 +278,8 @@ public class GameScreen implements Screen, Serializable {
 //            TODO: uncomment
             checkForWinLoseConditions();
 
+
+
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
             }
@@ -470,13 +479,14 @@ public class GameScreen implements Screen, Serializable {
                 Index position = player.getPosition();
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
-                itemsCollected = itemsCollected + extractedItems.size();
-                DialogScreen dialog = new DialogScreen("Scavenge Completed", extractedItems.isEmpty() ? "There was nothing to be found" : "Collected " + extractedItems.toString().replaceAll("[\\[\\]]", ""));
-
+                itemsCollected += extractedItems.size();
+                DialogScreen dialog = new DialogScreen("Collected", displayItemsForMessage(extractedItems));
                 switch(Utils.random.nextInt(1,4)) {
                     case 1:
 //                        If too dark, player has a chance to injure themselves
-                        if ((player.getMinutes()  % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashlight")) {
+                        int minuteLeftover = player.getMinutes() % 24;
+                        if (!(6 <= minuteLeftover && minuteLeftover <= 18) &&
+                                !player.getInventory().contains("flashlight")) {
 //                            10% Chance of Injury
                             if (Utils.random.nextDouble() > 0.85) {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,11));
@@ -488,7 +498,8 @@ public class GameScreen implements Screen, Serializable {
                         break;
                     case 2:
 //                        If in Village, Commercial Bldg, or Mall, might face against dangerous survivors
-                        if (area.getType() == AreaType.VILLAGE || area.getType() == AreaType.COMMERCIAL_BLDG || area.getType() == AreaType.MALL) {
+                        switch (area.getType()) {
+                            case AreaType.VILLAGE, AreaType.COMMERCIAL_BLDG, AreaType.MALL:
 //                            10% Chance of getting into a fight
                             if (Utils.random.nextDouble() > 0.85) {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
@@ -496,11 +507,13 @@ public class GameScreen implements Screen, Serializable {
                                 dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor");
                                 setInjuriesFaced(getInjuriesFaced() + 1);
                             }
+                            break;
                         }
                         break;
                     case 3:
 //                        If in Forest, Park, Village, Farm, might encounter wild animals
-                        if (area.getType() == AreaType.FOREST || area.getType() == AreaType.VILLAGE || area.getType() == AreaType.PARK) {
+                        switch (area.getType()) {
+                            case AreaType.FOREST,  AreaType.VILLAGE,  AreaType.PARK:
 //                            10% Chance of getting into a fight
                             if (Utils.random.nextDouble() > 0.85) {
                                 player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
@@ -667,7 +680,8 @@ public class GameScreen implements Screen, Serializable {
 //    Waits for the next minute and checks if the player met the condition for winning and losing
     private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
-        if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() % 30000 == 0) {
+        if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
+            System.out.println(area.getRescueProbability());
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
             if (player.getCondition() < 5) {
@@ -687,6 +701,37 @@ public class GameScreen implements Screen, Serializable {
 
             minutes = player.getMinutes();
         }
+    }
+
+    private String displayItemsForMessage(List<String> items) {
+        if (items.size() <= 0) {
+            return "You didn't find anything useful.";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        HashMap<String, Integer> counter = new HashMap<>();
+        for (String id : items) {
+            counter.put(id, counter.getOrDefault(id, 0) + 1);
+        }
+
+        List<Map.Entry<String, Integer>> sortedEntries = counter.entrySet()
+                .stream()
+                .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
+                .toList();
+
+        for (Map.Entry<String, Integer> entry : sortedEntries) {
+            Item item = Item.of(entry.getKey());
+
+            builder.append(item.name())
+                    .append(" (")
+                    .append(entry.getValue())
+                    .append(")");
+            if (entry != sortedEntries.getLast()) {
+                builder.append("\n");
+            }
+        }
+
+        return builder.toString();
     }
 
     public void checkForStructureEvents(){
