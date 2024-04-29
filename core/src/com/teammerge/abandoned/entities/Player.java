@@ -3,12 +3,14 @@ package com.teammerge.abandoned.entities;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.utilities.InsertionSort;
+import com.teammerge.abandoned.utilities.wfc.classes.Utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Player {
+public class Player implements Serializable {
     private int condition, fullness, hydration, energy, minutes;
 
     private Index position;
@@ -16,16 +18,15 @@ public class Player {
     private final ArrayList<String> inventory;
 
     public long timeSinceLastSecond;
-    Random random = new Random();
 
     public Player(Index starting) {
         inventory = new ArrayList<>();
         timeSinceLastSecond = 0;
-        minutes = random.nextInt(0, 8);
-        condition = 80 + random.nextInt( 20);
-        fullness = 80 + random.nextInt( 20);
-        hydration = 80 + random.nextInt( 20);
-        energy = 80 + random.nextInt(20);
+        minutes = Utils.random.nextInt(0, 8);
+        condition = 80 + Utils.random.nextInt( 20);
+        fullness = 80 + Utils.random.nextInt( 20);
+        hydration = 80 + Utils.random.nextInt( 20);
+        energy = 80 + Utils.random.nextInt(20);
         position = starting;
     }
 
@@ -43,11 +44,11 @@ public class Player {
     }
 
     public void decay(){
-        setFullness(fullness - random.nextInt(1,3));
-        setHydration(hydration - random.nextInt(1,3));
-        setEnergy(energy - random.nextInt(1,3));
+        setFullness(fullness - Utils.random.nextInt(1,3));
+        setHydration(hydration - Utils.random.nextInt(1,3));
+        setEnergy(energy - Utils.random.nextInt(1,3));
 
-        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - random.nextInt(0,3));
+        if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - Utils.random.nextInt(0,3));
     }
 
     public void setCondition(int condition) { this.condition = Math.min(Math.max(condition,0),100); }

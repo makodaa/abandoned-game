@@ -64,16 +64,20 @@ public abstract class ItemRepository {
 
         return itemRows
                 .stream()
-                .map((v) -> v[0]).toList().toArray(new String[itemRows.size()]);
+                .map((v) -> v[0])
+                .toArray(String[]::new);
     }
 
     static public String[] rowOf(String id) {
-        Optional<String[]> found = getItemRows().stream().filter((r) -> r[0].equals(id)).findFirst();
+        Optional<String[]> found = getItemRows()
+                .stream()
+                .filter((r) -> r[0].equals(id))
+                .findFirst();
 
         if (found.isPresent()) {
             return found.get();
         }
 
-        throw new Error("Unknown id: '" + id + "'");
+        throw new Error("Unknown item id: '" + id + "'");
     }
 }
