@@ -341,7 +341,7 @@ public class CraftingScreen extends Table {
         /// [Drawing]
 
         BackgroundDrawable backgroundDrawable = new BackgroundDrawable("images/plain_white_background.png");
-        backgroundDrawable.setColor(0,0,0, 102);
+        backgroundDrawable.setColor(0,0,0, 205);
         setBackground(backgroundDrawable);
     }
 }
