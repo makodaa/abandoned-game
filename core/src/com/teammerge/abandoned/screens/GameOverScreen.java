@@ -52,9 +52,9 @@ public class GameOverScreen implements Screen {
 
         String gameEndText;
         if(gameEndingScene == 1){
-            gameEndText = "You forgot to breath and are now completely dead";
+            gameEndText = "Unfortunately, you suffered due to your worsening condition and died.";
         } else {
-            gameEndText = "A rescue helicopter sees you and are now successfully rescued";
+            gameEndText = "Success! A rescue helicopter sees you and are now successfully rescued";
         }
         displayCentralTexts.add("Congratulations!\n"+ gameEndText);
         displayCentralTexts.add("RAWR");
@@ -77,8 +77,7 @@ public class GameOverScreen implements Screen {
 
 
         displayRightTexts.add(
-                "\n\n"+
-                        daysPassed +
+                "\n\n"+ daysPassed +
                 "\n\n" + distanceTravelled +
                 "\n\n" + itemsCollected +
                 "\n\n" + itemsCrafted +

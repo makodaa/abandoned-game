@@ -37,13 +37,13 @@ public class OpeningScreen implements Screen {
         this.mapHeight = mapHeight;
 
         displayTexts = new ArrayList<>();
-        displayTexts.add("\"Im sorry sir, but we were ordered to not go back to the city for any more patrols.\"");
+        displayTexts.add("\"Apologies, but we were ordered to not go back to the city for any more patrols.\"");
         displayTexts.add("\"The city is in shambles, with falling debris, broken wires, and no signal. " +
                 "It's too risky for us to send down units.\"");
         displayTexts.add("\"You'd have to make your way to our rescue zones outside the city\"");
-        displayTexts.add("\"They're is quite far out, so we advise that you go look around for any leftover supplies and equipment.\"");
+        displayTexts.add("\"They're quite far out, so we advise that you go look around for any leftover supplies and equipment.\"");
         displayTexts.add("\"I'll be sending you the direction and distance estimate\"");
-        displayTexts.add("\"We don't know what dangers you will face in the city. Would you lose?\"");
+        displayTexts.add("\"We don't know what dangers you will face in the city. However, would you lose?\"");
         displayTexts.add("Nah, I'd live");
         // Add more texts as needed
 
