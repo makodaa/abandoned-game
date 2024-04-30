@@ -13,12 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.teammerge.abandoned.AbandonedGame;
 import com.teammerge.abandoned.actors.drawables.BackgroundDrawable;
 import com.teammerge.abandoned.actors.tables.*;
@@ -26,7 +23,6 @@ import com.teammerge.abandoned.entities.Campfire;
 import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.entities.FishBasketTrap;
 import com.teammerge.abandoned.entities.Player;
-import com.teammerge.abandoned.entities.DeadfallTrap;
 import com.teammerge.abandoned.enums.Direction;
 import com.teammerge.abandoned.records.Index;
 import com.teammerge.abandoned.records.Item;
@@ -42,7 +38,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.List;
-import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -60,7 +55,7 @@ public class GameScreen implements Screen, Serializable {
     transient ProgressBar conditionBar, fullnessBar, hydrationBar, energyBar;
     transient Label conditionLabel, fullnessLabel, hydrationLabel, energyLabel;
     transient Label currentLocationLabel;
-    transient Label debugMilisecondCounterLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
+    transient Label headDirectionLabel, daysPassedLabel, hoursBeforeNextPhaseLabel;
 
     transient Table containerTable;
 
@@ -74,6 +69,7 @@ public class GameScreen implements Screen, Serializable {
     transient AtomicBoolean runSerializingThread;
     transient Thread serializingThread;
     boolean isInTransition, isGameDone;
+    int mapHeight, mapWidth;
     int minutes, gameEndingScene, daysPassed, itemsCollected, itemsCrafted, distanceTravelled, injuriesFaced, injuriesTreated;
 
     transient private HashSet<Integer> activeKeys = new HashSet<>();
@@ -126,7 +122,7 @@ public class GameScreen implements Screen, Serializable {
 
         /// Specials.
 
-
+        serialized.updateNearestLocation();
 
         return serialized;
     }
@@ -137,6 +133,9 @@ public class GameScreen implements Screen, Serializable {
 
         // Load camera, stage, and assets
         this.game = game;
+        this.mapHeight = mapHeight;
+        this.mapWidth = mapWidth;
+
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -184,6 +183,8 @@ public class GameScreen implements Screen, Serializable {
 
         stage.addActor(containerTable);
         Gdx.input.setInputProcessor(stage);
+
+        updateNearestLocation();
 
         activeKeys = new HashSet<>();
         listeners = new HashMap<>();
@@ -422,15 +423,15 @@ public class GameScreen implements Screen, Serializable {
         hoursBeforeNextPhaseLabel = createLabel(" ", mediumFont, Color.WHITE);
         hoursBeforeNextPhaseLabel.setAlignment(Align.right);
 
-        debugMilisecondCounterLabel = createLabel(" ", mediumFont, Color.WHITE);
-        debugMilisecondCounterLabel.setAlignment(Align.right);
+        headDirectionLabel = createLabel(" ", mediumFont, Color.WHITE);
+        headDirectionLabel.setAlignment(Align.right);
 
         table.align(Align.topRight);
         table.add(locationDaysGroupTable).right();
         table.row();
         table.add(hoursBeforeNextPhaseLabel).right();
         table.row();
-        table.add(debugMilisecondCounterLabel).right();
+        table.add(headDirectionLabel).right();
 
         return table;
     }
@@ -719,7 +720,80 @@ public class GameScreen implements Screen, Serializable {
         hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " HOURS BEFORE " + nextCycle);
 
         // FIXME:
-        debugMilisecondCounterLabel.setText("" + player.getTimeSinceLastSecond());
+//        headDirectionLabel.setText("" + player.getTimeSinceLastSecond());
+    }
+
+    private void updateNearestLocation() {
+        Index[] found = null;
+        ArrayList<Index[]> queue  = new ArrayList<>();
+        HashSet<Index> seen = new HashSet<>();
+        queue.add(new Index[] {player.getPosition()});
+
+        outer:
+        while (!queue.isEmpty()) {
+            Index[] currentPath = queue.removeFirst();
+            Index latest = currentPath[0];
+
+            System.out.println(seen.contains(latest));
+            seen.add(latest);
+            final Index[] neighbors = {
+                    new Index(-1, 0),
+                    new Index(0, 1),
+                    new Index(1, 0),
+                    new Index(0, -1),
+            };
+
+            for (Index delta : neighbors) {
+                int ny = latest.y() + delta.y();
+                int nx = latest.x() + delta.x();
+                if (!((0 <= ny && ny < mapHeight) && (0 <= nx && nx < mapWidth))) continue;
+
+                if (map[ny][nx].getType() == AreaType.RESCUE_AREA) {
+                    found = currentPath;
+                    break outer;
+                }
+
+                Index neighbor = new Index(ny, nx);
+                if (seen.contains(neighbor)) {
+                    continue;
+                }
+
+                Index[] neighboringPath = new Index[currentPath.length + 1];
+                neighboringPath[0] = neighbor;
+                for (int i = 1; i < currentPath.length + 1; ++i) {
+                    neighboringPath[i] = currentPath[i - 1];
+                }
+                queue.addLast(neighboringPath);
+            }
+        }
+
+        if (found == null) return;
+
+        int distance = 0;
+        for (Index ind : found) {
+            Area area = map[ind.y()][ind.x()];
+            distance += area.getDistance();
+        }
+
+        double angle = Math.atan2(found[0].y() - found[found.length - 1].y(), found[0].x() - found[found.length - 1].x());
+        angle *= (180.0 / Math.PI);
+        angle %= 360.0;
+
+        String angleDirection = getDirection(angle);
+        headDirectionLabel.setText("Nearest: " + distance + "km" + (angleDirection == null ? "" : ", " + angleDirection));
+    }
+
+    private static String getDirection(double angle) {
+        String angleDirection = null;
+        if (-22.5 <= angle && angle <= 22.5) angleDirection = "E";
+        else if (22.5 <= angle && angle <= 67.5) angleDirection = "NE";
+        else if (67.5 <= angle && angle <= 112.5) angleDirection = "N";
+        else if (112.5 <= angle && angle <= 157.5) angleDirection = "NW";
+        else if (157.5 <= angle && angle <= 202.5) angleDirection = "W";
+        else if (202.5 <= angle && angle <= 247.5) angleDirection = "SW";
+        else if (247.5 <= angle && angle <= 292.5) angleDirection = "S";
+        else if (292.5 <= angle && angle <= 337.5) angleDirection = "SE";
+        return angleDirection;
     }
 
     protected interface KeyHandler {
@@ -828,6 +902,7 @@ public class GameScreen implements Screen, Serializable {
         Area area = map[position.y()][position.x()];
 
         loadBackgrounds(area.getType().getBackgroundFolders());
+        updateNearestLocation();
     }
 
     public void showLoadingScreen(String title, String message) {
