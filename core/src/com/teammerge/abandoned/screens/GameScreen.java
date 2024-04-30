@@ -203,7 +203,6 @@ public class GameScreen implements Screen, Serializable {
 
         Thread thread = new Thread(() -> {
             while (runSerializingThread.get()) {
-                System.out.println("Saving the file.");
                 String path = Gdx.files.internal("saves/save_file.txt").path();
                 try (FileOutputStream fileOutputStream = new FileOutputStream(path);
                         ObjectOutputStream objectOutputStream  = new ObjectOutputStream(fileOutputStream)) {
@@ -228,10 +227,10 @@ public class GameScreen implements Screen, Serializable {
     }
 
     private void loadBackgrounds(String folder) {
-        day = new BackgroundDrawable("images/backgrounds/" + folder + "/day.png");
-        dusk = new BackgroundDrawable("images/backgrounds/" + folder + "/dusk.png");
-        night = new BackgroundDrawable("images/backgrounds/" + folder + "/night.png");
-        midnight = new BackgroundDrawable("images/backgrounds/" + folder + "/midnight.png");
+        day = new BackgroundDrawable(Gdx.files.internal("images/backgrounds/" + folder + "/day.png").path());
+        dusk = new BackgroundDrawable(Gdx.files.internal("images/backgrounds/" + folder + "/dusk.png").path());
+        night = new BackgroundDrawable(Gdx.files.internal("images/backgrounds/" + folder + "/night.png").path());
+        midnight = new BackgroundDrawable(Gdx.files.internal("images/backgrounds/" + folder + "/midnight.png").path());
     }
 
     public Area[][] getMap() {
@@ -316,12 +315,23 @@ public class GameScreen implements Screen, Serializable {
 
     @Override
     public void dispose() {
-        lightFont.dispose();
-        mediumFont.dispose();
-        batch.dispose();
-        stage.dispose();
-        if (runSerializingThread != null) {
-            runSerializingThread.set(false);
+        /// FIXME: This is a hack.
+        try {
+            if (lightFont != null) lightFont.dispose();
+        } finally {
+            try {
+                if (mediumFont != null) mediumFont.dispose();
+            } finally {
+                try {
+                    if (batch != null) batch.dispose();
+                } finally {
+                    try {
+                        if (stage != null) stage.dispose();
+                    } finally {
+                        if (runSerializingThread != null) runSerializingThread.set(false);
+                    }
+                }
+            }
         }
     }
 
@@ -620,7 +630,6 @@ public class GameScreen implements Screen, Serializable {
         int waitingHours;
         String dayCycle, nextCycle;
         daysPassed = player.getMinutes() / 24;
-
         // Following conditions check if time is 0AM - 12AM, and 1PM - 11PM
         if (0 <= hours && hours < 12) {
             if (hours < 6) {
@@ -641,11 +650,7 @@ public class GameScreen implements Screen, Serializable {
                 nextCycle = "SUNFALL";
                 waitingHours = 18 - hours;
 
-                if (hours > 15) {
-                    containerTable.setBackground(dusk);
-                }
-
-
+                containerTable.setBackground(dusk);
             } else {
                 dayCycle = "EVENING, ";
                 nextCycle = "MIDNIGHT";
