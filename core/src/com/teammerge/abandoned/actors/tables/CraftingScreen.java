@@ -185,7 +185,7 @@ public class CraftingScreen extends Table {
                     Table requirementGroupTable = new VisTable();
 
                     if (i > 0) {
-                        Label orLabel = new VisLabel("OR: ", labelStyle) {{
+                        Label orLabel = new VisLabel("Or: ", labelStyle) {{
                             setAlignment(Align.left);
                         }};
                         requirementGroupTable.add(orLabel).fill();
@@ -225,7 +225,7 @@ public class CraftingScreen extends Table {
         /// [Content]
 
 
-        inventoryList.setItems(itemList.stream().map(i -> i.name() + " (" + (canCraft(i) ? "Y" : "N") + ")" ).toArray(String[]::new));
+        inventoryList.setItems(itemList.stream().map(Item::name).toArray(String[]::new));
 
         itemLabel.setText(selectedItem.name());
         descriptionLabel.setText(selectedItem.description());
@@ -244,6 +244,7 @@ public class CraftingScreen extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 int active = inventoryList.getSelectedIndex();
+                int resultCount = 0;
                 Item item = Item.of(idsOfItemsThatCanBeCrafted[active]);
 
                 if (!canCraft(item)) {
@@ -260,14 +261,18 @@ public class CraftingScreen extends Table {
                                 items.remove(entry.id());
                             }
                         }
+                        resultCount = recipe.resultCount();
 
                         break;
                     }
                 }
 
-                screen.showLoadingScreen("Success", "Crafting: " + item.name());
+                screen.showLoadingScreen("Crafting Completed", item.name() + "(" + resultCount + ")");
                 screen.setItemsCrafted();
-                player.addItem(item.id());
+
+                for (int i = 0; i < resultCount; ++i) {
+                    player.addItem(item.id());
+                }
             }
         });
         inventoryTable.addListener(new ChangeListener() {

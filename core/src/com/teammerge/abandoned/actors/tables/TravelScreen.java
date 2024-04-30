@@ -18,6 +18,7 @@ import com.teammerge.abandoned.records.Item;
 import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.classes.Utils;
+import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
 import java.util.*;
 import java.util.List;
@@ -132,7 +133,6 @@ public class TravelScreen extends Table {
     }
 
     private Table createMapGraphics(Skin skin){
-
         List<List<Map.Entry<Index,Area>>> visibleMap = new ArrayList<>();
         int up = player.getPosition().y() - 5;
         int down = player.getPosition().y() + 5;
@@ -167,7 +167,8 @@ public class TravelScreen extends Table {
                     table.add(new Image(skin.newDrawable("question_mark",Color.GRAY))).size(40);
                     continue;
                 }
-                    table.add(new Image(skin.newDrawable(area.getType().getIconKey(),Color.GRAY))).size(40);
+
+                table.add(new Image(skin.newDrawable(area.getType().getIconKey(),area.getType() == AreaType.RESCUE_AREA ? Color.RED : Color.GRAY))).size(40);
             }
             table.row();
         }
@@ -254,11 +255,11 @@ public class TravelScreen extends Table {
 
                 screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + areaNameLabel.getText(), dialog));
                 player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 5));
-                player.setEnergy(player.getEnergy() - (targetArea.getDistance()));
+                player.setEnergy(player.getEnergy() - (int)Math.sqrt(targetArea.getDistance()));
                 screen.setDistanceTravelled((screen.getDistanceTravelled() + targetArea.getDistance()));
                 System.out.println(screen.getDistanceTravelled());
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
-                for (int i = 0; i < targetArea.getDistance(); i++) player.decay();
+                for (int i = 0; i < Math.sqrt(targetArea.getDistance()); i++) player.decay();
                 screen.move(direction);
                 closeScreen();
             }

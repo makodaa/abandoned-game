@@ -122,7 +122,7 @@ public class BaseScreen extends Table {
                 screen.showLoadingScreen(loadingScreen);
                 player.setMinutes(player.getMinutes() + timeForward);
                 player.setEnergy(player.getEnergy() + (5 * timeForward));
-                for (int i = player.getMinutes(); i < player.getMinutes() + timeForward; i++) {
+                for (int i = player.getMinutes(); i < player.getMinutes() + Math.sqrt((timeForward)); i++) {
                     player.decay();
                 }
                 remove();
