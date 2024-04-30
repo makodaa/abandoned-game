@@ -785,7 +785,7 @@ public class GameScreen implements Screen, Serializable {
 
     private static String getDirection(double angle) {
         String angleDirection = null;
-        if (-22.5 <= angle && angle <= 22.5) angleDirection = "E";
+        if (angle <= 22.5) angleDirection = "E";
         else if (22.5 <= angle && angle <= 67.5) angleDirection = "NE";
         else if (67.5 <= angle && angle <= 112.5) angleDirection = "N";
         else if (112.5 <= angle && angle <= 157.5) angleDirection = "NW";
@@ -793,6 +793,8 @@ public class GameScreen implements Screen, Serializable {
         else if (202.5 <= angle && angle <= 247.5) angleDirection = "SW";
         else if (247.5 <= angle && angle <= 292.5) angleDirection = "S";
         else if (292.5 <= angle && angle <= 337.5) angleDirection = "SE";
+        else angleDirection = "E";
+
         return angleDirection;
     }
 
