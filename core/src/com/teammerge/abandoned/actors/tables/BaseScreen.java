@@ -69,12 +69,12 @@ public class BaseScreen extends Table {
 
         Table journalTable = new Table();
         Label entryNumberLabel = new Label("DAY " + player.getMinutes() / 24, new Label.LabelStyle(titleMediumFont,Color.WHITE));
-        Label entryLabel = new Label("Entering the city, I'm struck by its eerie stillness. Nature has begun its reclamation, weaving through concrete and steel. It's a world frozen in time, where echoes of life linger in the silence. As I take my first steps, I know this will be a journey of survival against the odds.", new Label.LabelStyle(textLightFont,Color.WHITE));
+        Label entryLabel = new Label("", new Label.LabelStyle(textLightFont,Color.WHITE));
         entryLabel.setWrap(true);
         journalTable.align(Align.topLeft);
-        journalTable.add(entryNumberLabel).left();
-        journalTable.row().expandX().fillX();
-        journalTable.add(entryLabel).left();
+//        journalTable.add(entryNumberLabel).left();
+//        journalTable.row().expandX().fillX();
+//        journalTable.add(entryLabel).left();
 
 
         Table restTable = new Table();
