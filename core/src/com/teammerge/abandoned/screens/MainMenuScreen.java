@@ -2,6 +2,7 @@ package com.teammerge.abandoned.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -36,6 +37,7 @@ public class MainMenuScreen implements Screen {
     TextButton loadGameButton, newGameButton, exitButton;
 
     Texture background;
+    Music music;
 
     public MainMenuScreen(final AbandonedGame game) {
         this.game = game;
@@ -43,9 +45,11 @@ public class MainMenuScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         camera = new OrthographicCamera();
         background = new Texture(Gdx.files.internal("images/main_menu_background.png"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/main_menu.mp3"));
+        music.setVolume(0.15f);
+        music.play();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(stage); // Never Forget
-
         difficultyScreen = createDifficultyScreen();
 
 //      Creating H1, H2 fonts
@@ -76,6 +80,7 @@ public class MainMenuScreen implements Screen {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     game.setScreen(GameScreen.fromSerialized(game, gameScreen));
+                    music.stop();
                     return false;
                 }
             });
@@ -309,10 +314,12 @@ public class MainMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 game.setScreen(new OpeningScreen(game, 31, 31));
+                music.stop();
+
             }
         });
 
-        ImageTextButton mediumMapButton = new ImageTextButton("MEDIUM MAP\n[97 x 97]",mediumMapButtonStyle);
+        ImageTextButton mediumMapButton = new ImageTextButton("MEDIUM MAP\n[41 x 41]",mediumMapButtonStyle);
         mediumMapButton.clearChildren();
         mediumMapButton.add(mediumMapButton.getImage()).spaceBottom(27);
         mediumMapButton.row();
@@ -322,11 +329,13 @@ public class MainMenuScreen implements Screen {
         mediumMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                game.setScreen(new OpeningScreen(game, 97,97));
+                game.setScreen(new OpeningScreen(game, 41,41));
+                music.stop();
+
             }
         });
 
-        ImageTextButton largeMapButton = new ImageTextButton("LARGE MAP\n[171 x 171]",largeMapButtonStyle);
+        ImageTextButton largeMapButton = new ImageTextButton("LARGE MAP\n[51 x 51]",largeMapButtonStyle);
         largeMapButton.clearChildren();
         largeMapButton.add(largeMapButton.getImage()).spaceBottom(27);
         largeMapButton.row();
@@ -336,7 +345,8 @@ public class MainMenuScreen implements Screen {
         largeMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                game.setScreen(new OpeningScreen(game, 171,171));
+                game.setScreen(new OpeningScreen(game, 51,51));
+                music.stop();
             }
         });
 

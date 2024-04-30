@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -266,7 +267,8 @@ public class CraftingScreen extends Table {
                         break;
                     }
                 }
-
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/crafting.wav"));
+                sound.play();
                 screen.showLoadingScreen("Crafting Completed", item.name() + "(" + resultCount + ")");
                 screen.setItemsCrafted();
 

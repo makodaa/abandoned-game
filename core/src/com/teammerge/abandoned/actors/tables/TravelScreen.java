@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -246,13 +247,18 @@ public class TravelScreen extends Table {
             public void changed(ChangeEvent event, Actor actor) {
                 DialogScreen dialog = null;
 
-                if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
-                    if (Utils.random.nextDouble() > 0.90) {
-                        dialog = new DialogScreen("Arrived at " + targetArea.getName(), "You got injured along the way because it was too dark.");
-                        player.setCondition(player.getCondition() - Utils.random.nextInt(5, 11));
+
+                if (!player.getInventory().contains("flashlight")) {
+                    if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
+                        if (Utils.random.nextDouble() > 0.90) {
+                            dialog = new DialogScreen("Arrived at " + targetArea.getName(), "You got injured along the way because it was too dark.");
+                            player.setCondition(player.getCondition() - Utils.random.nextInt(5, 11));
+                        }
                     }
                 }
 
+                Sound walkingSound = Gdx.audio.newSound(Gdx.files.internal("sounds/walking.mp3"));
+                walkingSound.play();
                 screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + areaNameLabel.getText(), dialog));
                 player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 5));
                 player.setEnergy(player.getEnergy() - (int)Math.sqrt(targetArea.getDistance()));
@@ -261,7 +267,12 @@ public class TravelScreen extends Table {
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
                 for (int i = 0; i < Math.sqrt(targetArea.getDistance()); i++) player.decay();
                 screen.move(direction);
+                screen.getMusic().stop();
+                screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/"+ screen.getMap()[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundMusic())));
+                screen.getMusic().setVolume(0.2f);
+                screen.getMusic().play();
                 closeScreen();
+
             }
         });
 

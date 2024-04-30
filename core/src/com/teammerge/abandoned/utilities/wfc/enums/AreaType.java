@@ -373,6 +373,12 @@ public enum AreaType implements Serializable {
             case COMMERCIAL_BLDG, MALL, HOSPITAL -> "city";
         };
     }
+    public String getBackgroundMusic() {
+        return switch (this) {
+            case FOREST, VILLAGE, FARM, PARK, RESCUE_AREA -> "forest.wav";
+            case MALL, COMMERCIAL_BLDG, HOSPITAL -> "ruined_city.mp3";
+        };
+    }
 
     public static final int UNIVERSAL = Superpositions.universal(values());
 }

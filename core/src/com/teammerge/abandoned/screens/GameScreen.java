@@ -3,6 +3,8 @@ package com.teammerge.abandoned.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -74,6 +76,9 @@ public class GameScreen implements Screen, Serializable {
 
     transient private HashSet<Integer> activeKeys = new HashSet<>();
     transient private HashMap<Integer, KeyHandler> listeners = new HashMap<>();
+    boolean flag;
+
+    Music music;
 
     public static GameScreen fromSerialized(final AbandonedGame game, GameScreen serialized) {
         serialized.serializingThread = serialized.createSerializingThread();
@@ -145,6 +150,7 @@ public class GameScreen implements Screen, Serializable {
         isInTransition = false;
         isGameDone = false;
 
+
         // Load Fonts
         mediumFont = generateFont("fonts/RobotoCondensed-Medium.ttf", 28);
         lightFont = generateFont("fonts/RobotoCondensed-Light.ttf", 22);
@@ -163,6 +169,14 @@ public class GameScreen implements Screen, Serializable {
         campfire = new Campfire();
         fishBasketTrap = new FishBasketTrap();
         deadfallTrap = new DeadfallTrap();
+
+        //Set up music
+        Index position = player.getPosition();
+        Area area = map[position.y()][position.x()];
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/"+ area.getType().getBackgroundMusic()));
+        music.setVolume(0.2f);
+        music.play();
+
 
         // Set up container table and actor groups
         containerTable = new Table();
@@ -293,6 +307,13 @@ public class GameScreen implements Screen, Serializable {
         updateAttributeGraphics();
         updateLocationGraphics();
         updateDiurnalCycleGraphics();
+
+        if (!flag) {
+            if (player.getInventory().contains("backpack")) {
+                player.setInventoryCapacity(player.getInventoryCapacity() + 10);
+                flag = true;
+            }
+        }
     }
 
 
@@ -543,7 +564,8 @@ public class GameScreen implements Screen, Serializable {
                 }
 
                 showLoadingScreen(new LoadingScreen(self,"Looking around for materials...", dialog));
-
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/scavenge.wav"));
+                sound.play();
                 player.addAllItems(extractedItems.toArray(String[]::new));
                 player.setMinutes(player.getMinutes() + 1);
                 player.decay();
@@ -603,7 +625,7 @@ public class GameScreen implements Screen, Serializable {
                         new DialogScreen(
                                 "Gathering Completed",
                                 0 < yield ?
-                                        bonus == 1
+                                        (0 < bonus && player.getInventory().contains("axe"))
                                                 ? "You found " + yield + " firewood and " + bonus + " hardwood"
                                                 : "You found " + yield  + " firewood."
                                         : "There's no wood to be found."
@@ -969,5 +991,13 @@ public class GameScreen implements Screen, Serializable {
 
     public void setInjuriesTreated(int injuriesTreated) {
         this.injuriesTreated = injuriesTreated;
+    }
+
+    public Music getMusic() {
+        return music;
+    }
+
+    public void setMusic(Music music) {
+        this.music = music;
     }
 }
