@@ -449,6 +449,8 @@ public class GameScreen implements Screen, Serializable {
         Texture inventoryTexture = new Texture(Gdx.files.internal("images/icons/buttons/Inventory.png"));
         Texture craftTexture = new Texture(Gdx.files.internal("images/icons/buttons/Craft.png"));
         Texture buildTexture = new Texture(Gdx.files.internal("images/icons/buttons/Build.png"));
+        Texture woodTexture = new Texture(Gdx.files.internal("images/icons/buttons/Wood.png"));
+        Texture waterTexture = new Texture(Gdx.files.internal("images/icons/buttons/Water.png"));
 
 
         /// REST BUTTON TEXTURE AND IMPLEMENTATION.
@@ -584,6 +586,52 @@ public class GameScreen implements Screen, Serializable {
             }
         });
 
+        TextureRegion woodTR = new TextureRegion(woodTexture);
+        TextureRegionDrawable woodTRD = new TextureRegionDrawable(woodTR);
+        ImageButton woodButton = new ImageButton(woodTRD);
+        woodButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                int yield = Utils.random.nextInt(0,5);
+                int bonus = Utils.random.nextInt(0,2);
+                for (int i = 0; i < yield; i++) player.getInventory().add("firewood");
+                if (player.getInventory().contains("axe") && bonus == 1) player.getInventory().add("hardwood");
+                showLoadingScreen(new LoadingScreen(
+                        self,
+                        "Gathering Wood",
+                        new DialogScreen(
+                                "Gathering Completed",
+                                0 < yield ?
+                                        bonus == 1
+                                                ? "You found " + yield + " firewood and " + bonus + " hardwood"
+                                                : "You found " + yield  + " firewood."
+                                        : "There's no wood to be found."
+                                )));
+            }
+        });
+
+        TextureRegion waterTR = new TextureRegion(waterTexture);
+        TextureRegionDrawable waterTRD = new TextureRegionDrawable(waterTR);
+        ImageButton waterButton = new ImageButton(waterTRD);
+        waterButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Index position = player.getPosition();
+                Area area = map[position.y()][position.x()];
+                boolean mapCondition = Arrays.asList(AreaType.VILLAGE, AreaType.FARM, AreaType.FOREST).contains(area.getType());
+                boolean inventoryCondition = player.getInventory().contains("empty_bottle");
+                if (!mapCondition) {
+                    showDialogScreen(new DialogScreen("","There's no sources available"));
+                } else if (!inventoryCondition) {
+                    showDialogScreen(new DialogScreen("","You have no ways to carry water"));}
+                if(mapCondition && inventoryCondition) {
+                    showLoadingScreen(new LoadingScreen(self, "Collecting Water", new DialogScreen("Collection Successful","You collected some dirty water")));
+                }
+            }
+        });
+
+
+
         // Finalization, arranging actors onto table
         padTable(table);
         table.align(Align.left);
@@ -602,6 +650,11 @@ public class GameScreen implements Screen, Serializable {
 
         table.add(craftingButton).pad(12).padLeft(0);
         table.add(campfireButton).pad(12);
+
+        table.row().fillX();
+
+        table.add(woodButton).pad(12).padLeft(0);
+        table.add(waterButton).pad(12);
 
         return table;
     }
@@ -744,7 +797,7 @@ public class GameScreen implements Screen, Serializable {
     }
 
     public void checkForStructureEvents(){
-//        If a trap is set up, chance for player to catch small animals
+//        If a fish basket trap is set up, chance for player to catch fishes
         if (0.40 < Utils.random.nextDouble()) {
             if (fishBasketTrap.isBuilt() && 0 < fishBasketTrap.getBaitRemaining()) {
                 fishBasketTrap.collect(player);
@@ -755,6 +808,13 @@ public class GameScreen implements Screen, Serializable {
         if (0.60 < Utils.random.nextDouble()){
             if (campfire.isBuilt() && 0 < campfire.getSecondsRemaining()) {
                 player.setCondition(player.getCondition() + 5);
+            }
+        }
+//       If a deadfall trap is set up, chance for player to catch small animals
+        if (0.40 < Utils.random.nextDouble()) {
+            if (deadfallTrap.isBuilt() && 0 < deadfallTrap.getBaitRemaining()) {
+                deadfallTrap.collect(player);
+                showDialogScreen(new DialogScreen("Your trapped went off","A small bird was caught in your trap"));
             }
         }
     }
