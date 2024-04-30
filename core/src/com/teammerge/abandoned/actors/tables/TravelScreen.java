@@ -160,7 +160,7 @@ public class TravelScreen extends Table {
                 }
 
                 if(player.getAreasVisited().contains(index)) {
-                    table.add(new Image(skin.newDrawable(area.getType().getIconKey(),Color.WHITE))).size(40);
+                    table.add(new Image(skin.newDrawable(area.getType().getIconKey(), area.getType() == AreaType.RESCUE_AREA ? Color.RED : Color.WHITE))).size(40);
                     continue;
                 }
                 if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
