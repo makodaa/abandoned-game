@@ -144,14 +144,16 @@ public class CraftingScreen extends Table {
         this.row().fillX().expandX();
 
 
-        VisTable inventoryTable = new VisTable();
+        Table inventoryTable = new Table();
         VisScrollPane inventoryScrollPane = new VisScrollPane(inventoryTable);
             List<String> inventoryList = new List<>(inventorystyle);
             inventoryTable.add(inventoryList).expand().fill().pad(10f);
         this.add(inventoryScrollPane).fillX().fillY().expand();
+        inventoryList.setItems(itemList.stream().map(Item::name).toArray(String[]::new));
+        inventoryList.setSelectedIndex(0);
 
 
-            VisTable currentItemTable = new VisTable();
+            Table currentItemTable = new Table();
             currentItemTable.align(Align.topLeft);
             currentItemTable.pad(32);
 
@@ -210,6 +212,7 @@ public class CraftingScreen extends Table {
                     requirementsTable.add(requirementGroupTable).fill();
                     requirementsTable.row().expandX().fill();
                 }
+
             currentItemTable.add(requirementsTable).fill();
             currentItemTable.row().expandX().fill();
 
@@ -218,15 +221,12 @@ public class CraftingScreen extends Table {
 
                 TextButton craftButton = new TextButton("Craft", buttonStyle);
                 craftButton.align(Align.right);
-                buttonGroupTable.add(craftButton).size(272f,80f).pad(16f);
+                buttonGroupTable.add(craftButton).size(235,63).pad(18f);
             currentItemTable.add(buttonGroupTable).fillX();
             this.add(currentItemTable).fillX();
             currentItemTable.add(craftButton).left();
 
         /// [Content]
-
-
-        inventoryList.setItems(itemList.stream().map(Item::name).toArray(String[]::new));
 
         itemLabel.setText(selectedItem.name());
         descriptionLabel.setText(selectedItem.description());
@@ -238,6 +238,7 @@ public class CraftingScreen extends Table {
             craftButton.setText("Not enough items");
             craftButton.setDisabled(true);
         }
+
 
         /// [Event Listeners]
 
@@ -270,7 +271,7 @@ public class CraftingScreen extends Table {
                 Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/crafting.wav"));
                 sound.play();
                 screen.showLoadingScreen("Crafting Completed", item.name() + "(" + resultCount + ")");
-                screen.setItemsCrafted();
+                screen.setItemsCrafted(screen.getItemsCrafted() + 1);
 
                 for (int i = 0; i < resultCount; ++i) {
                     player.addItem(item.id());
@@ -333,6 +334,10 @@ public class CraftingScreen extends Table {
                 if (canCraft(selectedItem)) {
                     craftButton.setText("Craft");
                     craftButton.setDisabled(false);
+                    if ((Arrays.asList("cooked_avian","cooked_fish","clean_water")).contains(idsOfItemsThatCanBeCrafted[inventoryList.getSelectedIndex()]) && screen.getCampfire().getSecondsRemaining() == 0) {
+                        craftButton.setText("Campfire Required");
+                        craftButton.setDisabled(true);
+                    }
                 } else {
                     craftButton.setText("Not enough items");
                     craftButton.setDisabled(true);

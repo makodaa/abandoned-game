@@ -174,7 +174,7 @@ public class GameScreen implements Screen, Serializable {
         Index position = player.getPosition();
         Area area = map[position.y()][position.x()];
         music = Gdx.audio.newMusic(Gdx.files.internal("music/"+ area.getType().getBackgroundMusic()));
-        music.setVolume(0.2f);
+        music.setVolume(0.1f);
         music.play();
 
 
@@ -948,8 +948,12 @@ public class GameScreen implements Screen, Serializable {
         stage.addActor(dialogScreen);
     }
 
-    public void setItemsCrafted(){
-        this.itemsCrafted++;
+    public int getItemsCrafted() {
+        return itemsCrafted;
+    }
+
+    public void setItemsCrafted(int itemsCrafted){
+        this.itemsCrafted = itemsCrafted;
     }
 
 

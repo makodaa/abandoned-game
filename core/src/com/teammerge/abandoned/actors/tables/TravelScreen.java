@@ -269,7 +269,7 @@ public class TravelScreen extends Table {
                 screen.move(direction);
                 screen.getMusic().stop();
                 screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/"+ screen.getMap()[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundMusic())));
-                screen.getMusic().setVolume(0.2f);
+                screen.getMusic().setVolume(0.1f);
                 screen.getMusic().play();
                 closeScreen();
 
