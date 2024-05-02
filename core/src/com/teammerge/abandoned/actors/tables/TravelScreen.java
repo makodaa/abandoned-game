@@ -235,7 +235,7 @@ public class TravelScreen extends Table {
         /*
          * Conceal area name when dark
          * */
-        if ((player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashligh   t")) {
+        if ((player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashlight")) {
             areaNameLabel.setText("???");
             description.setText("You can't figure out the place");
             areaIcon.setDrawable(skin.newDrawable("question_mark"));

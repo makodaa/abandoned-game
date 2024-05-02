@@ -1,5 +1,5 @@
 ID,Item,Weight,effectCondition,effectFullness,effectHydration,effectEnergy,usable?,naturally generates?,craftable?,crafting requirements,spawns in?,Misc.,Description
-empty_bottle,Empty Bottle,1,,,,,no,yes,no,2 plastic,CB;VI;FA;MA;HO,,An empty bottle.
+empty_bottle,Empty Bottle,1,,,,,no,yes,yes,2 plastic,CB;VI;FA;MA;HO,,An empty bottle.
 clean_water,Clean Water,2,,,30,,yes,yes,yes,dirty_water,CB;MA;HO,,A bottle of clean water. Restores hydration.
 dirty_water,Dirty Water,2,-10,,20,,yes,yes,no,,FO;VI;PA;FA,,Dirty water taken straight from the environment. Restores hydration.
 energy_drink,Energy Drink,2,-2,,20,20,yes,yes,no,,VI;CB;MA,,"A can of energy drink. It shouldn't be expired, right? Restores Energy and Hydration"
@@ -17,7 +17,7 @@ medicine,Medicine,0.5,20,,,-10,yes,yes,no,,HO;VI;MA,,Some old all around medicin
 first_aid_kit,First Aid Kit,2,40,,,,yes,yes,no,,HO;MA,,"A complete first aid kit, could treat any injury. Restores Condition"
 cloth,Cloth,0.5,,,,,no,yes,yes,clothes 2,CB;VI;MA;HO,,Some durable cloth.
 clothes,Clothes,1,,,,,no,yes,no,,VI;PA;MA,,Some leftover clothes left by evacuated civilians.
-rope,Rope,2,,,,,no,yes,no,,CB;VI;FA;MA,,Some trusty old rope.
+rope,Rope,2,,,,,no,yes,yes,2 cloth,CB;VI;FA;MA,,Some trusty old rope.
 plastic,Plastic,0.5,,,,,no,yes,no,,ALL,,Some sheets of plastic. Remember to Recycle.
 tinder,Tinder,0.2,,,,,no,no,yes,paper . firewood 5,,,"Tinder for starting fires, not the app."
 stick,Stick,1,,,,,no,yes,yes,firewood 3,VI;PA;FO;FA,,"Long, Durable sticks. Who's a good boy?"
@@ -26,15 +26,14 @@ hardwood,Hardwood,8,,,,,no,yes,no,,VI;PA;FO;FA,,"Solid. Best used for crafting e
 rubbish,Rubbish,1,,,,,no,yes,no,,ALL,,I don't see a use for this.
 backpack,Backpack,,,,,,no,yes,yes,3 cloth 1 rope,VI;MA,,A backpack for storing items. Increases Inventory Space
 matches,Matches,0.1,,,,,no,yes,no,,VI;CB;MA,,The best fire starters.
-fire_starter,Fire Starter,2,,,,,no,no,yes,2 hardwood 1 stick,,,Let's hope this works.
+fire_starter,Fire Starter,2,,,,,no,no,yes,1 hardwood 1 stick,,,Let's hope this works.
 flashlight,Flashlight,1,,,,,no,yes,no,,VI;CB;MA,,"A functioning flashlight, a rare find. Removes disabilities brought by darkness"
 axe,Axe,6,,,,,no,yes,no,,MA,,Here's Johnny. Increases yield in gathering wood
 paper,Paper,0.2,,,,,no,yes,no,,ALL;,,Paper.
 bread,Bread,1,,20,,,yes,yes,no,,VI;CB;MA;FA,,"Bread thumbs up"
 soda,Soda,2,-5,,20,10,yes,yes,no,,VI;CB;MA;,,Mi-Soda Original Taste
 rock,Rock,4,,,,,no,yes,no,,ALL,,"What can I say? 'You're welcome'?"
-spanish_bread,Spanish Bread,1,,30,,,yes,yes,no,,VI;CB;MA;FA,,"Colonizer bread."
-baguette,Baguette,1,,25,,,yes,yes,no,,VI;CB;MA;FA,,"Oui oui, Oratrice Mecanique d'Analyse Cardinale"
 jerkey,Beef Jerkey,2,,25,,,yes,yes,no,,VI;CB;MA,,"Long-lasting beef jerkey. Restores Hunger"
-juice,Juice,2,,,30,,yes,yes,no,,MA;CB,,"Juice"
+juice,Juice,2,,,30,,yes,yes,no,,MA;CB,,""
 coffee,Coffee,2,,,30,15,yes,yes,no,,MA,,"Neskape"
+

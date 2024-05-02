@@ -310,9 +310,8 @@ public class GameScreen implements Screen, Serializable {
             checkForWinLoseConditions();
 
 
-            if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
+            if (player.getMinutes() % 3 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
-
                 switch(Utils.random.nextInt(1,5))
                 {
                     case 1: {

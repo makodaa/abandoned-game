@@ -53,7 +53,7 @@ public class Player implements Serializable {
 
     public void decay(){
         setFullness(fullness - 2);
-        setHydration(hydration - 2);
+        setHydration(hydration - 3);
         setEnergy(energy - 2);
 
         if(fullness < 10 || hydration < 10 || energy < 5) setCondition(condition - Utils.random.nextInt(1,4));
