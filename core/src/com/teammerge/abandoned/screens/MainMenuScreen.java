@@ -46,7 +46,6 @@ public class MainMenuScreen implements Screen {
         camera = new OrthographicCamera();
         background = new Texture(Gdx.files.internal("images/main_menu_background.png"));
         music = Gdx.audio.newMusic(Gdx.files.internal("music/main_menu.mp3"));
-        music.setVolume(0.15f);
         music.play();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(stage); // Never Forget

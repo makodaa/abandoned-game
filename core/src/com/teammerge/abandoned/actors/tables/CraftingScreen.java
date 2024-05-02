@@ -161,7 +161,7 @@ public class CraftingScreen extends Table {
 
             Label itemLabel = new VisLabel("", labelStyle);
             itemLabel.setAlignment(Align.left);
-            currentItemTable.add(itemLabel).fillX().spaceBottom(32);
+            currentItemTable.add(itemLabel).top().fillX().spaceBottom(32);
             currentItemTable.row().expandX().fillX();
 
             Label descriptionLabel = new VisLabel("", labelStyle);
@@ -223,8 +223,9 @@ public class CraftingScreen extends Table {
                 craftButton.align(Align.right);
                 buttonGroupTable.add(craftButton).size(235,63).pad(18f);
             currentItemTable.add(buttonGroupTable).fillX();
-            this.add(currentItemTable).fillX();
-            currentItemTable.add(craftButton).left();
+            align(Align.topLeft);
+            this.add(currentItemTable).top().fillX();
+            currentItemTable.add(craftButton).expandY().fillY().bottom();
 
         /// [Content]
 
@@ -268,7 +269,9 @@ public class CraftingScreen extends Table {
                         break;
                     }
                 }
+
                 Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/crafting.wav"));
+                sound.setVolume(1, 0.7f);
                 sound.play();
                 screen.showLoadingScreen("Crafting Completed", item.name() + "(" + resultCount + ")");
                 screen.setItemsCrafted(screen.getItemsCrafted() + 1);
@@ -276,6 +279,8 @@ public class CraftingScreen extends Table {
                 for (int i = 0; i < resultCount; ++i) {
                     player.addItem(item.id());
                 }
+//              Close Screen as UI cannot be updated
+                remove();
             }
         });
         inventoryTable.addListener(new ChangeListener() {

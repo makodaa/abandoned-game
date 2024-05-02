@@ -3,6 +3,7 @@ package com.teammerge.abandoned.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -10,7 +11,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import com.teammerge.abandoned.AbandonedGame;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameOverScreen implements Screen {
@@ -26,6 +30,7 @@ public class GameOverScreen implements Screen {
     private boolean displayingCentralText;
 
     GameScreen gameScreen;
+    Music music;
 
     public GameOverScreen(AbandonedGame game, GameScreen gameScreen) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Regular.ttf"));
@@ -42,27 +47,36 @@ public class GameOverScreen implements Screen {
         int injuriesTreated = gameScreen.getInjuriesTreated();
         this.game = game;
 
-
-
         displayLeftTexts = new ArrayList<>();
         displayRightTexts = new ArrayList<>();
         displayCentralTexts = new ArrayList<>();
 
         // TODO: Modify the text
 
-        String gameEndText;
+        String[] gameEndText;
         if(gameEndingScene == 1){
-            gameEndText = "Unfortunately, you suffered due to your worsening condition and died.";
+            gameEndText = new String[]{
+                    "* You fell as, you struggled to stand up from your post.",
+                    "* Your vision starts to blur, and you start to lose your touch with reality",
+                    "* You decided to lay down, and try to rest away the pain",
+                    "* The world had mercy on you, and let you rest in peace."
+            };
         } else {
-            gameEndText = "Success! A rescue helicopter sees you and are now successfully rescued";
+            gameEndText = new String[]{
+                    "* You hear a truck engine pass by",
+                    "* You realized its a rescue truck",
+                    "* You stood and tried to take its attention",
+                    "...",
+                    "They See You!",
+                    "You're saved!"
+
+            };
         }
-        displayCentralTexts.add("Congratulations!\n"+ gameEndText);
-        displayCentralTexts.add("RAWR");
 
+        displayCentralTexts.addAll(Arrays.asList(gameEndText));
+        displayCentralTexts.add((gameEndingScene == 1 ? "Better Luck Next Time!" : "You survived!"));
         displayLeftTexts.add(
-                gameEndingScene == 1 ? "Better Luck Next Time!" : """
-                        You Survived!
-
+                        """
                         Days Survived\s
 
                         Distance Travelled
@@ -77,7 +91,7 @@ public class GameOverScreen implements Screen {
 
 
         displayRightTexts.add(
-                "\n\n"+ daysPassed +
+                daysPassed +
                 "\n\n" + distanceTravelled +
                 "\n\n" + itemsCollected +
                 "\n\n" + itemsCrafted +
@@ -97,6 +111,11 @@ public class GameOverScreen implements Screen {
 
                 // If both left and right texts are fully displayed, go to the next text or game screen
                 if (textComplete && currentRightLetterIndex == displayRightTexts.getFirst().length()) {
+
+                    File file = new File(Gdx.files.internal("saves/save_file.txt").path());
+                    if (!file.delete()) {
+                        System.out.println("Delete unsuccessful.");
+                    }
                     game.screen.dispose();
                     game.screen = new MainMenuScreen(game);
                     game.setScreen(game.screen);

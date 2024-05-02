@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -146,6 +147,41 @@ public class InventoryScreen extends Table {
 
                     /// Count the item use
 //                    screen.setItemsUsed();
+                    /// Play sound
+                    /// TODO: Add Sound
+                    switch (item.id()){
+                        case "dirty_water",
+                                "clean_water",
+                                "energy_drink",
+                                "soda" ->
+                        {
+                            Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/drinking.mp3"));
+                            sound.play();
+                        }
+                        case "edible_berries,",
+                                "wild_berries",
+                                "fruit",
+                                "raw_fish",
+                                "cooked_fish",
+                                "raw_avian",
+                                "cooked_avian",
+                                "rotten_meat",
+                                "bread" ->
+                        {
+                            Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/eating.wav"));
+                            sound.play();
+                        }
+                        case "bandages",
+                                "medicine",
+                                "first_aid_kit" ->
+                        {
+                            Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/patching.mp3"));
+                            sound.play();
+                        }
+                        case null, default -> {
+                            
+                        }
+                    };
                 }
             }
         });

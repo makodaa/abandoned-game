@@ -78,7 +78,7 @@ public class GameScreen implements Screen, Serializable {
     transient private HashMap<Integer, KeyHandler> listeners = new HashMap<>();
     boolean flag;
 
-    Music music;
+    transient Music music;
 
     public static GameScreen fromSerialized(final AbandonedGame game, GameScreen serialized) {
         serialized.serializingThread = serialized.createSerializingThread();
@@ -129,6 +129,10 @@ public class GameScreen implements Screen, Serializable {
 
         serialized.updateNearestLocation();
 
+        serialized.music = Gdx.audio.newMusic(Gdx.files.internal("music/starting_music.mp3"));
+        serialized.music.setVolume(1.0f);
+        serialized.music.play();
+
         return serialized;
     }
 
@@ -173,8 +177,8 @@ public class GameScreen implements Screen, Serializable {
         //Set up music
         Index position = player.getPosition();
         Area area = map[position.y()][position.x()];
-        music = Gdx.audio.newMusic(Gdx.files.internal("music/"+ area.getType().getBackgroundMusic()));
-        music.setVolume(0.1f);
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/starting_music.mp3"));
+        music.setVolume(1.0f);
         music.play();
 
 
@@ -204,10 +208,21 @@ public class GameScreen implements Screen, Serializable {
         listeners = new HashMap<>();
 
         /// FIXME: Remove this for release.
-        addKeyListener(Input.Keys.Q, () -> {
-            map = mapGenerator.generateMap(mapWidth, mapHeight);
-            loadBackgrounds(map[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundFolders());
-        });
+//        addKeyListener(Input.Keys.Q, () -> {
+//            map = mapGenerator.generateMap(mapWidth, mapHeight);
+//            loadBackgrounds(map[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundFolders());
+//        });
+//
+////        addKeyListener(Input.Keys.K, () -> {
+////            gameEndingScene = 1;
+////            runSerializingThread.set(false);
+////            game.setScreen(new GameOverScreen(game, this));
+////        });
+////        addKeyListener(Input.Keys.R, () -> {
+////            gameEndingScene = 2;
+////            runSerializingThread.set(false);
+////            game.setScreen(new GameOverScreen(game, this));
+////            });
 
     }
 
@@ -221,7 +236,9 @@ public class GameScreen implements Screen, Serializable {
                 String path = Gdx.files.internal("saves/save_file.txt").path();
                 try (FileOutputStream fileOutputStream = new FileOutputStream(path);
                         ObjectOutputStream objectOutputStream  = new ObjectOutputStream(fileOutputStream)) {
-                        objectOutputStream.writeObject(self);
+                        if (runSerializingThread.get()) {
+                            objectOutputStream.writeObject(self);
+                        }
                     } catch (IOException e) {
                         System.out.println("Something went wrong saving the state: " + String.join("\n", Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
                         runSerializingThread.set(false);
@@ -293,12 +310,41 @@ public class GameScreen implements Screen, Serializable {
             checkForWinLoseConditions();
 
 
-
             if (player.getMinutes() % 6 == 0 && player.getTimeSinceLastSecond() == 0) {
                 checkForStructureEvents();
+
+                switch(Utils.random.nextInt(1,5))
+                {
+                    case 1: {
+                        if (player.getInventory().contains("raw_avian")){
+                            player.getInventory().remove("raw_avian");
+                            player.getInventory().add("rotten_meat");
+                        }
+                        break;
+                    }
+                    case 2: {
+                        if (player.getInventory().contains("raw_fish")){
+                            player.getInventory().remove("raw_fish");
+                            player.getInventory().add("rotten_meat");
+                        }
+                        break;
+                    }
+                    case 3:
+                        if (player.getInventory().contains("cooked_avian")){
+                            player.getInventory().remove("cooked_avian");
+                            player.getInventory().add("rotten_meat");
+                        }
+                        break;
+                    case 4:
+                        if (player.getInventory().contains("cooked_fish")){
+                            player.getInventory().remove("cooked_fish");
+                            player.getInventory().add("rotten_meat");
+                        }
+                }
             }
 
             if(isGameDone){
+                runSerializingThread.set(false);
                 game.setScreen(new GameOverScreen(game, this));
             }
         }
@@ -518,6 +564,7 @@ public class GameScreen implements Screen, Serializable {
                 Area area = map[position.y()][position.x()];
                 List<String> extractedItems = area.extract();
                 itemsCollected += extractedItems.size();
+                player.decay();
                 DialogScreen dialog = new DialogScreen("Collected", displayItemsForMessage(extractedItems));
                 switch(Utils.random.nextInt(1,4)) {
                     case 1:
@@ -616,9 +663,12 @@ public class GameScreen implements Screen, Serializable {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 int yield = Utils.random.nextInt(0,5);
+                if (player.getInventory().contains("axe"))  yield+= 3;
                 int bonus = Utils.random.nextInt(0,2);
                 for (int i = 0; i < yield; i++) player.getInventory().add("firewood");
                 if (player.getInventory().contains("axe") && bonus == 1) player.getInventory().add("hardwood");
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/wood.mp3"));
+                sound.play();
                 showLoadingScreen(new LoadingScreen(
                         self,
                         "Gathering Wood",
@@ -630,6 +680,7 @@ public class GameScreen implements Screen, Serializable {
                                                 : "You found " + yield  + " firewood."
                                         : "There's no wood to be found."
                                 )));
+
             }
         });
 
@@ -649,6 +700,9 @@ public class GameScreen implements Screen, Serializable {
                     showDialogScreen(new DialogScreen("","You have no ways to carry water"));}
                 if(mapCondition && inventoryCondition) {
                     showLoadingScreen(new LoadingScreen(self, "Collecting Water", new DialogScreen("Collection Successful","You collected some dirty water")));
+                    player.decay();
+                    Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/water.mp3"));
+                    sound.play();
                 }
             }
         });
@@ -756,7 +810,6 @@ public class GameScreen implements Screen, Serializable {
             Index[] currentPath = queue.removeFirst();
             Index latest = currentPath[0];
 
-            System.out.println(seen.contains(latest));
             seen.add(latest);
             final Index[] neighbors = {
                     new Index(-1, 0),
@@ -841,7 +894,6 @@ public class GameScreen implements Screen, Serializable {
     private void checkForWinLoseConditions(){
         Area area = map[player.getPosition().y()][player.getPosition().x()];
         if ((0< player.getMinutes()|| minutes < player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
-            System.out.println(area.getRescueProbability());
 //            TODO: Create text screens for lose and win screens
 //            Check for lost condition
             if (player.getCondition() < 5) {

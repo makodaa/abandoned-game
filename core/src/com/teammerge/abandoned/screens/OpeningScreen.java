@@ -3,6 +3,7 @@ package com.teammerge.abandoned.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -25,6 +26,8 @@ public class OpeningScreen implements Screen {
     private final int mapWidth;
     private final int mapHeight;
 
+    Sound sound;
+
     public OpeningScreen(AbandonedGame game, int mapWidth, int mapHeight) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RobotoCondensed-Light.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -36,8 +39,12 @@ public class OpeningScreen implements Screen {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
 
+//        Play sound
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/transmission.wav"));
+        sound.play();
+
         displayTexts = new ArrayList<>();
-        displayTexts.add("\"Apologies, but we were ordered to not go back to the city for any more patrols.\"");
+        displayTexts.add("\"I'm Sorry, but we were ordered to not go back to the city for any more patrols.\"");
         displayTexts.add("\"The city is in shambles, with falling debris, broken wires, and no signal. " +
                 "It's too risky for us to send down units.\"");
         displayTexts.add("\"You'd have to make your way to our rescue zones outside the city\"");
@@ -106,7 +113,6 @@ public class OpeningScreen implements Screen {
     @Override
     public void dispose() {
         font.dispose();
-
     }
 
     private void displayCurrentText() {
@@ -134,6 +140,8 @@ public class OpeningScreen implements Screen {
             displayCurrentText();
         } else {
             // If all texts are displayed, transition to the game screen
+            sound.stop();
+            sound.dispose();
             game.setScreen(new GameScreen(game, mapWidth, mapHeight));
         }
     }

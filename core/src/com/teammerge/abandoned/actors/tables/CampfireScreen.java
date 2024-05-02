@@ -1,6 +1,7 @@
 package com.teammerge.abandoned.actors.tables;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -126,6 +127,9 @@ public class CampfireScreen extends Table {
                                 ? new DialogScreen("","Let's hope this works.")
                                 : new DialogScreen("","Nothing Happened.")));
                 if (0< campfire.getSecondsRemaining()) {
+                    screen.getMusic().stop();
+                    screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/campfire.mp3")));
+                    screen.getMusic().play();
                     removeActor(useFireStarter);
                     removeActor(useMatches);
                     row().expand(false,false);
@@ -149,6 +153,9 @@ public class CampfireScreen extends Table {
                                 ? new DialogScreen("","Let's hope this works.")
                                 : new DialogScreen("","Nothing Happened.")));
                 if (0< campfire.getSecondsRemaining()) {
+                    screen.getMusic().stop();
+                    screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/campfire.mp3")));
+                    screen.getMusic().play();
                     row().expand(false,false);
                     removeActor(useFireStarter);
                     removeActor(useMatches);
@@ -168,6 +175,8 @@ public class CampfireScreen extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 campfire.addTinder(player);
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/fire.wav"));
+                sound.play();
                 if (!campfire.isBuilt() || campfire.getSecondsRemaining() == 0 || Collections.frequency(player.getInventory(),"tinder") == 0 ) addTinder.setDisabled(true);
             }
         });
@@ -178,6 +187,8 @@ public class CampfireScreen extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 campfire.addFirewood(player);
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/fire.wav"));
+                sound.play();
                 if (!campfire.isBuilt() || campfire.getSecondsRemaining() == 0 || Collections.frequency(player.getInventory(),"firewood") == 0) addFirewood.setDisabled(true);
             }
         });
@@ -188,6 +199,8 @@ public class CampfireScreen extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 campfire.addHardwood(player);
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/fire.wav"));
+                sound.play();
                 if (!campfire.isBuilt() || campfire.getSecondsRemaining() == 0 || Collections.frequency(player.getInventory(),"hardwood") == 0) addHardwood.setDisabled(true);
             }
         });

@@ -263,13 +263,12 @@ public class TravelScreen extends Table {
                 player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 5));
                 player.setEnergy(player.getEnergy() - (int)Math.sqrt(targetArea.getDistance()));
                 screen.setDistanceTravelled((screen.getDistanceTravelled() + targetArea.getDistance()));
-                System.out.println(screen.getDistanceTravelled());
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
                 for (int i = 0; i < Math.sqrt(targetArea.getDistance()); i++) player.decay();
                 screen.move(direction);
                 screen.getMusic().stop();
                 screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/"+ screen.getMap()[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundMusic())));
-                screen.getMusic().setVolume(0.1f);
+                screen.getMusic().setVolume(1.0f);
                 screen.getMusic().play();
                 closeScreen();
 
