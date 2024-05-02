@@ -157,6 +157,9 @@ public class InventoryScreen extends Table {
                         {
                             Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/drinking.mp3"));
                             sound.play();
+                            if (item.id().equals("dirty_water") || item.id().equals("clean_water")) {
+                                player.getInventory().add("empty_bottle");
+                            }
                         }
                         case "edible_berries,",
                                 "wild_berries",
@@ -179,9 +182,10 @@ public class InventoryScreen extends Table {
                             sound.play();
                         }
                         case null, default -> {
-                            
+
                         }
                     };
+
                 }
             }
         });

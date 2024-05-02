@@ -82,7 +82,7 @@ public class Area implements Serializable {
                 .filter(Objects::nonNull)
                 .count();
 
-        int count = Utils.random.nextInt(0, (int)Math.ceil(items.length / 1.5));
+        int count = Utils.random.nextInt(0, (int)Math.ceil(length / 2.0));
         ArrayList<String> chosen = new ArrayList<>();
         for (int i = 0; i < count; ++i) {
             int currentIndex = -1;

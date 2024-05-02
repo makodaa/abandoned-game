@@ -703,6 +703,8 @@ public class GameScreen implements Screen, Serializable {
                     player.decay();
                     Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/water.mp3"));
                     sound.play();
+                    player.getInventory().remove("empty_bottle");
+                    player.getInventory().add("dirty_water");
                 }
             }
         });
@@ -850,7 +852,7 @@ public class GameScreen implements Screen, Serializable {
             distance += area.getDistance();
         }
 
-        double angle = Math.atan2(found[0].y() - found[found.length - 1].y(), found[0].x() - found[found.length - 1].x());
+        double angle = Math.atan2(found[found.length - 1].y() - found[0].y(), found[0].x() - found[found.length - 1].x());
         angle *= (180.0 / Math.PI);
         angle %= 360.0;
 

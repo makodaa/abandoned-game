@@ -1,5 +1,5 @@
 ID,Item,Weight,effectCondition,effectFullness,effectHydration,effectEnergy,usable?,naturally generates?,craftable?,crafting requirements,spawns in?,Misc.,Description
-empty_bottle,Empty Bottle,1,,,,,yes,yes,no,,CB;VI;FA;MA;HO,,An empty bottle.
+empty_bottle,Empty Bottle,1,,,,,no,yes,no,2 plastic,CB;VI;FA;MA;HO,,An empty bottle.
 clean_water,Clean Water,2,,,30,,yes,yes,yes,dirty_water,CB;MA;HO,,A bottle of clean water. Restores hydration.
 dirty_water,Dirty Water,2,-10,,20,,yes,yes,no,,FO;VI;PA;FA,,Dirty water taken straight from the environment. Restores hydration.
 energy_drink,Energy Drink,2,-2,,20,20,yes,yes,no,,VI;CB;MA,,"A can of energy drink. It shouldn't be expired, right? Restores Energy and Hydration"
@@ -36,3 +36,5 @@ rock,Rock,4,,,,,no,yes,no,,ALL,,"What can I say? 'You're welcome'?"
 spanish_bread,Spanish Bread,1,,30,,,yes,yes,no,,VI;CB;MA;FA,,"Colonizer bread."
 baguette,Baguette,1,,25,,,yes,yes,no,,VI;CB;MA;FA,,"Oui oui, Oratrice Mecanique d'Analyse Cardinale"
 jerkey,Beef Jerkey,2,,25,,,yes,yes,no,,VI;CB;MA,,"Long-lasting beef jerkey. Restores Hunger"
+juice,Juice,2,,,30,,yes,yes,no,,MA;CB,,"Juice"
+coffee,Coffee,2,,,30,15,yes,yes,no,,MA,,"Neskape"

@@ -164,12 +164,13 @@ public class TravelScreen extends Table {
                     table.add(new Image(skin.newDrawable(area.getType().getIconKey(), area.getType() == AreaType.RESCUE_AREA ? Color.RED : Color.WHITE))).size(40);
                     continue;
                 }
-                if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
+
+                if ((player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashlight")) {
                     table.add(new Image(skin.newDrawable("question_mark",Color.GRAY))).size(40);
                     continue;
                 }
 
-                table.add(new Image(skin.newDrawable(area.getType().getIconKey(),area.getType() == AreaType.RESCUE_AREA ? Color.RED : Color.GRAY))).size(40);
+                table.add(new Image(skin.newDrawable(area.getType().getIconKey(),area.getType() == AreaType.RESCUE_AREA ? Color.GREEN : Color.GRAY))).size(40);
             }
             table.row();
         }
@@ -234,7 +235,7 @@ public class TravelScreen extends Table {
         /*
          * Conceal area name when dark
          * */
-        if (player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) {
+        if ((player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) && !player.getInventory().contains("flashligh   t")) {
             areaNameLabel.setText("???");
             description.setText("You can't figure out the place");
             areaIcon.setDrawable(skin.newDrawable("question_mark"));
@@ -256,6 +257,9 @@ public class TravelScreen extends Table {
                         }
                     }
                 }
+                if ((player.getMinutes() % 24 < 6 || 18 < player.getMinutes() % 24) && player.getInventory().contains("flashlight")){
+                    player.getInventory().remove("flashlight");
+                }
 
                 Sound walkingSound = Gdx.audio.newSound(Gdx.files.internal("sounds/walking.mp3"));
                 walkingSound.play();
@@ -264,7 +268,7 @@ public class TravelScreen extends Table {
                 player.setEnergy(player.getEnergy() - (int)Math.sqrt(targetArea.getDistance()));
                 screen.setDistanceTravelled((screen.getDistanceTravelled() + targetArea.getDistance()));
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
-                for (int i = 0; i < Math.sqrt(targetArea.getDistance()); i++) player.decay();
+                for (int i = 0; i < (targetArea.getDistance()/3); i++) player.decay();
                 screen.move(direction);
                 screen.getMusic().stop();
                 screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/"+ screen.getMap()[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundMusic())));
