@@ -17,6 +17,7 @@ import com.teammerge.abandoned.screens.GameScreen;
 import com.teammerge.abandoned.utilities.wfc.classes.Area;
 import com.teammerge.abandoned.utilities.wfc.enums.AreaType;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class FishTrapScreen extends Table {
@@ -102,11 +103,9 @@ public class FishTrapScreen extends Table {
 
         Area area = screen.getMap()[player.getPosition().y()][player.getPosition().x()];
         TextButton buildButton = new TextButton("Build", buttonStyle);
-        if (Collections.frequency(player.getInventory(),"stick") < 5
+        if (Collections.frequency(player.getInventory(),"stick") < 3
                 || Collections.frequency(player.getInventory(),"rope") < 2
-                || area.getType() != AreaType.VILLAGE
-                || area.getType() != AreaType.FOREST
-                || area.getType() != AreaType.FARM)
+                || (!Arrays.asList(AreaType.FOREST, AreaType.PARK, AreaType.FARM).contains(area.getType())))
             buildButton.setDisabled(true);
 
         buildButton.addListener(new ChangeListener() {

@@ -73,7 +73,7 @@ public class Campfire implements Serializable {
 
     public void addHardwood(Player player) {
         player.getInventory().remove("hardwood");
-        setSecondsRemaining(getSecondsRemaining() + 360);
+        setSecondsRemaining(getSecondsRemaining() + 240);
     }
 
     public Campfire getCampfire() {

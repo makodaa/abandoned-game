@@ -130,7 +130,7 @@ public class GameScreen implements Screen, Serializable {
         serialized.updateNearestLocation();
 
         serialized.music = Gdx.audio.newMusic(Gdx.files.internal("music/starting_music.mp3"));
-        serialized.music.setVolume(1.0f);
+        serialized.music.setVolume(0.8f);
         serialized.music.play();
 
         return serialized;
@@ -175,10 +175,9 @@ public class GameScreen implements Screen, Serializable {
         deadfallTrap = new DeadfallTrap();
 
         //Set up music
-        Index position = player.getPosition();
-        Area area = map[position.y()][position.x()];
         music = Gdx.audio.newMusic(Gdx.files.internal("music/starting_music.mp3"));
-        music.setVolume(1.0f);
+        music.setVolume(0.8f);
+        music.setLooping(false);
         music.play();
 
 
@@ -208,22 +207,6 @@ public class GameScreen implements Screen, Serializable {
         listeners = new HashMap<>();
 
         /// FIXME: Remove this for release.
-//        addKeyListener(Input.Keys.Q, () -> {
-//            map = mapGenerator.generateMap(mapWidth, mapHeight);
-//            loadBackgrounds(map[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundFolders());
-//        });
-//
-////        addKeyListener(Input.Keys.K, () -> {
-////            gameEndingScene = 1;
-////            runSerializingThread.set(false);
-////            game.setScreen(new GameOverScreen(game, this));
-////        });
-////        addKeyListener(Input.Keys.R, () -> {
-////            gameEndingScene = 2;
-////            runSerializingThread.set(false);
-////            game.setScreen(new GameOverScreen(game, this));
-////            });
-
     }
 
     private Thread createSerializingThread() {
@@ -306,57 +289,32 @@ public class GameScreen implements Screen, Serializable {
 
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
-//            TODO: uncomment
             checkForWinLoseConditions();
-
-
-            if (player.getMinutes() % 3 == 0 && player.getTimeSinceLastSecond() == 0) {
-                checkForStructureEvents();
-                switch(Utils.random.nextInt(1,5))
-                {
-                    case 1: {
-                        if (player.getInventory().contains("raw_avian")){
-                            player.getInventory().remove("raw_avian");
-                            player.getInventory().add("rotten_meat");
-                        }
-                        break;
-                    }
-                    case 2: {
-                        if (player.getInventory().contains("raw_fish")){
-                            player.getInventory().remove("raw_fish");
-                            player.getInventory().add("rotten_meat");
-                        }
-                        break;
-                    }
-                    case 3:
-                        if (player.getInventory().contains("cooked_avian")){
-                            player.getInventory().remove("cooked_avian");
-                            player.getInventory().add("rotten_meat");
-                        }
-                        break;
-                    case 4:
-                        if (player.getInventory().contains("cooked_fish")){
-                            player.getInventory().remove("cooked_fish");
-                            player.getInventory().add("rotten_meat");
-                        }
+            tryForEndCondition();
+                if (player.getMinutes() % 8 == 0 && player.getTimeSinceLastSecond() == 0) {
+                    checkForStructureEvents();
+                    tryForSpoilage();
                 }
-            }
-
-            if(isGameDone){
-                runSerializingThread.set(false);
-                game.setScreen(new GameOverScreen(game, this));
-            }
+                if (Arrays.asList(4,16,17,20,23).contains(player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
+                    tryForAmbienceTrack();
+                }
         }
 
 
         updateAttributeGraphics();
         updateLocationGraphics();
         updateDiurnalCycleGraphics();
-
         if (!flag) {
             if (player.getInventory().contains("backpack")) {
                 player.setInventoryCapacity(player.getInventoryCapacity() + 10);
                 flag = true;
+            }
+        }
+
+        if(flag){
+            if (!player.getInventory().contains("backpack")){
+                player.setInventoryCapacity(player.getInventoryCapacity() - 10);
+                flag = false;
             }
         }
     }
@@ -565,15 +523,15 @@ public class GameScreen implements Screen, Serializable {
                 itemsCollected += extractedItems.size();
                 player.decay();
                 DialogScreen dialog = new DialogScreen("Collected", displayItemsForMessage(extractedItems));
-                switch(Utils.random.nextInt(1,4)) {
+                switch(Utils.random.nextInt(1,10)) {
                     case 1:
 //                        If too dark, player has a chance to injure themselves
                         int minuteLeftover = player.getMinutes() % 24;
                         if (!(6 <= minuteLeftover && minuteLeftover <= 18) &&
                                 !player.getInventory().contains("flashlight")) {
 //                            10% Chance of Injury
-                            if (Utils.random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,11));
+                            if (Utils.random.nextDouble() > 0.80) {
+                                player.setCondition(player.getCondition() - 5);
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "It was too dark, and you injured yourself");
                                 setInjuriesFaced(getInjuriesTreated() + 1);
@@ -582,29 +540,70 @@ public class GameScreen implements Screen, Serializable {
                         break;
                     case 2:
 //                        If in Village, Commercial Bldg, or Mall, might face against dangerous survivors
-                        switch (area.getType()) {
-                            case AreaType.VILLAGE, AreaType.COMMERCIAL_BLDG, AreaType.MALL:
-//                            10% Chance of getting into a fight
-                            if (Utils.random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
+                        if (Arrays.asList(AreaType.VILLAGE, AreaType.COMMERCIAL_BLDG, AreaType.MALL).contains(area.getType())) {
+                            if (Utils.random.nextDouble() > 0.82) {
+                                player.setCondition(player.getCondition() - 5);
                                 extractedItems.clear();
-                                dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor");
+                                dialog = new DialogScreen("Scavenge Failed", "You've encountered and fought with a violent survivor" +
+                                        (!player.getInventory().isEmpty()
+                                                ? " and lost " + player.getInventory().remove(Utils.random.nextInt(0,player.getInventory().size()))
+                                                : "."
+                                        )
+                                );
                                 setInjuriesFaced(getInjuriesFaced() + 1);
                             }
-                            break;
                         }
                         break;
                     case 3:
 //                        If in Forest, Park, Village, Farm, might encounter wild animals
-                        switch (area.getType()) {
-                            case AreaType.FOREST,  AreaType.VILLAGE,  AreaType.PARK:
-//                            10% Chance of getting into a fight
-                            if (Utils.random.nextDouble() > 0.85) {
-                                player.setCondition(player.getCondition() - Utils.random.nextInt(5,16));
+                        if (Arrays.asList(AreaType.FOREST,AreaType.VILLAGE,AreaType.PARK).contains(area.getType())) {
+                            if (Utils.random.nextDouble() > 0.90) {
+                                player.setCondition(player.getCondition() - 10);
                                 extractedItems.clear();
                                 dialog = new DialogScreen("Scavenge Failed", "A snake was hiding around the area and bit you.");
                                 setInjuriesFaced(getInjuriesFaced() + 1);
                             }
+                        }
+                        break;
+                    case 4:
+//                        In commercial buildings and malls, chance for electrocution
+                        if (Arrays.asList(AreaType.MALL, AreaType.COMMERCIAL_BLDG, AreaType.HOSPITAL).contains(area.getType())) {
+                            if (Utils.random.nextDouble() > 0.82) {
+                                player.setCondition(player.getCondition() - 15);
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "You made contact with some live wires");
+                                setInjuriesFaced(getInjuriesFaced() + 1);
+                            }
+                        }
+                        break;
+                    case 5:
+                        if (Arrays.asList(AreaType.MALL, AreaType.COMMERCIAL_BLDG, AreaType.VILLAGE, AreaType.HOSPITAL).contains(area.getType())) {
+                            if (Utils.random.nextDouble() > 0.82) {
+                                player.setCondition(player.getCondition() - 15);
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "You were hit by fallen debris");
+                                setInjuriesFaced(getInjuriesFaced() + 1);
+                            }
+                        }
+                        break;
+                    case 6:
+                        if (Arrays.asList(AreaType.MALL, AreaType.COMMERCIAL_BLDG, AreaType.VILLAGE).contains(area.getType())) {
+                            if (Utils.random.nextDouble() > 0.82) {
+                                player.setCondition(player.getCondition() - 5);
+                                extractedItems.clear();
+                                dialog = new DialogScreen("Scavenge Failed", "You fell down a sharp ledge");
+                                setInjuriesFaced(getInjuriesFaced() + 1);
+                            }
+                        }
+                        break;
+                    case 7:
+                        if (player.getEnergy() < 15) {
+                            player.setCondition(player.getCondition() - 5);
+                            extractedItems.clear();
+                            dialog = new DialogScreen("Scavenge Failed", "You collapsed as you tried to scavenge aimlessly");
+                            player.setMinutes(player.getMinutes() + 4);
+                            for (int i = 0; i < 4; i++) player.decay();
+                            setInjuriesFaced(getInjuriesFaced() + 1);
                         }
                         break;
                 }
@@ -790,13 +789,11 @@ public class GameScreen implements Screen, Serializable {
             }
 
         }
-        // FIXME:
 
         daysPassedLabel.setText("DAY " + daysPassed);
 
         hoursBeforeNextPhaseLabel.setText(dayCycle + waitingHours + " HOURS BEFORE " + nextCycle);
 
-        // FIXME:
 //        headDirectionLabel.setText("" + player.getTimeSinceLastSecond());
     }
 
@@ -851,9 +848,11 @@ public class GameScreen implements Screen, Serializable {
             distance += area.getDistance();
         }
 
-        double angle = Math.atan2(found[found.length - 1].y() - found[0].y(), found[0].x() - found[found.length - 1].x());
-        angle *= (180.0 / Math.PI);
+        double angle = (180.0 / Math.PI) * Math.atan2(found[found.length - 1].y() - found[0].y(), found[0].x() - found[found.length - 1].x());
+        angle += 360.0 * 4;
         angle %= 360.0;
+
+        System.out.println(angle);
 
         String angleDirection = getDirection(angle);
         headDirectionLabel.setText("Nearest: " + distance + "km" + (angleDirection == null ? "" : ", " + angleDirection));
@@ -946,10 +945,9 @@ public class GameScreen implements Screen, Serializable {
 
         return builder.toString();
     }
-
-    public void checkForStructureEvents(){
+    private void checkForStructureEvents(){
 //        If a fish basket trap is set up, chance for player to catch fishes
-        if (0.40 < Utils.random.nextDouble()) {
+        if (0.30 < Utils.random.nextDouble()) {
             if (fishBasketTrap.isBuilt() && 0 < fishBasketTrap.getBaitRemaining()) {
                 fishBasketTrap.collect(player);
                 showDialogScreen(new DialogScreen("Your trapped went off","You caught some fishes"));
@@ -962,11 +960,78 @@ public class GameScreen implements Screen, Serializable {
             }
         }
 //       If a deadfall trap is set up, chance for player to catch small animals
-        if (0.40 < Utils.random.nextDouble()) {
+        if (0.30 < Utils.random.nextDouble()) {
             if (deadfallTrap.isBuilt() && 0 < deadfallTrap.getBaitRemaining()) {
                 deadfallTrap.collect(player);
                 showDialogScreen(new DialogScreen("Your trapped went off","A small bird was caught in your trap"));
             }
+        }
+    }
+    private void tryForAmbienceTrack() {
+        switch (Utils.random.nextInt(0,20)){
+            case 1:
+                music.stop();
+                music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_1.mp3"));
+                music.setVolume(0.6f);
+                music.play();
+                break;
+            case 2:
+                music.stop();
+                music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_2.mp3"));
+                music.setVolume(0.6f);
+                music.play();
+                break;
+            case 3:
+                music.stop();
+                music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_3.mp3"));
+                music.setVolume(0.6f);
+                music.play();
+                break;
+            case 4:
+                music.stop();
+                music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_4.mp3"));
+                music.setVolume(0.6f);
+                music.play();
+                break;
+            default:
+                break;
+        }
+    }
+    private  void tryForEndCondition(){
+        if(isGameDone){
+            music.stop();
+            runSerializingThread.set(false);
+            game.setScreen(new GameOverScreen(game, this));
+        }
+    }
+    private void tryForSpoilage(){
+        switch(Utils.random.nextInt(1,5))
+        {
+            case 1: {
+                if (player.getInventory().contains("raw_avian")){
+                    player.getInventory().remove("raw_avian");
+                    player.getInventory().add("rotten_meat");
+                }
+                break;
+            }
+            case 2: {
+                if (player.getInventory().contains("raw_fish")){
+                    player.getInventory().remove("raw_fish");
+                    player.getInventory().add("rotten_meat");
+                }
+                break;
+            }
+            case 3:
+                if (player.getInventory().contains("cooked_avian")){
+                    player.getInventory().remove("cooked_avian");
+                    player.getInventory().add("rotten_meat");
+                }
+                break;
+            case 4:
+                if (player.getInventory().contains("cooked_fish")){
+                    player.getInventory().remove("cooked_fish");
+                    player.getInventory().add("rotten_meat");
+                }
         }
     }
 

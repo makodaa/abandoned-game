@@ -111,13 +111,13 @@ public class CampfireScreen extends Table {
                 removeActor(recipeDescriptionLabel);
                 row().expand(false,false);
                 add(useMatches).size(400,45).row();
-                add(useFireStarter).size(400,45).expandY().fillY();
+                add(useFireStarter).size(400,45);
                 if (0 < Collections.frequency(player.getInventory(),"matches") && 0 < Collections.frequency(player.getInventory(),"tinder" )) useMatches.setDisabled(false);
                 if (0 < Collections.frequency(player.getInventory(),"fire_starter") && 0 <Collections.frequency(player.getInventory(),"tinder" )) useFireStarter.setDisabled(false);
             }
         });
 
-        useFireStarter = new TextButton("Light (Fire Starter)",buttonStyle);
+        useFireStarter = new TextButton("Light (Fire Starter) (Needs Tinder)",buttonStyle);
         if (!campfire.isBuilt() || 0 < campfire.getSecondsRemaining() || Collections.frequency(player.getInventory(),"fire_starter" ) == 0 || Collections.frequency(player.getInventory(),"tinder" ) == 0) useFireStarter.setDisabled(true);
         useFireStarter.addListener(new ChangeListener() {
             @Override
@@ -135,7 +135,7 @@ public class CampfireScreen extends Table {
                     row().expand(false,false);
                     add(addTinder).size(400,45).row();
                     add(addFirewood).size(400,45).row();
-                    add(addHardwood).size(400,45).expandY().fillY();
+                    add(addHardwood).size(400,45);
                     if (0 < Collections.frequency(player.getInventory(),"tinder")) addTinder.setDisabled(false);
                     if (0 < Collections.frequency(player.getInventory(),"firewood")) addFirewood.setDisabled(false);
                     if (0 < Collections.frequency(player.getInventory(),"hardwood")) addHardwood.setDisabled(false);
@@ -143,7 +143,7 @@ public class CampfireScreen extends Table {
             }
         });
 
-        useMatches = new TextButton("Light (Matches)", buttonStyle);
+        useMatches = new TextButton("Light (Matches) (Needs Tinder)", buttonStyle);
         if (!campfire.isBuilt() || 0 < campfire.getSecondsRemaining() || Collections.frequency(player.getInventory(),"matches") == 0 || Collections.frequency(player.getInventory(),"tinder" ) == 0) useMatches.setDisabled(true);
         useMatches.addListener(new ChangeListener() {
             @Override
@@ -161,7 +161,7 @@ public class CampfireScreen extends Table {
                     removeActor(useMatches);
                     add(addTinder).size(400,45).row();
                     add(addFirewood).size(400,45).row();
-                    add(addHardwood).size(400,45).expandY().fillY();
+                    add(addHardwood).size(400,45);
                     if (0 < Collections.frequency(player.getInventory(),"tinder")) addTinder.setDisabled(false);
                     if (0 < Collections.frequency(player.getInventory(),"firewood")) addFirewood.setDisabled(false);
                     if (0 < Collections.frequency(player.getInventory(),"hardwood")) addHardwood.setDisabled(false);
@@ -205,31 +205,29 @@ public class CampfireScreen extends Table {
             }
         });
 
-
-
         pad(18.0f);
         defaults().spaceBottom(9);
         align(Align.topLeft);
         add(topBarTable).expandX().fillX().right();
         row();
         add(timeInformationTable).left();
-        row().expand().fill();
-        add(campfireDescriptionTable);
         row();
+        add(campfireDescriptionTable);
+        row().spaceBottom(45);
         if (!campfire.isBuilt()){
-            add(buildCampfire).size(400,45);
+            add(buildCampfire).size(400,45).spaceBottom(18);
             row();
-            add(recipeDescriptionLabel).expandY().fillY();
+            add(recipeDescriptionLabel);
         }
         if(campfire.isBuilt() && 0 == campfire.getSecondsRemaining()) {
-            add(useMatches).size(400,45);
+            add(useMatches).size(400,45).spaceBottom(18);
             row();
-            add(useFireStarter).size(400,45).expandY().fillY();
+            add(useFireStarter).size(400,45);
         }
         if(campfire.isBuilt() && 0 < campfire.getSecondsRemaining()) {
-            add(addTinder).size(400,45).row();
-            add(addFirewood).size(400,45).row();
-            add(addHardwood).size(400,45).expandY().fillY();
+            add(addTinder).size(400,45).spaceBottom(18).row();
+            add(addFirewood).size(400,45).spaceBottom(18).row();
+            add(addHardwood).size(400,45);
         }
     }
 

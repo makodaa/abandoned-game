@@ -29,11 +29,12 @@ matches,Matches,0.1,,,,,no,yes,no,,VI;CB;MA,,The best fire starters.
 fire_starter,Fire Starter,2,,,,,no,no,yes,1 hardwood 1 stick,,,Let's hope this works.
 flashlight,Flashlight,1,,,,,no,yes,no,,VI;CB;MA,,"A functioning flashlight, a rare find. Removes disabilities brought by darkness"
 axe,Axe,6,,,,,no,yes,no,,MA,,Here's Johnny. Increases yield in gathering wood
-paper,Paper,0.2,,,,,no,yes,no,,ALL;,,Paper.
-bread,Bread,1,,20,,,yes,yes,no,,VI;CB;MA;FA,,"Bread thumbs up"
+paper,Paper,0.2,,,,,no,yes,no,,ALL;,,"Get one and pass".
+bread,Bread,1,,20,,,yes,yes,yes,3 flour 1 dirty_water . 3 flour 1 clean_water,VI;CB;MA;FA,,"Some surviving pieces of bread"
 soda,Soda,2,-5,,20,10,yes,yes,no,,VI;CB;MA;,,Mi-Soda Original Taste
 rock,Rock,4,,,,,no,yes,no,,ALL,,"What can I say? 'You're welcome'?"
 jerkey,Beef Jerkey,2,,25,,,yes,yes,no,,VI;CB;MA,,"Long-lasting beef jerkey. Restores Hunger"
-juice,Juice,2,,,30,,yes,yes,no,,MA;CB,,""
-coffee,Coffee,2,,,30,15,yes,yes,no,,MA,,"Neskape"
-
+juice,Juice,2,,,30,,yes,yes,no,,MA;CB,,"Orange Colored Juice, Orange Flavored"
+coffee,Coffee,2,,,30,15,yes,yes,no,,MA,,Special thanks to the sonsors of today's project.
+wheat,Wheat,0.2,,,,,no,yes,no,,FA,,"Dried, but somewhat preserved strands of wheat"
+flour,Flour,0.1,,,,,no,yes,yes,wheat 2,FA;VI,,"Just add some water"

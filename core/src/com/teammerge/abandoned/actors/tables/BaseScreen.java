@@ -128,6 +128,10 @@ public class BaseScreen extends Table {
                 remove();
             }
         });
+        if (80 < player.getEnergy()) {
+            textButton.setDisabled(true);
+            textButton.setText("You don't feel tired");
+        }
         return textButton;
     }
 

@@ -235,6 +235,10 @@ public class CraftingScreen extends Table {
         if (canCraft(selectedItem)) {
             craftButton.setText("Craft");
             craftButton.setDisabled(false);
+            if ((Arrays.asList("cooked_avian","cooked_fish","clean_water")).contains(idsOfItemsThatCanBeCrafted[inventoryList.getSelectedIndex()]) && screen.getCampfire().getSecondsRemaining() == 0) {
+                craftButton.setText("Campfire Required");
+                craftButton.setDisabled(true);
+            }
         } else {
             craftButton.setText("Not enough items");
             craftButton.setDisabled(true);
