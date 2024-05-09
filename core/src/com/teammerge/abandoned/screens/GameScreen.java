@@ -207,6 +207,7 @@ public class GameScreen implements Screen, Serializable {
         listeners = new HashMap<>();
 
         /// FIXME: Remove this for release.
+//        addKeyListener(Input.Keys.M, this::tryForAmbienceTrack);
     }
 
     private Thread createSerializingThread() {
@@ -216,6 +217,7 @@ public class GameScreen implements Screen, Serializable {
 
         Thread thread = new Thread(() -> {
             while (runSerializingThread.get()) {
+                System.out.println("Saving file");
                 String path = Gdx.files.internal("saves/save_file.txt").path();
                 try (FileOutputStream fileOutputStream = new FileOutputStream(path);
                         ObjectOutputStream objectOutputStream  = new ObjectOutputStream(fileOutputStream)) {
@@ -226,8 +228,6 @@ public class GameScreen implements Screen, Serializable {
                         System.out.println("Something went wrong saving the state: " + String.join("\n", Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
                         runSerializingThread.set(false);
                 };
-
-
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -290,14 +290,14 @@ public class GameScreen implements Screen, Serializable {
         if (loadingScreen.getStage() == null && dialogScreen.getStage() == null) {
             player.tick(delta * 1000);
             checkForWinLoseConditions();
-            tryForEndCondition();
                 if (player.getMinutes() % 8 == 0 && player.getTimeSinceLastSecond() == 0) {
                     checkForStructureEvents();
                     tryForSpoilage();
                 }
-                if (Arrays.asList(4,16,17,20,23).contains(player.getMinutes()) && player.getTimeSinceLastSecond() == 0) {
-                    tryForAmbienceTrack();
-                }
+            if (Arrays.asList(4,16,17,18,19,20,23).contains(player.getMinutes() % 24) && player.getTimeSinceLastSecond() == 0) {
+                tryForAmbienceTrack();
+            }
+            tryForEndCondition();
         }
 
 
@@ -483,7 +483,6 @@ public class GameScreen implements Screen, Serializable {
         TextureRegion restTR = new TextureRegion(restTexture);
         TextureRegionDrawable restTRD = new TextureRegionDrawable(restTR);
         ImageButton restButton = new ImageButton(restTRD);
-
         restButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -968,29 +967,30 @@ public class GameScreen implements Screen, Serializable {
         }
     }
     private void tryForAmbienceTrack() {
-        switch (Utils.random.nextInt(0,20)){
+        System.out.println(player.getMinutes() % 24);
+        switch (Utils.random.nextInt(1,6)){
             case 1:
                 music.stop();
                 music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_1.mp3"));
-                music.setVolume(0.6f);
+                music.setVolume(0.8f);
                 music.play();
                 break;
             case 2:
                 music.stop();
                 music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_2.mp3"));
-                music.setVolume(0.6f);
+                music.setVolume(0.8f);
                 music.play();
                 break;
             case 3:
                 music.stop();
                 music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_3.mp3"));
-                music.setVolume(0.6f);
+                music.setVolume(0.8f);
                 music.play();
                 break;
             case 4:
                 music.stop();
                 music = Gdx.audio.newMusic(Gdx.files.internal("music/ambience_4.mp3"));
-                music.setVolume(0.6f);
+                music.setVolume(0.8f);
                 music.play();
                 break;
             default:

@@ -56,8 +56,8 @@ public class Player implements Serializable {
         setHydration(hydration - 3);
         setEnergy(energy - 2);
 
-        if(fullness < 15 || hydration < 15 || energy < 10) setCondition(condition - Utils.random.nextInt(1,4));
-        if((80 < fullness &&  80 < hydration) && condition < 70) setCondition(Math.min(condition + Utils.random.nextInt(1,3),70));
+        if(fullness < 15 || hydration < 15 || energy < 10) setCondition(condition - 2);
+        if((60 < fullness &&  80 < hydration) && condition < 70) setCondition(Math.min(condition + Utils.random.nextInt(1,3),60));
     }
 
     public void setCondition(int condition) { this.condition = Math.min(Math.max(condition,0),100); }

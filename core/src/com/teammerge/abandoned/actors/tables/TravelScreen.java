@@ -264,11 +264,11 @@ public class TravelScreen extends Table {
                 Sound walkingSound = Gdx.audio.newSound(Gdx.files.internal("sounds/walking.mp3"));
                 walkingSound.play();
                 screen.showLoadingScreen(new LoadingScreen(screen, "Travelling to " + areaNameLabel.getText(), dialog));
-                player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 5));
+                player.setMinutes(player.getMinutes() + (targetArea.getDistance() / 4));
                 player.setEnergy(player.getEnergy() - (int)Math.sqrt(targetArea.getDistance()));
                 screen.setDistanceTravelled((screen.getDistanceTravelled() + targetArea.getDistance()));
                 player.getAreasVisited().add(player.getPosition().add(direction.getVector()));
-                for (int i = 0; i < (targetArea.getDistance()/3); i++) player.decay();
+                for (int i = 0; i < (targetArea.getDistance()/4); i++) player.decay();
                 screen.move(direction);
                 screen.getMusic().stop();
                 screen.setMusic(Gdx.audio.newMusic(Gdx.files.internal("music/"+ screen.getMap()[player.getPosition().y()][player.getPosition().x()].getType().getBackgroundMusic())));
